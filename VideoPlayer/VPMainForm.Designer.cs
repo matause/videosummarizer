@@ -39,17 +39,12 @@
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
-            this.slimDXRenderTarget = new System.Windows.Forms.PictureBox();
-            this.videoControlsLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.stopButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
+            this.stopButton = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
-            this.displaySplitContainer.Panel1.SuspendLayout();
             this.displaySplitContainer.Panel2.SuspendLayout();
             this.displaySplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.slimDXRenderTarget)).BeginInit();
-            this.videoControlsLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -60,7 +55,7 @@
             this.aboutMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(624, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(422, 24);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "mainMenuStrip";
             // 
@@ -130,74 +125,54 @@
             this.displaySplitContainer.Location = new System.Drawing.Point(0, 24);
             this.displaySplitContainer.Name = "displaySplitContainer";
             this.displaySplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // displaySplitContainer.Panel1
-            // 
-            this.displaySplitContainer.Panel1.Controls.Add(this.slimDXRenderTarget);
+            this.displaySplitContainer.Panel1MinSize = 300;
             // 
             // displaySplitContainer.Panel2
             // 
-            this.displaySplitContainer.Panel2.Controls.Add(this.videoControlsLayout);
-            this.displaySplitContainer.Size = new System.Drawing.Size(624, 418);
-            this.displaySplitContainer.SplitterDistance = 208;
+            this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
+            this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
+            this.displaySplitContainer.Panel2MinSize = 34;
+            this.displaySplitContainer.Size = new System.Drawing.Size(422, 338);
+            this.displaySplitContainer.SplitterDistance = 300;
             this.displaySplitContainer.TabIndex = 1;
-            // 
-            // slimDXRenderTarget
-            // 
-            this.slimDXRenderTarget.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.slimDXRenderTarget.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.slimDXRenderTarget.Location = new System.Drawing.Point(0, 0);
-            this.slimDXRenderTarget.Name = "slimDXRenderTarget";
-            this.slimDXRenderTarget.Size = new System.Drawing.Size(624, 208);
-            this.slimDXRenderTarget.TabIndex = 0;
-            this.slimDXRenderTarget.TabStop = false;
-            // 
-            // videoControlsLayout
-            // 
-            this.videoControlsLayout.Controls.Add(this.playButton);
-            this.videoControlsLayout.Controls.Add(this.stopButton);
-            this.videoControlsLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.videoControlsLayout.Location = new System.Drawing.Point(0, 0);
-            this.videoControlsLayout.Name = "videoControlsLayout";
-            this.videoControlsLayout.Size = new System.Drawing.Size(624, 206);
-            this.videoControlsLayout.TabIndex = 0;
-            // 
-            // stopButton
-            // 
-            this.stopButton.Location = new System.Drawing.Point(84, 3);
-            this.stopButton.Name = "stopButton";
-            this.stopButton.Size = new System.Drawing.Size(75, 23);
-            this.stopButton.TabIndex = 3;
-            this.stopButton.Text = "Stop";
-            this.stopButton.UseVisualStyleBackColor = true;
+            this.displaySplitContainer.TabStop = false;
             // 
             // playButton
             // 
-            this.playButton.Location = new System.Drawing.Point(3, 3);
+            this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.playButton.Location = new System.Drawing.Point(12, 3);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(75, 23);
-            this.playButton.TabIndex = 2;
+            this.playButton.TabIndex = 4;
             this.playButton.Text = "Play";
             this.playButton.UseVisualStyleBackColor = true;
+            // 
+            // stopButton
+            // 
+            this.stopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.stopButton.Location = new System.Drawing.Point(93, 3);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new System.Drawing.Size(75, 23);
+            this.stopButton.TabIndex = 5;
+            this.stopButton.Text = "Stop";
+            this.stopButton.UseVisualStyleBackColor = true;
             // 
             // VPMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 442);
+            this.ClientSize = new System.Drawing.Size(422, 362);
             this.Controls.Add(this.displaySplitContainer);
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
+            this.MinimumSize = new System.Drawing.Size(200, 400);
             this.Name = "VPMainForm";
             this.Text = "Video Summarizer";
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
-            this.displaySplitContainer.Panel1.ResumeLayout(false);
             this.displaySplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).EndInit();
             this.displaySplitContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.slimDXRenderTarget)).EndInit();
-            this.videoControlsLayout.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -216,10 +191,8 @@
         private System.Windows.Forms.ToolStripMenuItem fileExitMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutAboutMenuItem;
         private System.Windows.Forms.SplitContainer displaySplitContainer;
-        private System.Windows.Forms.PictureBox slimDXRenderTarget;
-        private System.Windows.Forms.FlowLayoutPanel videoControlsLayout;
-        private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Button playButton;
+        private System.Windows.Forms.Button stopButton;
     }
 }
 

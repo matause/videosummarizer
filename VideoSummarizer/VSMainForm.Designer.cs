@@ -34,10 +34,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 442);
+            this.ClientSize = new System.Drawing.Size(422, 362);
             this.Name = "VSMainForm";
-            this.Text = "Video Summarizer";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
