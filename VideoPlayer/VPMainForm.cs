@@ -113,7 +113,7 @@ namespace VideoPlayer
             }
             else
             {
-                // No sense in reading audio if the user didn't select
+                // No sense in trying to read audio if the user didn't select
                 // a valid video file.
                 return;
             }
