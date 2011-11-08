@@ -51,7 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Direct2DRenderer.cs" />
+    <Compile Include="Frame.cs" />
     <Compile Include="SoundPlayer.cs" />
+    <Compile Include="Video.cs" />
     <Compile Include="VPMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
