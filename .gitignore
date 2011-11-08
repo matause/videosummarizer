@@ -1,0 +1,5 @@
+*.suo
+VideoPlayer/bin/
+VideoPlayer/obj/
+VideoSummarizer/bin/
+VideoSummarizer/obj/
