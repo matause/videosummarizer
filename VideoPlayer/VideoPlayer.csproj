@@ -50,9 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="576vReader.cs" />
     <Compile Include="Direct2DRenderer.cs" />
     <Compile Include="Frame.cs" />
-    <Compile Include="SoundPlayer.cs" />
+    <Compile Include="AudioPlayer.cs" />
     <Compile Include="Video.cs" />
     <Compile Include="VPMainForm.cs">
       <SubType>Form</SubType>
