@@ -61,18 +61,20 @@ namespace VideoPlayer
 
         private void ReadFrame(ref Frame frame)
         {
-            byte[] data = new byte[frame.bytesPerFrame];
-            file.Read(data, 0, frame.bytesPerFrame);
+            int bytesPerFrameInFile = frame.bytesPerFrame * 3 / 4;
+
+            byte[] data = new byte[bytesPerFrameInFile];
+            file.Read(data, 0, bytesPerFrameInFile);
 
             for (int i = 0; i < frame.width; ++i)
             {
-                for (int j = 0; j < frame.height; ++j )
+                for (int j = 0; j < frame.height; ++j)
                 {
-                    Color3 color = new Color3(
-                        ((float)data[  i + j * frame.width ]) / 255.0f,
-                        ((float)data[ (i + j * frame.width) + frame.width * frame.height ]) / 255.0f,
-                        ((float)data[ (i + j * frame.width) + frame.width * frame.height * 2 ]) / 255.0f);
-
+                    Pixel color = new Pixel();
+                    color.r = data[  i + j * frame.width ];
+                    color.g = data[ (i + j * frame.width) + frame.width * frame.height ];
+                    color.b = data[ (i + j * frame.width) + frame.width * frame.height * 2 ];
+                    
                     frame.pixels[i][j] = color;
                 }
             }

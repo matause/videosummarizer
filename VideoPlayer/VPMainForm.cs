@@ -20,12 +20,21 @@ namespace VideoPlayer
 {
     public partial class VPMainForm : Form
     {
+        bool isVideoLoaded;
+
+        const int frameWidth = 320;
+        const int frameHeight = 240;
+
         Color4 clearColor;
         SplitterPanel renderTarget;
         Direct2DRenderer renderer;
 
+        Video video;
+
         public VPMainForm()
         {
+            isVideoLoaded = false;
+
             clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
             renderer = new Direct2DRenderer(clearColor);
 
@@ -107,9 +116,11 @@ namespace VideoPlayer
             dlg.Title = "Open the video file.";
             dlg.Filter = "576v files (*.576v)|*.576v";
 
+            bool result;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                // TODO: read it in.
+                video = new Video(frameWidth, frameHeight);
+                result = video.OnInitialize( dlg.FileName );
             }
             else
             {
@@ -118,20 +129,24 @@ namespace VideoPlayer
                 return;
             }
 
-            // Then, read in audio file.
-            dlg.Title = "Open the audio file.";
-            dlg.Filter = "Wav files (*.wav)|*.wav";
+            //if (result == true)
+            //{
+            //    // Then, read in audio file.
+            //    dlg.Title = "Open the audio file.";
+            //    dlg.Filter = "Wav files (*.wav)|*.wav";
 
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                // TODO: read it in.
-            }
-            else
-            {
-                // Bail
-                return;
-            }
+            //    if (dlg.ShowDialog() == DialogResult.OK)
+            //    {
+            //        // TODO: read it in.
+            //    }
+            //    else
+            //    {
+            //        // Bail
+            //        return;
+            //    }
+            //}
 
+            isVideoLoaded = true;
             // TODO: Call a function to display first frame on the screen
             // and get the player ready to rock for playing a video.
         }
@@ -143,6 +158,12 @@ namespace VideoPlayer
         private void OnPlayButtonClick(object sender, EventArgs e)
         {
             // TODO
+            if (isVideoLoaded == true)
+            {
+                renderer.OnUpdate(video.frames[71]);
+
+                renderTarget.Invalidate();
+            }
         }
 
         private void OnStopButtonClick(object sender, EventArgs e)

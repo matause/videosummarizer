@@ -54,6 +54,7 @@
     <Compile Include="Direct2DRenderer.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="AudioPlayer.cs" />
+    <Compile Include="Pixel.cs" />
     <Compile Include="Video.cs" />
     <Compile Include="VPMainForm.cs">
       <SubType>Form</SubType>
