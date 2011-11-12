@@ -59,8 +59,8 @@ namespace VideoPlayer
 
                     resultIndex += 4;
 
-                    if ((pixels[i][j].b != 0) || (pixels[i][j].g != 0) || (pixels[i][j].r != 0))
-                        return result;
+                    //if ((pixels[i][j].b != 0) || (pixels[i][j].g != 0) || (pixels[i][j].r != 0))
+                    //    return result;
                 }
             }
 
