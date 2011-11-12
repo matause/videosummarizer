@@ -66,14 +66,17 @@ namespace VideoPlayer
             byte[] data = new byte[bytesPerFrameInFile];
             file.Read(data, 0, bytesPerFrameInFile);
 
-            for (int i = 0; i < frame.width; ++i)
+            for (int i = 0; i < frame.height; ++i)
             {
-                for (int j = 0; j < frame.height; ++j)
+                for (int j = 0; j < frame.width; ++j)
                 {
                     Pixel color = new Pixel();
-                    color.r = data[  i + j * frame.width ];
-                    color.g = data[ (i + j * frame.width) + frame.width * frame.height ];
-                    color.b = data[ (i + j * frame.width) + frame.width * frame.height * 2 ];
+                    color.r = data[i + j * frame.width];
+                    color.g = data[(i + j * frame.width) + frame.width * frame.height];
+                    color.b = data[(i + j * frame.width) + frame.width * frame.height * 2];
+
+                    if ((color.r != 0) || (color.g != 0) || (color.b != 0))
+                        return;
                     
                     frame.pixels[i][j] = color;
                 }

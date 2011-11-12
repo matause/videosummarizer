@@ -31,10 +31,10 @@ namespace VideoPlayer
             // Instantiate the variable which will store this frame's pixels.
             pixels = new List<List<Pixel>>();
 
-            for (int i = 0; i < width; ++i)
+            for (int i = 0; i < height; ++i)
             {
                 List<Pixel> row = new List<Pixel>();
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
                     Pixel pixel = new Pixel();
                     row.Add(pixel);
@@ -46,15 +46,21 @@ namespace VideoPlayer
         public byte[] GetBytes()
         {
             byte[] result = new byte[bytesPerFrame];
+            int resultIndex = 0;
 
-            for (int i = 0; i < width; ++i)
+            for (int i = 0; i < height; ++i)
             {
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
-                    result[ ( i + j * width )     ] = pixels[i][j].b;
-                    result[ ( i + j * width ) + 1 ] = pixels[i][j].g;
-                    result[ ( i + j * width ) + 2 ] = pixels[i][j].r;
-                    result[ ( i + j * width ) + 3 ] = pixels[i][j].a;
+                    result[ resultIndex] = pixels[i][j].b;
+                    result[ resultIndex + 1] = pixels[i][j].g;
+                    result[ resultIndex + 2] = pixels[i][j].r;
+                    result[ resultIndex + 3] = pixels[i][j].a;
+
+                    resultIndex += 4;
+
+                    if ((pixels[i][j].b != 0) || (pixels[i][j].g != 0) || (pixels[i][j].r != 0))
+                        return result;
                 }
             }
 

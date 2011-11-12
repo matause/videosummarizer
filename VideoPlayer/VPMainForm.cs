@@ -160,7 +160,7 @@ namespace VideoPlayer
             // TODO
             if (isVideoLoaded == true)
             {
-                renderer.OnUpdate(video.frames[71]);
+                renderer.OnUpdate(video.frames[18]);
 
                 renderTarget.Invalidate();
             }
