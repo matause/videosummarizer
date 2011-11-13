@@ -168,16 +168,13 @@ namespace VideoPlayer
 
             // Load the image into D2D
             DataStream stream = new DataStream(data, true, false);
-            SlimDX.Direct2D.PixelFormat format =
-                new SlimDX.Direct2D.PixelFormat(SlimDX.DXGI.Format.B8G8R8A8_UNorm, AlphaMode.Ignore);
-            BitmapProperties props = new BitmapProperties();
-            props.PixelFormat = format;
-
+            SlimDX.Direct2D.BitmapProperties properties = new SlimDX.Direct2D.BitmapProperties();
+            properties.PixelFormat = new SlimDX.Direct2D.PixelFormat(SlimDX.DXGI.Format.B8G8R8A8_UNorm, SlimDX.Direct2D.AlphaMode.Ignore);
+       
             try
             {
                 currentFrame = new SlimDX.Direct2D.Bitmap(renderTarget, new Size(frameWidth, frameHeight),
-                    stream, bytesPerStride, props);
-
+                    stream, bytesPerStride, properties);
             }
             catch
             {

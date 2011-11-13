@@ -91,7 +91,7 @@ namespace VideoPlayer
             // Read blue channel.
             for (int i = 0; i < frame.width; ++i)
             {
-                for (int j = 0; j < frame.height; ++j)
+                for (int j = 0; j < frame.width; ++j)
                 {
                     Pixel color = frame.pixels[i][j];
                     color.b = data[index++];

@@ -31,10 +31,10 @@ namespace VideoPlayer
             // Instantiate the variable which will store this frame's pixels.
             pixels = new List<List<Pixel>>();
 
-            for (int i = 0; i < width; ++i)
+            for (int i = 0; i < height; ++i)
             {
                 List<Pixel> row = new List<Pixel>();
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
                     Pixel pixel = new Pixel();
                     row.Add(pixel);
@@ -48,7 +48,7 @@ namespace VideoPlayer
             int index = 0;
             for (int i = 0; i < width; ++i)
             {
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
                     result[ index++ ] = pixels[i][j].b;
                     result[ index++ ] = pixels[i][j].g;
