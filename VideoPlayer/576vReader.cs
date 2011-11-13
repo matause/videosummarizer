@@ -66,16 +66,35 @@ namespace VideoPlayer
             byte[] data = new byte[bytesPerFrameInFile];
             file.Read(data, 0, bytesPerFrameInFile);
 
+            int index = 0;
+
+            // Read red channel.
             for (int i = 0; i < frame.width; ++i)
             {
                 for (int j = 0; j < frame.height; ++j)
                 {
-                    Pixel color = new Pixel();
-                    color.r = data[  i + j * frame.width ];
-                    color.g = data[ (i + j * frame.width) + frame.width * frame.height ];
-                    color.b = data[ (i + j * frame.width) + frame.width * frame.height * 2 ];
-                    
-                    frame.pixels[i][j] = color;
+                    Pixel color = frame.pixels[i][j];
+                    color.r = data[index++];
+                }
+            }
+
+            // Read green channel.
+            for (int i = 0; i < frame.width; ++i)
+            {
+                for (int j = 0; j < frame.height; ++j)
+                {
+                    Pixel color = frame.pixels[i][j];
+                    color.g = data[index++];
+                }
+            }
+
+            // Read blue channel.
+            for (int i = 0; i < frame.width; ++i)
+            {
+                for (int j = 0; j < frame.height; ++j)
+                {
+                    Pixel color = frame.pixels[i][j];
+                    color.b = data[index++];
                 }
             }
         }

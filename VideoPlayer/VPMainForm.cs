@@ -14,6 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using System.Threading;
+using System.Diagnostics;
 using SlimDX;
 
 namespace VideoPlayer
@@ -21,6 +23,10 @@ namespace VideoPlayer
     public partial class VPMainForm : Form
     {
         bool isVideoLoaded;
+        bool isVideoPlaying;
+        bool isVideoStopping;
+
+        float totalVideoPlayTime;
 
         const int frameWidth = 320;
         const int frameHeight = 240;
@@ -30,13 +36,22 @@ namespace VideoPlayer
         Direct2DRenderer renderer;
 
         Video video;
+        Stopwatch videoTimer;
+        Thread videoThread;
 
         public VPMainForm()
         {
             isVideoLoaded = false;
+            isVideoPlaying = false;
+            isVideoStopping = false;
+
+            totalVideoPlayTime = 0.0f;
 
             clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
             renderer = new Direct2DRenderer(clearColor);
+
+            videoTimer = new Stopwatch();
+            videoTimer.Stop();
 
             InitializeComponent();
 
@@ -46,13 +61,14 @@ namespace VideoPlayer
             //
             // Set up callbacks.
             //
-
             this.Load += new EventHandler(OnLoad);
+            this.FormClosed += new FormClosedEventHandler(OnClose);
 
             fileExitMenuItem.Click += new EventHandler(OnFileExit);
             fileOpenMenuItem.Click += new EventHandler(OnFileOpen);
             fileCloseMenuItem.Click += new EventHandler(OnFileClose);
-
+           
+    
             renderTarget.Paint += new PaintEventHandler(OnRender);
             renderTarget.Resize += new EventHandler(OnResize);
 
@@ -79,12 +95,29 @@ namespace VideoPlayer
             }
         }
 
+        private void OnClose(object sender, FormClosedEventArgs e)
+        {
+            StopVideoThread();
+
+            renderer.OnShutdown();
+        }
+
         //
         // Top splitter panel (our Direct2D render target ) callbacks.
         //
 
         private void OnRender(object sender, PaintEventArgs e)
         {
+            if (video != null)
+            {
+                // Load current frame into D2D.
+                lock (video)
+                {
+                    renderer.OnUpdate(video.GetCurrentFrame());
+                }
+            }
+
+            // Draw the frame.
             renderer.OnRender();
         }
 
@@ -157,18 +190,87 @@ namespace VideoPlayer
 
         private void OnPlayButtonClick(object sender, EventArgs e)
         {
-            // TODO
-            if (isVideoLoaded == true)
+            if (isVideoLoaded == true )
             {
-                renderer.OnUpdate(video.frames[71]);
+                StopVideoThread();
 
-                renderTarget.Invalidate();
+                // No Threads at this point. So, we can just do stuff.
+                video.OnReset();
+                videoTimer.Reset();
+                videoTimer.Start();
+
+                // Create and start new thread.
+                videoThread = new Thread(PlayVideoThread);
+                videoThread.Start();
+
+                isVideoPlaying = true;
             }
         }
 
         private void OnStopButtonClick(object sender, EventArgs e)
         {
-            // TODO
+            StopVideoThread();
+
+            videoTimer.Stop();
+
+            isVideoPlaying = false;
+        }
+
+        //
+        // Helper Threading Functions
+        //
+
+        private void PlayVideoThread()
+        {
+            totalVideoPlayTime = 0.0f;
+
+            while(true)
+            {
+                // Update current frame.
+                float totalTime = 0.0f;
+                lock (videoTimer)
+                {
+                    totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
+                }
+
+                float elapsedTime = totalTime - totalVideoPlayTime;
+                totalVideoPlayTime = totalTime;
+
+                lock (video)
+                {
+                    video.OnUpdate(elapsedTime);
+                }
+
+                // Tell GUI to redraw.
+                lock (renderTarget)
+                {
+                    renderTarget.Invalidate();
+                }
+
+                if (isVideoStopping == true)
+                {
+                    isVideoStopping = false;
+                    break;
+                }
+            }
+        }
+
+        private void StopVideoThread()
+        {
+            if (isVideoPlaying == true)
+            {
+                // Clean up the old thread if it exists.
+                if (video != null)
+                {
+                    isVideoStopping = true;
+                }
+
+                // Just hang until the thread actually stops.
+
+                // This is probably a very, very bad idea.
+                // But whatever.
+                while (isVideoStopping == true) {}
+            }
         }
     }
 }

@@ -15,6 +15,8 @@ namespace VideoPlayer
     class Video
     {
         private const int TOTAL_FRAMES_IN_RAM = 72;
+        private const int VIDEO_FPS = 24;
+        private const float SECONDS_PER_FRAME = 1.0f / (float)VIDEO_FPS;
 
         public int currentFrame, numberOfFrames;
         public int startingListFrame;
@@ -22,11 +24,14 @@ namespace VideoPlayer
 
         _576vReader videoReader;
 
+        float currentFrameTime;
+
         public Video(int frameWidth, int frameHeight)
         {
             currentFrame = 0;
             numberOfFrames = 0;
             startingListFrame = 0;
+            currentFrameTime = 0.0f;
 
             videoReader = new _576vReader();
 
@@ -56,6 +61,38 @@ namespace VideoPlayer
             }
 
             return true;
+        }
+
+        public void OnReset()
+        {
+            currentFrame = 0;
+            currentFrameTime = 0.0f;
+        }
+
+        public void OnUpdate(float elapsedTime)
+        {
+            currentFrameTime += elapsedTime;
+            while( currentFrameTime >= SECONDS_PER_FRAME )
+            {
+                currentFrame++;
+                currentFrameTime -= SECONDS_PER_FRAME;
+            }
+        }
+
+        public Frame GetCurrentFrame()
+        {
+            Frame frame;
+
+            if (currentFrame < TOTAL_FRAMES_IN_RAM)
+            {
+                frame = frames[currentFrame];
+            }
+            else
+            {
+                frame = frames[TOTAL_FRAMES_IN_RAM - 1];
+            }
+
+            return frame;
         }
     }
 }

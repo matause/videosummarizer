@@ -43,22 +43,19 @@ namespace VideoPlayer
             }
         }
 
-        public byte[] GetBytes()
+        public void GetBytes( ref byte[] result )
         {
-            byte[] result = new byte[bytesPerFrame];
-
+            int index = 0;
             for (int i = 0; i < width; ++i)
             {
                 for (int j = 0; j < height; ++j)
                 {
-                    result[ ( i + j * width )     ] = pixels[i][j].b;
-                    result[ ( i + j * width ) + 1 ] = pixels[i][j].g;
-                    result[ ( i + j * width ) + 2 ] = pixels[i][j].r;
-                    result[ ( i + j * width ) + 3 ] = pixels[i][j].a;
+                    result[ index++ ] = pixels[i][j].b;
+                    result[ index++ ] = pixels[i][j].g;
+                    result[ index++ ] = pixels[i][j].r;
+                    result[ index++ ] = pixels[i][j].a;
                 }
             }
-
-            return result;
         }
     }
 }

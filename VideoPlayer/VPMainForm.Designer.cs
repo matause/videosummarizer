@@ -164,6 +164,7 @@
             this.ClientSize = new System.Drawing.Size(422, 362);
             this.Controls.Add(this.displaySplitContainer);
             this.Controls.Add(this.mainMenuStrip);
+            this.DoubleBuffered = true;
             this.MainMenuStrip = this.mainMenuStrip;
             this.MinimumSize = new System.Drawing.Size(200, 400);
             this.Name = "VPMainForm";

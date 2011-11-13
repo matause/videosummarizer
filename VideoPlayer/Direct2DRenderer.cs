@@ -25,6 +25,7 @@ namespace VideoPlayer
         private Factory factory;
         private WindowRenderTarget renderTarget;
 
+        private byte[] currentFrameBytes;
         private SlimDX.Direct2D.Bitmap currentFrame;
 
         public Direct2DRenderer(Color4 clearColor)
@@ -73,7 +74,7 @@ namespace VideoPlayer
                 WindowRenderTargetProperties properties = new WindowRenderTargetProperties();
                 properties.Handle = handle;
                 properties.PixelSize = new Size(width, height);
-                properties.PresentOptions = PresentOptions.Immediately;
+                properties.PresentOptions = PresentOptions.RetainContents | PresentOptions.None;
 
                 renderTarget = new WindowRenderTarget(factory, properties);
             }
@@ -92,11 +93,18 @@ namespace VideoPlayer
 
             if (isInitialized == true)
             {
-                // Convert the frame to bytes
-                byte[] data = new byte[frame.bytesPerFrame];
-                data = frame.GetBytes();
+                // First time calling this. Allocate our byte buffer.
+                if (currentFrameBytes == null)
+                {
+                    currentFrameBytes = new byte[frame.bytesPerFrame];
+                }
 
-                result = LoadImage( data, frame.width, frame.height, frame.bytesPerStride);
+                // Convert the frame to bytes
+                frame.GetBytes(ref currentFrameBytes);
+
+                result = LoadImage(currentFrameBytes, frame.width, frame.height, frame.bytesPerStride);
+
+
             }
 
             if (result == true)
@@ -137,6 +145,11 @@ namespace VideoPlayer
         {
             factory.Dispose();
             renderTarget.Dispose();
+
+            if (currentFrame != null)
+            {
+                currentFrame.Dispose();
+            }
         }
 
         //
@@ -146,6 +159,12 @@ namespace VideoPlayer
         private bool LoadImage( byte[] data, int frameWidth, int frameHeight, int bytesPerStride)
         {
             bool result = true;
+
+            if (currentFrame != null)
+            {
+                currentFrame.Dispose();
+                currentFrame = null;
+            }
 
             // Load the image into D2D
             DataStream stream = new DataStream(data, true, false);
@@ -160,7 +179,7 @@ namespace VideoPlayer
                     stream, bytesPerStride, props);
 
             }
-            catch( Exception e )
+            catch
             {
                 result = false;
             }
