@@ -17,6 +17,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using SlimDX;
+using SlimDX.Windows;
 
 namespace VideoPlayer
 {
@@ -32,8 +33,10 @@ namespace VideoPlayer
         const int frameHeight = 240;
 
         Color4 clearColor;
-        SplitterPanel renderTarget;
+        
+        //SplitterPanel renderTarget;
         Direct2DRenderer renderer;
+        RenderForm renderTarget;
 
         Video video;
         Stopwatch videoTimer;
@@ -56,7 +59,11 @@ namespace VideoPlayer
             InitializeComponent();
 
             // Get the render target from the GUI.
-            renderTarget = displaySplitContainer.Panel1;
+            renderTarget = new RenderForm();
+            renderTarget.FormBorderStyle = FormBorderStyle.None;
+            renderTarget.TopLevel = false;
+            displaySplitContainer.Panel1.Controls.Add(renderTarget);
+            renderTarget.Show();
 
             //
             // Set up callbacks.
@@ -113,6 +120,8 @@ namespace VideoPlayer
                 // Load current frame into D2D.
                 lock (video)
                 {
+                    // We really shouldn't do this every frame.
+                    // TODO: Change it later.
                     renderer.OnUpdate(video.GetCurrentFrame());
                 }
             }
