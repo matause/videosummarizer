@@ -141,6 +141,17 @@ namespace VideoPlayer
             }
         }
 
+        public void OnReset()
+        {
+            isImageLoaded = false;
+
+            if (currentFrame != null)
+            {
+                currentFrame.Dispose();
+            }
+            currentFrame = null;
+        }
+
         public void OnShutdown()
         {
             factory.Dispose();

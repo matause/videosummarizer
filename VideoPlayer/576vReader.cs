@@ -55,7 +55,10 @@ namespace VideoPlayer
 
         public void OnClose()
         {
-            file.Close();
+            if (file != null)
+            {
+                file.Close();
+            }
         }
 
         private void ReadFrame(ref Frame frame)

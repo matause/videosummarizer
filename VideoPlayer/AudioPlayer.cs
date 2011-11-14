@@ -18,11 +18,13 @@ namespace VideoPlayer
 {
     class AudioPlayer
     {
-        SoundPlayer player;
+        public bool isSoundLoaded;
+        private SoundPlayer player;
 
         public AudioPlayer()
         {
             player = new SoundPlayer();
+            isSoundLoaded = false;
         }
 
         public bool OnInitialize(string filePath)
@@ -31,14 +33,34 @@ namespace VideoPlayer
 
             try
             {
-                
+                player.SoundLocation = filePath;
+                player.Load(); 
             }
             catch
             {
-
+                result = false;
             }
 
             return result;
+        }
+
+        public void OnPlay()
+        {
+            try
+            {
+                player.Stop();
+                player.Play();
+            }
+            catch { }
+        }
+
+        public void OnStop()
+        {
+            try
+            {
+                player.Stop();
+            }
+            catch { }
         }
     }
 }

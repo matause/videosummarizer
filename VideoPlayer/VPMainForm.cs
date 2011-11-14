@@ -104,8 +104,7 @@ namespace VideoPlayer
 
         private void OnClose(object sender, FormClosedEventArgs e)
         {
-            StopVideoThread();
-
+            StopVideo();
             renderer.OnShutdown();
         }
 
@@ -146,23 +145,39 @@ namespace VideoPlayer
 
         private void OnFileClose(object sender, EventArgs e)
         {
-            // TODO: Clear all the video and audio data and reset the renderer
-            // for a new video.
+            StopVideo();
+            if (video != null)
+            {
+                video.OnReset();
+                video = null;
+            }
+
+            videoTimer.Stop();
+            
+            isVideoPlaying = false;
+            isVideoLoaded = false;
+
+            renderer.OnReset();
+            renderTarget.Invalidate();
         }
 
         private void OnFileOpen(object sender, EventArgs e)
         {
+            // Clean up any existing video data.
+            OnFileClose(sender, e);
+
             // First, read in video file.
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Multiselect = false;
             dlg.Title = "Open the video file.";
             dlg.Filter = "576v files (*.576v)|*.576v";
 
-            bool result;
+            bool result = true;
+            string videoFile = "";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 video = new Video(frameWidth, frameHeight);
-                result = video.OnInitialize( dlg.FileName );
+                videoFile = dlg.FileName;
             }
             else
             {
@@ -171,26 +186,28 @@ namespace VideoPlayer
                 return;
             }
 
-            //if (result == true)
-            //{
-            //    // Then, read in audio file.
-            //    dlg.Title = "Open the audio file.";
-            //    dlg.Filter = "Wav files (*.wav)|*.wav";
+            // Then, read in audio file.
+            dlg.Title = "Open the audio file.";
+            dlg.Filter = "Wav files (*.wav)|*.wav";
 
-            //    if (dlg.ShowDialog() == DialogResult.OK)
-            //    {
-            //        // TODO: read it in.
-            //    }
-            //    else
-            //    {
-            //        // Bail
-            //        return;
-            //    }
-            //}
+            string audioFile = "";
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                audioFile = dlg.FileName;
+            }
+            else
+            {
+                // Bail
+                return;
+            }
 
-            isVideoLoaded = true;
-            // TODO: Call a function to display first frame on the screen
-            // and get the player ready to rock for playing a video.
+            result = video.OnInitialize(videoFile, audioFile);
+
+            if (result == true)
+            {
+                isVideoLoaded = true;
+                renderTarget.Invalidate();
+            }
         }
 
         //
@@ -201,16 +218,19 @@ namespace VideoPlayer
         {
             if (isVideoLoaded == true )
             {
-                StopVideoThread();
+                StopVideo();
 
                 // No Threads at this point. So, we can just do stuff.
                 video.OnReset();
                 videoTimer.Reset();
+
+                // These need started together.
                 videoTimer.Start();
+                video.OnStartPlaying();
 
                 // Create and start new thread.
-                videoThread = new Thread(PlayVideoThread);
-                videoThread.Start();
+                videoThread = new Thread(PlayVideo);
+                videoThread.Start();    
 
                 isVideoPlaying = true;
             }
@@ -218,10 +238,9 @@ namespace VideoPlayer
 
         private void OnStopButtonClick(object sender, EventArgs e)
         {
-            StopVideoThread();
-
+            StopVideo();
             videoTimer.Stop();
-
+            video.OnReset();
             isVideoPlaying = false;
         }
 
@@ -229,7 +248,7 @@ namespace VideoPlayer
         // Helper Threading Functions
         //
 
-        private void PlayVideoThread()
+        private void PlayVideo()
         {
             totalVideoPlayTime = 0.0f;
 
@@ -264,7 +283,7 @@ namespace VideoPlayer
             }
         }
 
-        private void StopVideoThread()
+        private void StopVideo()
         {
             if (isVideoPlaying == true)
             {

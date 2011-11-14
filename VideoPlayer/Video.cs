@@ -4,6 +4,9 @@
 // video.
 //
 
+// Comment this to debug video without having 
+// to listen to audio.
+#define AUDIO
 
 using System;
 using System.Collections.Generic;
@@ -22,9 +25,10 @@ namespace VideoPlayer
         public int startingListFrame;
         public List<Frame> frames;
 
-        _576vReader videoReader;
+        private _576vReader videoReader;
+        public AudioPlayer audioPlayer;
 
-        float currentFrameTime;
+        private float currentFrameTime;
 
         public Video(int frameWidth, int frameHeight)
         {
@@ -34,6 +38,7 @@ namespace VideoPlayer
             currentFrameTime = 0.0f;
 
             videoReader = new _576vReader();
+            audioPlayer = new AudioPlayer();
 
             frames = new List<Frame>();
             for (int i = 0; i < TOTAL_FRAMES_IN_RAM; ++i)
@@ -42,10 +47,11 @@ namespace VideoPlayer
             }
         }
 
-        public bool OnInitialize(string videoFilePath)
+        public bool OnInitialize(string videoFilePath, string audioFilePath)
         {
             bool result = true;
 
+            // Set up the video
             result = videoReader.OnInitialize(videoFilePath);
 
             if( result == false )
@@ -60,13 +66,31 @@ namespace VideoPlayer
                     return false;
             }
 
+            // Set up the audio.
+            result = audioPlayer.OnInitialize(audioFilePath);
+
+            if (result == false)
+                return false;
+
             return true;
+        }
+
+        public void OnStartPlaying()
+        {
+            currentFrame = 0;
+            currentFrameTime = 0.0f;
+            audioPlayer.OnStop();
+
+#if AUDIO
+            audioPlayer.OnPlay();
+#endif
         }
 
         public void OnReset()
         {
             currentFrame = 0;
             currentFrameTime = 0.0f;
+            audioPlayer.OnStop();
         }
 
         public void OnUpdate(float elapsedTime)
