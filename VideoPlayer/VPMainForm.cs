@@ -25,7 +25,6 @@ namespace VideoPlayer
     {
         bool isVideoLoaded;
         bool isVideoPlaying;
-        bool isVideoStopping;
 
         float totalVideoPlayTime;
 
@@ -40,13 +39,14 @@ namespace VideoPlayer
 
         Video video;
         Stopwatch videoTimer;
+
         Thread videoThread;
+        Thread streamThread;
 
         public VPMainForm()
         {
             isVideoLoaded = false;
             isVideoPlaying = false;
-            isVideoStopping = false;
 
             totalVideoPlayTime = 0.0f;
 
@@ -104,7 +104,7 @@ namespace VideoPlayer
 
         private void OnClose(object sender, FormClosedEventArgs e)
         {
-            StopVideo();
+            StopVideoThreads();
             renderer.OnShutdown();
         }
 
@@ -145,7 +145,7 @@ namespace VideoPlayer
 
         private void OnFileClose(object sender, EventArgs e)
         {
-            StopVideo();
+            StopVideoThreads();
             if (video != null)
             {
                 video.OnReset();
@@ -218,7 +218,7 @@ namespace VideoPlayer
         {
             if (isVideoLoaded == true )
             {
-                StopVideo();
+                StopVideoThreads();
 
                 // No Threads at this point. So, we can just do stuff.
                 video.OnReset();
@@ -228,9 +228,12 @@ namespace VideoPlayer
                 videoTimer.Start();
                 video.OnStartPlaying();
 
-                // Create and start new thread.
+                // Create and start new playing and streaming threads.
                 videoThread = new Thread(PlayVideo);
-                videoThread.Start();    
+                videoThread.Start();
+
+                streamThread = new Thread(StreamVideo);
+                streamThread.Start();
 
                 isVideoPlaying = true;
             }
@@ -238,66 +241,73 @@ namespace VideoPlayer
 
         private void OnStopButtonClick(object sender, EventArgs e)
         {
-            StopVideo();
+            StopVideoThreads();
             videoTimer.Stop();
             video.OnReset();
             isVideoPlaying = false;
+
+            renderTarget.Invalidate();
         }
 
         //
         // Helper Threading Functions
         //
 
+        // Threaded function for playback.
         private void PlayVideo()
         {
             totalVideoPlayTime = 0.0f;
 
-            while(true)
+            lock (video)
             {
-                // Update current frame.
-                float totalTime = 0.0f;
-                lock (videoTimer)
+                while(true)
                 {
-                    totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
-                }
+                    // Update current frame.
+                    float totalTime = 0.0f;
+                    lock (videoTimer)
+                    {
+                        totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
+                    }
 
-                float elapsedTime = totalTime - totalVideoPlayTime;
-                totalVideoPlayTime = totalTime;
+                    float elapsedTime = totalTime - totalVideoPlayTime;
+                    totalVideoPlayTime = totalTime;
 
-                lock (video)
-                {
-                    video.OnUpdate(elapsedTime);
-                }
+                    Monitor.Wait(video);
+                    bool result = video.OnUpdate(elapsedTime);
+                    Monitor.Pulse(video);
 
-                // Tell GUI to redraw.
-                lock (renderTarget)
-                {
-                    renderTarget.Invalidate();
-                }
-
-                if (isVideoStopping == true)
-                {
-                    isVideoStopping = false;
-                    break;
+                    // Tell GUI to redraw if the frame changed.
+                    if (result == true)
+                    {
+                        renderTarget.Invalidate();
+                    }
                 }
             }
         }
 
-        private void StopVideo()
+        // Threaded function for stream reading.
+        private void StreamVideo()
+        {
+            lock (video)
+            {
+				Monitor.Pulse(video);
+				while( Monitor.Wait(video,1000) == true )
+				{
+                    video.StreamNewFrames();
+                    Monitor.Pulse(video);
+                }
+            }
+        }
+
+        private void StopVideoThreads()
         {
             if (isVideoPlaying == true)
             {
-                // Clean up the old thread if it exists.
-                if (video != null)
-                {
-                    isVideoStopping = true;
-                }
+                streamThread.Abort();
+                videoThread.Abort();
 
-                // Just hang until the thread actually stops.
-
-                // This is probably a very, very bad idea.
-                // But whatever.
-                while (isVideoStopping == true) {}
+                streamThread = null;
+                videoThread = null;
             }
         }
     }

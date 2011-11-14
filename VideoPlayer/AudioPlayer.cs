@@ -31,14 +31,28 @@ namespace VideoPlayer
         {
             bool result = true;
 
+            StreamReader file = null; 
+
             try
             {
-                player.SoundLocation = filePath;
-                player.Load(); 
+                file = new StreamReader(filePath);
             }
             catch
             {
                 result = false;
+            }
+
+            if (result == true)
+            {
+                try
+                {
+                    player.Stream = file.BaseStream;
+                    player.Load();
+                }
+                catch
+                {
+                    result = false;
+                }
             }
 
             return result;
@@ -60,7 +74,7 @@ namespace VideoPlayer
             {
                 player.Stop();
             }
-            catch { }
+            catch {}
         }
     }
 }
