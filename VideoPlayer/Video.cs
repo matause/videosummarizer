@@ -108,7 +108,7 @@ namespace VideoPlayer
             audioPlayer.OnStop();
 
 #if AUDIO
-            audioPlayer.OnPlay();
+            audioPlayer.OnPlay(0);
 #endif
         }
 

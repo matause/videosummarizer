@@ -11,19 +11,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using System.IO;
-using System.Media;
+using IrrKlang;
 
 namespace VideoPlayer
 {
     class AudioPlayer
     {
         public bool isSoundLoaded;
-        private SoundPlayer player;
+        private ISoundEngine engine;
+        private string soundFileName;
+        private ISound sound;
+
+        float volume;
 
         public AudioPlayer()
         {
-            player = new SoundPlayer();
+            volume = 1.0f;
+            engine = new ISoundEngine();
             isSoundLoaded = false;
         }
 
@@ -31,48 +35,37 @@ namespace VideoPlayer
         {
             bool result = true;
 
-            StreamReader file = null; 
-
-            try
-            {
-                file = new StreamReader(filePath);
-            }
-            catch
-            {
-                result = false;
-            }
-
-            if (result == true)
-            {
-                try
-                {
-                    player.Stream = file.BaseStream;
-                    player.Load();
-                }
-                catch
-                {
-                    result = false;
-                }
-            }
+            soundFileName = filePath;
 
             return result;
         }
 
-        public void OnPlay()
+        /// <summary>
+        /// Plays the sound.
+        /// </summary>
+        /// <param name="startingPosition">The time to start playback. (in milliseconds)</param>
+        public void OnPlay(uint startingPosition)
         {
             try
             {
-                player.Stop();
-                player.Play();
+                sound = engine.Play2D(soundFileName, false, false, StreamMode.AutoDetect, false);
+                sound.PlayPosition = startingPosition;
+                sound.Volume = volume;
+                isSoundLoaded = true;
             }
             catch { }
+        }
+
+        public void OnSetVolume(float volume)
+        {
+            this.volume = volume;
         }
 
         public void OnStop()
         {
             try
             {
-                player.Stop();
+                engine.StopAllSounds();
             }
             catch {}
         }
