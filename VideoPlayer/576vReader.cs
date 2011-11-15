@@ -40,7 +40,7 @@ namespace VideoPlayer
             try
             {
                 // Go to the start of the frame.
-                file.Seek(frameNumber * frame.bytesPerFrame, SeekOrigin.Begin);
+                file.Seek(frameNumber * frame.bytesPerFrame * 3 / 4, SeekOrigin.Begin);
 
                 // Read in the frame.
                 ReadFrame(ref frame);
