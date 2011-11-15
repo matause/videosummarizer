@@ -39,8 +39,10 @@ namespace VideoPlayer
 
             try
             {
+                long filePosition = (long)frameNumber * (long)frame.bytesPerFrameInFile;
+
                 // Go to the start of the frame.
-                file.Seek(frameNumber * frame.bytesPerFrame * 3 / 4, SeekOrigin.Begin);
+                file.Seek( filePosition, SeekOrigin.Begin );
 
                 // Read in the frame.
                 ReadFrame(ref frame);
@@ -63,10 +65,8 @@ namespace VideoPlayer
 
         private void ReadFrame(ref Frame frame)
         {
-            int bytesPerFrameInFile = frame.bytesPerFrame * 3 / 4;
-
-            byte[] data = new byte[bytesPerFrameInFile];
-            file.Read(data, 0, bytesPerFrameInFile);
+            byte[] data = new byte[frame.bytesPerFrameInFile];
+            file.Read(data, 0, frame.bytesPerFrameInFile);
 
             int index = 0;
 

@@ -15,9 +15,11 @@ namespace VideoPlayer
     class Frame
     {
         public int index, height, width;
-        public int bytesPerFrame;
+        public int bytesPerFrameInMemory;
+        public int bytesPerFrameInFile;
         public int bytesPerStride;
-        public const int bytesPerPixel = 4;
+        public const int bytesPerPixelInMemory = 4;
+        public const int bytesPerPixelInFile = 3;
         public List<List<Pixel>> pixels;
 
         public Frame(int index, int width, int height)
@@ -25,8 +27,9 @@ namespace VideoPlayer
             this.index = index;
             this.width = width;
             this.height = height;
-            bytesPerStride = width * bytesPerPixel;
-            bytesPerFrame = width * height * bytesPerPixel;
+            bytesPerStride = width * bytesPerPixelInMemory;
+            bytesPerFrameInMemory = width * height * bytesPerPixelInMemory;
+            bytesPerFrameInFile = width * height * bytesPerPixelInFile;
 
             // Instantiate the variable which will store this frame's pixels.
             pixels = new List<List<Pixel>>();

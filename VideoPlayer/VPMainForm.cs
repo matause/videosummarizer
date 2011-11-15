@@ -226,7 +226,7 @@ namespace VideoPlayer
 
                 // These need started together.
                 videoTimer.Start();
-                video.OnStartPlaying();
+                video.OnStartPlaying(0, 1100);
 
                 // Create and start new playing and streaming threads.
                 videoThread = new Thread(PlayVideo);

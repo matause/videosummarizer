@@ -101,14 +101,14 @@ namespace VideoPlayer
             }
         }
 
-        public void OnStartPlaying()
+        public void OnStartPlaying(int startingFrame, uint soundOffset)
         {
-            currentFrame = 0;
+            currentFrame = startingFrame;
             currentFrameTime = 0.0f;
             audioPlayer.OnStop();
 
 #if AUDIO
-            audioPlayer.OnPlay(0);
+            audioPlayer.OnPlay(soundOffset);
 #endif
         }
 

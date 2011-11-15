@@ -96,7 +96,7 @@ namespace VideoPlayer
                 // First time calling this. Allocate our byte buffer.
                 if (currentFrameBytes == null)
                 {
-                    currentFrameBytes = new byte[frame.bytesPerFrame];
+                    currentFrameBytes = new byte[frame.bytesPerFrameInMemory];
                 }
 
                 // Convert the frame to bytes
