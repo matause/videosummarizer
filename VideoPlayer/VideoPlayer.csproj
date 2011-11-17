@@ -34,6 +34,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AForge">
+      <HintPath>..\references\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging">
+      <HintPath>..\references\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math">
+      <HintPath>..\references\AForge.Math.dll</HintPath>
+    </Reference>
     <Reference Include="irrKlang.NET4">
       <HintPath>..\irrKlang-1.3.0\irrKlang.NET4.dll</HintPath>
     </Reference>
@@ -57,6 +66,7 @@
     <Compile Include="Direct2DRenderer.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="AudioPlayer.cs" />
+    <Compile Include="Histogram.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Video.cs" />
     <Compile Include="VPMainForm.cs">

@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using AForge.Math;
+using AForge.Imaging;
+
 namespace VideoPlayer
 {
     class Frame
@@ -21,6 +24,10 @@ namespace VideoPlayer
         public const int bytesPerPixelInMemory = 4;
         public const int bytesPerPixelInFile = 3;
         public List<List<Pixel>> pixels;
+
+        // Histogram variables
+        public Int32[] values;
+        public AForge.Math.Histogram histogram;
 
         public Frame(int index, int width, int height)
         {

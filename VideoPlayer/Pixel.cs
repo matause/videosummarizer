@@ -18,9 +18,12 @@ namespace VideoPlayer
         public byte b;
         public byte a;
 
+        //For generating histogram
+        public byte y;
+
         public Pixel()
         {
-            r = g = b = 0;
+            r = g = b = y = 0;
             a = 255;
         }
     }

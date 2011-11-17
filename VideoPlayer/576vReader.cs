@@ -99,6 +99,18 @@ namespace VideoPlayer
                     color.b = data[index++];
                 }
             }
+
+            // Compute Y channel
+            for (int i = 0; i < frame.width; ++i)
+            {
+                for (int j = 0; j < frame.height; ++j)
+                {
+                    Pixel color = frame.pixels[i][j];
+                    double y = (0.299 * color.r) + (0.587 * color.g) + (0.114 * color.b);
+
+                    color.y = (byte)(((y - Math.Floor(y / 1.0) * 1.0) > 0.5) ? Math.Ceiling(y) : Math.Floor(y));
+                }
+            }
         }
     }
 }
