@@ -74,13 +74,13 @@ namespace VideoPlayer
             fileExitMenuItem.Click += new EventHandler(OnFileExit);
             fileOpenMenuItem.Click += new EventHandler(OnFileOpen);
             fileCloseMenuItem.Click += new EventHandler(OnFileClose);
-           
     
             renderTarget.Paint += new PaintEventHandler(OnRender);
             renderTarget.Resize += new EventHandler(OnResize);
 
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
+            summarizeButton.Click += new EventHandler(OnSummarizeButtonClick);
         }
 
         //
@@ -305,9 +305,22 @@ namespace VideoPlayer
             {
                 streamThread.Abort();
                 videoThread.Abort();
-
+        
                 streamThread = null;
                 videoThread = null;
+            }
+        }
+
+        private void OnSummarizeButtonClick(object sender, EventArgs e)
+        {
+            if (isVideoLoaded == true)
+            {
+                // Stop video player
+                StopVideoThreads();
+                video.OnReset();
+
+                // Compute the data for Shot detection analysis
+                video.VideoAnalysis();
             }
         }
     }

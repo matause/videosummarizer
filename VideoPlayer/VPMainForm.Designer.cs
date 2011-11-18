@@ -41,6 +41,7 @@
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
+            this.summarizeButton = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
@@ -129,6 +130,7 @@
             // 
             // displaySplitContainer.Panel2
             // 
+            this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
             this.displaySplitContainer.Panel2MinSize = 34;
@@ -156,6 +158,16 @@
             this.stopButton.TabIndex = 5;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
+            // 
+            // summarizeButton
+            // 
+            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.summarizeButton.Location = new System.Drawing.Point(174, 3);
+            this.summarizeButton.Name = "summarizeButton";
+            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
+            this.summarizeButton.TabIndex = 6;
+            this.summarizeButton.Text = "Summarize";
+            this.summarizeButton.UseVisualStyleBackColor = true;
             // 
             // VPMainForm
             // 
@@ -194,6 +206,7 @@
         private System.Windows.Forms.SplitContainer displaySplitContainer;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button stopButton;
+        private System.Windows.Forms.Button summarizeButton;
     }
 }
 

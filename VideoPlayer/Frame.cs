@@ -27,7 +27,6 @@ namespace VideoPlayer
 
         // Histogram variables
         public Int32[] values;
-        public AForge.Math.Histogram histogram;
 
         public Frame(int index, int width, int height)
         {
