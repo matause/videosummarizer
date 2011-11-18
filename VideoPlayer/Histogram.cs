@@ -41,8 +41,8 @@ namespace VideoPlayer
             }
 
             // GC values
-            //frameA.values = null;
-            //frameB.values = null;
+            frameA.values = null;
+            frameB.values = null;
 
             return sum;
         }
@@ -51,8 +51,6 @@ namespace VideoPlayer
         {
             string filePath = @"C:\ShotDetection.csv";  
 	        string delimiter = ",";
-
-            //file = new FileStream(filePath, FileMode.Create);
 
             int length = framesMinWiseDifferences.Count;
 

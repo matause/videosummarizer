@@ -197,9 +197,6 @@ namespace VideoPlayer
 
                 framesMinWiseDifferences.Add(sum);
 
-                if (sum > 0)
-                    sum = sum;
-
                 ++framesAnalyzedAbsolute;
 
                 // shift analysis window
