@@ -164,8 +164,8 @@ namespace VideoPlayer
             currentFrame = 0;
             currentFrameTime = 0.0f;
 
-            //TOTAL_FRAMES_IN_RAM = histogram.shots.Count;
-            //SECONDS_PER_FRAME = 1.0f;
+            totalFramesInRam = histogram.shots.Count;
+            secondsPerFrame = 1.0f;
 
             if (histogram.shots.Count > 0)
             {
