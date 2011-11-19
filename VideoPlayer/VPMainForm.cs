@@ -26,6 +26,7 @@ namespace VideoPlayer
         bool isVideoLoaded;
         bool isVideoPlaying;
         bool isShotsPlaying;
+        bool isVideoSummarized;     
 
         float totalVideoPlayTime;
 
@@ -50,6 +51,7 @@ namespace VideoPlayer
             isVideoLoaded = false;
             isVideoPlaying = false;
             isShotsPlaying = false;
+            isVideoSummarized = false;
 
             totalVideoPlayTime = 0.0f;
 
@@ -251,7 +253,7 @@ namespace VideoPlayer
 
         private void OnPlayShotsButtonClick(object sender, EventArgs e)
         {
-            if (isVideoLoaded == true)
+            if (isVideoLoaded == true && isVideoSummarized == true)
             {
                 StopVideoThreads();
 
@@ -296,7 +298,10 @@ namespace VideoPlayer
                 video.OnReset();
 
                 // Compute the data for Shot detection analysis
-                video.VideoAnalysis();
+                bool result = video.VideoAnalysis();
+                
+                if(result == true)
+                    isVideoSummarized = true;
             }
         }
 
