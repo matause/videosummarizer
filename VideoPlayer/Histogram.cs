@@ -107,7 +107,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\MinWiseDifferences.csv";
+                    filePath = @"C:\MinWiseDifferences.csv";
                     
                     length = framesMinWiseDifferences.Count;
 
@@ -125,7 +125,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                delimiter = ",";
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\ShotBoundaries.csv";
+                    filePath = @"C:\ShotBoundaries.csv";
 
                     length = framesMinWiseDifferences.Count;
 
