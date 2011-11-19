@@ -65,6 +65,8 @@ namespace VideoPlayer
             displaySplitContainer.Panel1.Controls.Add(renderTarget);
             renderTarget.Show();
 
+            renderTarget.Size = displaySplitContainer.Panel1.ClientSize;
+
             //
             // Set up callbacks.
             //
@@ -76,7 +78,8 @@ namespace VideoPlayer
             fileCloseMenuItem.Click += new EventHandler(OnFileClose);
     
             renderTarget.Paint += new PaintEventHandler(OnRender);
-            renderTarget.Resize += new EventHandler(OnResize);
+            displaySplitContainer.Panel1.Paint += new PaintEventHandler(OnRender);
+            displaySplitContainer.Panel1.Resize += new EventHandler(OnResize);
 
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
@@ -131,6 +134,7 @@ namespace VideoPlayer
 
         private void OnResize(object sender, EventArgs e)
         {
+            renderTarget.Size = displaySplitContainer.Panel1.ClientSize;
             renderer.OnResize(renderTarget.Width, renderTarget.Height);
         }
 
@@ -249,6 +253,19 @@ namespace VideoPlayer
             renderTarget.Invalidate();
         }
 
+        private void OnSummarizeButtonClick(object sender, EventArgs e)
+        {
+            if (isVideoLoaded == true)
+            {
+                // Stop video player
+                StopVideoThreads();
+                video.OnReset();
+
+                // Compute the data for Shot detection analysis
+                video.VideoAnalysis();
+            }
+        }
+
         //
         // Helper Threading Functions
         //
@@ -299,6 +316,7 @@ namespace VideoPlayer
             }
         }
 
+        // Helper function to stop threads.
         private void StopVideoThreads()
         {
             if (isVideoPlaying == true)
@@ -308,19 +326,6 @@ namespace VideoPlayer
         
                 streamThread = null;
                 videoThread = null;
-            }
-        }
-
-        private void OnSummarizeButtonClick(object sender, EventArgs e)
-        {
-            if (isVideoLoaded == true)
-            {
-                // Stop video player
-                StopVideoThreads();
-                video.OnReset();
-
-                // Compute the data for Shot detection analysis
-                video.VideoAnalysis();
             }
         }
     }
