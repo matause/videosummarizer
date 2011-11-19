@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +49,7 @@ namespace VideoPlayer
 
         public void GenerateCSVFile(List<int> framesMinWiseDifferences)
         {
-            string filePath = @"C:\ShotDetection.csv";  
+            string filePath = @"C:\ShotDetection.csv";
 	        string delimiter = ",";
 
             int length = framesMinWiseDifferences.Count;
