@@ -133,7 +133,7 @@ namespace VideoPlayer
                     PointF offset = new PointF((bBufferSize.Width - frameSize.Width) / 2.0f,
                         (bBufferSize.Height - frameSize.Height) / 2.0f);
 
-                    RectangleF rect = new RectangleF(new PointF(0.0f, 0.0f), new SizeF(50, 50));
+                    RectangleF rect = new RectangleF(offset, frameSize);
                     renderTarget.DrawBitmap(currentFrame, rect);
                 }
 

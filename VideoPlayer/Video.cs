@@ -20,8 +20,10 @@ namespace VideoPlayer
         private const int TOTAL_FRAMES_IN_RAM = 72;
         private const int VIDEO_FPS = 24;
         private const float SECONDS_PER_FRAME = 1.0f / (float)VIDEO_FPS;
-        private const int VIDEO_DURATION = 10;      // We Need to find a way to compute video duration dynamically
-        private int TOTAL_FRAMES_IN_VIDEO = (VIDEO_DURATION * 60) * VIDEO_FPS;
+
+        // Metrics
+        private int totalFramesInVideo;
+        private float videoDuration; // in seconds
 
         public int currentFrame;
         public int startingCachedFrame;
@@ -49,6 +51,9 @@ namespace VideoPlayer
             currentFrameToReadAbsolute = 0;
             framesAnalyzedAbsolute = 0;
             currentFrameTime = 0.0f;
+
+            totalFramesInVideo = -1;
+            videoDuration = -1.0f;
 
             videoReader = new _576vReader();
             audioPlayer = new AudioPlayer();
@@ -87,6 +92,13 @@ namespace VideoPlayer
 
             lastReadFrame = TOTAL_FRAMES_IN_RAM - 1;
             currentFrameToReadAbsolute = TOTAL_FRAMES_IN_RAM;
+
+            // Compute some metrics.
+            Frame metricFrame = frames[0]; // Just grabbing a frame. Anyone would do.
+            long fileSize = videoReader.GetFileSize();
+            totalFramesInVideo = (int)(fileSize / (long)(metricFrame.width * metricFrame.height * Frame.bytesPerPixelInFile));
+
+            videoDuration = (float)totalFramesInVideo / (float)VIDEO_FPS;
 
             // Set up the audio.
             result = audioPlayer.OnInitialize(audioFilePath);
@@ -188,7 +200,7 @@ namespace VideoPlayer
             videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
 
             // Histogram Analysis on all frames in the video file
-            while (framesAnalyzedAbsolute < TOTAL_FRAMES_IN_VIDEO-1)
+            while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
             {
                 frameB = new Frame(2, frameWidth, frameHeight);
                 videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
@@ -204,7 +216,7 @@ namespace VideoPlayer
                 frameB = null;
             }
 
-            if (framesMinWiseDifferences.Count == TOTAL_FRAMES_IN_VIDEO - 1)
+            if (framesMinWiseDifferences.Count == totalFramesInVideo - 1)
             {
                 histogram.GenerateCSVFile(framesMinWiseDifferences);
                 result = true;

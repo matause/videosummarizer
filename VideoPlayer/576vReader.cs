@@ -33,6 +33,18 @@ namespace VideoPlayer
             return result;
         }
 
+        public long GetFileSize()
+        {
+            long result = -1;
+
+            if (file != null)
+            {
+                result = file.Length;
+            }
+
+            return result;
+        }
+
         public bool ReadFrame(int frameNumber, ref Frame frame)
         {
             bool result = true;
