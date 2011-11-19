@@ -126,7 +126,15 @@ namespace VideoPlayer
 
                 if (isImageLoaded == true)
                 {
-                    renderTarget.DrawBitmap(currentFrame);
+                    // Center image on the render target.
+                    SizeF bBufferSize = renderTarget.Size;
+                    SizeF frameSize = currentFrame.Size;
+
+                    PointF offset = new PointF((bBufferSize.Width - frameSize.Width) / 2.0f,
+                        (bBufferSize.Height - frameSize.Height) / 2.0f);
+
+                    RectangleF rect = new RectangleF( offset, frameSize);
+                    renderTarget.DrawBitmap(currentFrame, rect);
                 }
 
                 renderTarget.EndDraw();
