@@ -25,6 +25,7 @@ namespace VideoPlayer
     {
         bool isVideoLoaded;
         bool isVideoPlaying;
+        bool isShotsPlaying;
 
         float totalVideoPlayTime;
 
@@ -42,11 +43,13 @@ namespace VideoPlayer
 
         Thread videoThread;
         Thread streamThread;
+        Thread shotsVideoThread;
 
         public VPMainForm()
         {
             isVideoLoaded = false;
             isVideoPlaying = false;
+            isShotsPlaying = false;
 
             totalVideoPlayTime = 0.0f;
 
@@ -84,8 +87,8 @@ namespace VideoPlayer
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
             summarizeButton.Click += new EventHandler(OnSummarizeButtonClick);
-
             timelineBar.Scroll += new EventHandler(OnTimelineScroll);
+            playShotsButton.Click += new EventHandler(OnPlayShotsButtonClick);
         }
 
         //
@@ -162,6 +165,7 @@ namespace VideoPlayer
             
             isVideoPlaying = false;
             isVideoLoaded = false;
+            isShotsPlaying = false;
 
             renderer.OnReset();
             renderTarget.Invalidate();
@@ -245,18 +249,42 @@ namespace VideoPlayer
             }
         }
 
+        private void OnPlayShotsButtonClick(object sender, EventArgs e)
+        {
+            if (isVideoLoaded == true)
+            {
+                StopVideoThreads();
+
+                // No Threads at this point. So, we can just do stuff.
+                video.ReadShots();
+                videoTimer.Reset();
+
+                videoTimer.Start();
+
+                // Create and start thread to play
+                shotsVideoThread = new Thread(PlayShots);
+                shotsVideoThread.Start();
+
+                isShotsPlaying = true;
+            }
+        }
+
         private void OnStopButtonClick(object sender, EventArgs e)
         {
-            StopVideoThreads();
-            videoTimer.Stop();
-
-            if (video != null)
+            if (isVideoPlaying == true || isShotsPlaying == true)
             {
-                video.OnReset();
-            }
-            isVideoPlaying = false;
+                StopVideoThreads();
+                videoTimer.Stop();
+  
+                if (video != null)
+                {
+                    video.OnReset();
+                }
+                renderTarget.Invalidate();
 
-            renderTarget.Invalidate();
+                isVideoPlaying = false;
+                isShotsPlaying = false;
+            }
         }
 
         private void OnSummarizeButtonClick(object sender, EventArgs e)
@@ -285,6 +313,7 @@ namespace VideoPlayer
         // Helper Threading Functions
         //
 
+        
         // Threaded function for playback.
         private void PlayVideo()
         {
@@ -316,6 +345,35 @@ namespace VideoPlayer
                 }
             }
         }
+        
+
+        // Threaded function for play shots.
+        private void PlayShots()
+        {
+            totalVideoPlayTime = 0.0f;
+
+            while (true)
+            {
+                // Update current frame.
+                float totalTime = 0.0f;
+                lock (videoTimer)
+                {
+                    totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
+                }
+
+                float elapsedTime = totalTime - totalVideoPlayTime;
+                totalVideoPlayTime = totalTime;
+
+                Thread.Sleep(1);
+                bool result = video.OnUpdate(elapsedTime);
+
+                // Tell GUI to redraw if the frame changed.
+                if (result == true)
+                {
+                    renderTarget.Invalidate();
+                }
+            }
+        }
 
         // Threaded function for stream reading.
         private void StreamVideo()
@@ -341,6 +399,16 @@ namespace VideoPlayer
         
                 streamThread = null;
                 videoThread = null;
+
+                isVideoPlaying = false;
+            }
+
+            if (isShotsPlaying == true)
+            {
+                shotsVideoThread.Abort();
+                shotsVideoThread = null;
+
+                isShotsPlaying = false;
             }
         }
     }

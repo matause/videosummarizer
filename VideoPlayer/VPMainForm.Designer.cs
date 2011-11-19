@@ -38,6 +38,7 @@
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
+            this.playShotsButton = new System.Windows.Forms.Button();
             this.summarizeButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
@@ -124,6 +125,7 @@
             // 
             // displaySplitContainer.Panel2
             // 
+            this.displaySplitContainer.Panel2.Controls.Add(this.playShotsButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
@@ -133,6 +135,16 @@
             this.displaySplitContainer.SplitterDistance = 275;
             this.displaySplitContainer.TabIndex = 1;
             this.displaySplitContainer.TabStop = false;
+            // 
+            // playShotsButton
+            // 
+            this.playShotsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.playShotsButton.Location = new System.Drawing.Point(255, 28);
+            this.playShotsButton.Name = "playShotsButton";
+            this.playShotsButton.Size = new System.Drawing.Size(75, 23);
+            this.playShotsButton.TabIndex = 7;
+            this.playShotsButton.Text = "Play Shots";
+            this.playShotsButton.UseVisualStyleBackColor = true;
             // 
             // summarizeButton
             // 
@@ -215,6 +227,7 @@
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Button summarizeButton;
         private System.Windows.Forms.TrackBar timelineBar;
+        private System.Windows.Forms.Button playShotsButton;
     }
 }
 

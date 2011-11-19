@@ -103,8 +103,6 @@ namespace VideoPlayer
                 frame.GetBytes(ref currentFrameBytes);
 
                 result = LoadImage(currentFrameBytes, frame.width, frame.height, frame.bytesPerStride);
-
-
             }
 
             if (result == true)
