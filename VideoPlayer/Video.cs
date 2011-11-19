@@ -6,7 +6,7 @@
 
 // Comment this to debug video without having 
 // to listen to audio.
-//#define AUDIO
+#define AUDIO
 
 using System;
 using System.Collections.Generic;
@@ -17,9 +17,9 @@ namespace VideoPlayer
 {
     class Video
     {
-        private const int TOTAL_FRAMES_IN_RAM = 72;
+        private int TOTAL_FRAMES_IN_RAM = 72;
         private const int VIDEO_FPS = 24;
-        private const float SECONDS_PER_FRAME = 1.0f / (float)VIDEO_FPS;
+        private float SECONDS_PER_FRAME = 1.0f / (float)VIDEO_FPS;
         private const int VIDEO_DURATION = 10;      // We Need to find a way to compute video duration dynamically
         private int TOTAL_FRAMES_IN_VIDEO = (VIDEO_DURATION * 60) * VIDEO_FPS;
 
@@ -36,7 +36,6 @@ namespace VideoPlayer
 
         // Analysis variables
         public int framesAnalyzedAbsolute;
-        public List<int> framesMinWiseDifferences;
         public Histogram histogram;
         public int frameWidth;
         public int frameHeight;
@@ -76,23 +75,13 @@ namespace VideoPlayer
             if( result == false )
                 return false;
 
-            for (int i = 0; i < TOTAL_FRAMES_IN_RAM; ++i)
-            {
-                Frame frame = frames[i];
-                result = videoReader.ReadFrame(i, ref frame );
-                
-                if( result == false )
-                    return false;
-            }
-
-            lastReadFrame = TOTAL_FRAMES_IN_RAM - 1;
-            currentFrameToReadAbsolute = TOTAL_FRAMES_IN_RAM;
-
+#if AUDIO
             // Set up the audio.
             result = audioPlayer.OnInitialize(audioFilePath);
 
             if (result == false)
                 return false;
+#endif
 
             return true;
         }
@@ -118,9 +107,9 @@ namespace VideoPlayer
         {
             currentFrame = startingFrame;
             currentFrameTime = 0.0f;
-            audioPlayer.OnStop();
-
+            
 #if AUDIO
+            audioPlayer.OnStop();
             audioPlayer.OnPlay(soundOffset);
 #endif
         }
@@ -129,6 +118,9 @@ namespace VideoPlayer
         {
             currentFrame = 0;
             currentFrameTime = 0.0f;
+            
+            TOTAL_FRAMES_IN_RAM = 72;
+            SECONDS_PER_FRAME = 1.0f / (float)VIDEO_FPS;
 
             lastReadFrame = TOTAL_FRAMES_IN_RAM - 1;
             currentFrameToReadAbsolute = TOTAL_FRAMES_IN_RAM;
@@ -139,7 +131,31 @@ namespace VideoPlayer
                 bool result = videoReader.ReadFrame(i, ref frame);
             }
 
+#if AUDIO
             audioPlayer.OnStop();
+#endif
+        }
+
+        public void ReadShots()
+        {
+            currentFrame = 0;
+            currentFrameTime = 0.0f;
+
+            TOTAL_FRAMES_IN_RAM = histogram.shots.Count;
+            SECONDS_PER_FRAME = 1.0f;
+
+            if (histogram.shots.Count > 0)
+            {
+                for (int i = 0; i < TOTAL_FRAMES_IN_RAM; ++i)
+                {
+                    Frame frame = frames[i];
+                    bool result = videoReader.ReadFrame(histogram.shots[i], ref frame);
+                }
+            }
+
+#if AUDIO
+            audioPlayer.OnStop();
+#endif
         }
 
         // Returns true if the current frame updated.
@@ -179,9 +195,9 @@ namespace VideoPlayer
         {
             bool result = false;
             int sum = 0;
-
-            framesMinWiseDifferences = new List<int>();
             Frame frameA, frameB;
+
+            histogram.OnInitialize();
 
             // Read the first frame
             frameA = new Frame(1, frameWidth, frameHeight);
@@ -195,8 +211,6 @@ namespace VideoPlayer
 
                 sum = histogram.SumOfBinWiseDiff(ref frameA, ref frameB);
 
-                framesMinWiseDifferences.Add(sum);
-
                 ++framesAnalyzedAbsolute;
 
                 // shift analysis window
@@ -204,9 +218,15 @@ namespace VideoPlayer
                 frameB = null;
             }
 
-            if (framesMinWiseDifferences.Count == TOTAL_FRAMES_IN_VIDEO - 1)
+            if (histogram.framesMinWiseDifferences.Count == TOTAL_FRAMES_IN_VIDEO - 1)
             {
-                histogram.GenerateCSVFile(framesMinWiseDifferences);
+                histogram.GenerateCSVFile(histogram.MIN_WISE_DIFF);
+
+                // Break video into shots
+                histogram.FindShotTransitions();
+
+                histogram.GenerateCSVFile(histogram.SHOTS);
+
                 result = true;
             }
 

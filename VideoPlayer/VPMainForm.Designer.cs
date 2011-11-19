@@ -39,9 +39,10 @@
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
+            this.summarizeButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
-            this.summarizeButton = new System.Windows.Forms.Button();
+            this.playShotsButton = new System.Windows.Forms.Button();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
@@ -130,6 +131,7 @@
             // 
             // displaySplitContainer.Panel2
             // 
+            this.displaySplitContainer.Panel2.Controls.Add(this.playShotsButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
@@ -138,6 +140,16 @@
             this.displaySplitContainer.SplitterDistance = 300;
             this.displaySplitContainer.TabIndex = 1;
             this.displaySplitContainer.TabStop = false;
+            // 
+            // summarizeButton
+            // 
+            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.summarizeButton.Location = new System.Drawing.Point(174, 3);
+            this.summarizeButton.Name = "summarizeButton";
+            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
+            this.summarizeButton.TabIndex = 6;
+            this.summarizeButton.Text = "Summarize";
+            this.summarizeButton.UseVisualStyleBackColor = true;
             // 
             // playButton
             // 
@@ -159,15 +171,15 @@
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
             // 
-            // summarizeButton
+            // playShotsButton
             // 
-            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.summarizeButton.Location = new System.Drawing.Point(174, 3);
-            this.summarizeButton.Name = "summarizeButton";
-            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
-            this.summarizeButton.TabIndex = 6;
-            this.summarizeButton.Text = "Summarize";
-            this.summarizeButton.UseVisualStyleBackColor = true;
+            this.playShotsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.playShotsButton.Location = new System.Drawing.Point(255, 3);
+            this.playShotsButton.Name = "playShotsButton";
+            this.playShotsButton.Size = new System.Drawing.Size(75, 23);
+            this.playShotsButton.TabIndex = 7;
+            this.playShotsButton.Text = "Play Shots";
+            this.playShotsButton.UseVisualStyleBackColor = true;
             // 
             // VPMainForm
             // 
@@ -207,6 +219,7 @@
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Button summarizeButton;
+        private System.Windows.Forms.Button playShotsButton;
     }
 }
 
