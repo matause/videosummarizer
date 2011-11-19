@@ -84,6 +84,8 @@ namespace VideoPlayer
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
             summarizeButton.Click += new EventHandler(OnSummarizeButtonClick);
+
+            timelineBar.Scroll += new EventHandler(OnTimelineScroll);
         }
 
         //
@@ -247,7 +249,11 @@ namespace VideoPlayer
         {
             StopVideoThreads();
             videoTimer.Stop();
-            video.OnReset();
+
+            if (video != null)
+            {
+                video.OnReset();
+            }
             isVideoPlaying = false;
 
             renderTarget.Invalidate();
@@ -264,6 +270,15 @@ namespace VideoPlayer
                 // Compute the data for Shot detection analysis
                 video.VideoAnalysis();
             }
+        }
+
+        //
+        // Scroll Bar Callbacks
+        //
+
+        private void OnTimelineScroll(object sender, EventArgs e)
+        {
+            // TODO
         }
 
         //

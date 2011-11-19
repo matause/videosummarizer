@@ -35,24 +35,24 @@
             this.fileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileCloseSeperator = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
+            this.summarizeButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
-            this.summarizeButton = new System.Windows.Forms.Button();
+            this.timelineBar = new System.Windows.Forms.TrackBar();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
             this.displaySplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.timelineBar)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem,
-            this.editMenuItem,
             this.aboutMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
@@ -100,12 +100,6 @@
             this.fileExitMenuItem.Size = new System.Drawing.Size(112, 22);
             this.fileExitMenuItem.Text = "Exit";
             // 
-            // editMenuItem
-            // 
-            this.editMenuItem.Name = "editMenuItem";
-            this.editMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editMenuItem.Text = "Edit";
-            // 
             // aboutMenuItem
             // 
             this.aboutMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -126,23 +120,34 @@
             this.displaySplitContainer.Location = new System.Drawing.Point(0, 24);
             this.displaySplitContainer.Name = "displaySplitContainer";
             this.displaySplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.displaySplitContainer.Panel1MinSize = 300;
+            this.displaySplitContainer.Panel1MinSize = 275;
             // 
             // displaySplitContainer.Panel2
             // 
             this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
-            this.displaySplitContainer.Panel2MinSize = 34;
+            this.displaySplitContainer.Panel2.Controls.Add(this.timelineBar);
+            this.displaySplitContainer.Panel2MinSize = 59;
             this.displaySplitContainer.Size = new System.Drawing.Size(422, 338);
-            this.displaySplitContainer.SplitterDistance = 300;
+            this.displaySplitContainer.SplitterDistance = 275;
             this.displaySplitContainer.TabIndex = 1;
             this.displaySplitContainer.TabStop = false;
+            // 
+            // summarizeButton
+            // 
+            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.summarizeButton.Location = new System.Drawing.Point(174, 28);
+            this.summarizeButton.Name = "summarizeButton";
+            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
+            this.summarizeButton.TabIndex = 6;
+            this.summarizeButton.Text = "Summarize";
+            this.summarizeButton.UseVisualStyleBackColor = true;
             // 
             // playButton
             // 
             this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.playButton.Location = new System.Drawing.Point(12, 3);
+            this.playButton.Location = new System.Drawing.Point(12, 29);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(75, 23);
             this.playButton.TabIndex = 4;
@@ -152,22 +157,23 @@
             // stopButton
             // 
             this.stopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.stopButton.Location = new System.Drawing.Point(93, 3);
+            this.stopButton.Location = new System.Drawing.Point(93, 28);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(75, 23);
             this.stopButton.TabIndex = 5;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
             // 
-            // summarizeButton
+            // timelineBar
             // 
-            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.summarizeButton.Location = new System.Drawing.Point(174, 3);
-            this.summarizeButton.Name = "summarizeButton";
-            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
-            this.summarizeButton.TabIndex = 6;
-            this.summarizeButton.Text = "Summarize";
-            this.summarizeButton.UseVisualStyleBackColor = true;
+            this.timelineBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.timelineBar.Location = new System.Drawing.Point(3, 2);
+            this.timelineBar.Maximum = 100;
+            this.timelineBar.Name = "timelineBar";
+            this.timelineBar.Size = new System.Drawing.Size(416, 45);
+            this.timelineBar.TabIndex = 7;
+            this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // VPMainForm
             // 
@@ -184,8 +190,10 @@
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.displaySplitContainer.Panel2.ResumeLayout(false);
+            this.displaySplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).EndInit();
             this.displaySplitContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.timelineBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -195,7 +203,6 @@
 
         private System.Windows.Forms.MenuStrip mainMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileOpenMenuItem;
         private System.Windows.Forms.ToolStripSeparator fileOpenSeperator;
@@ -207,6 +214,7 @@
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Button summarizeButton;
+        private System.Windows.Forms.TrackBar timelineBar;
     }
 }
 
