@@ -158,6 +158,10 @@ namespace VideoPlayer
             currentFrame = 0;
             currentFrameTime = 0.0f;
 
+            // To play video after playing shots
+            totalFramesInRam = 72;                              
+            secondsPerFrame = 1.0f / (float)VIDEO_FPS;
+
             lastReadFrame = totalFramesInRam - 1;
             currentFrameToReadAbsolute = totalFramesInRam;
 
@@ -172,26 +176,35 @@ namespace VideoPlayer
 #endif
         }
 
-        public void ReadShots()
+        public bool ReadShots()
         {
-            currentFrame = 0;
-            currentFrameTime = 0.0f;
-
-            totalFramesInRam = histogram.shots.Count;
-            secondsPerFrame = 1.0f;
+            bool result = false;
 
             if (histogram.shots.Count > 0)
             {
-                for (int i = 0; i < totalFramesInRam; ++i)
+                currentFrame = 0;
+                currentFrameTime = 0.0f;
+
+                totalFramesInRam = histogram.shots.Count;
+                secondsPerFrame = 1.0f;
+
+                if (histogram.shots.Count > 0)
                 {
-                    Frame frame = frames[i];
-                    bool result = videoReader.ReadFrame(histogram.shots[i], ref frame);
+                    for (int i = 0; i < totalFramesInRam; ++i)
+                    {
+                        Frame frame = frames[i];
+                        videoReader.ReadFrame(histogram.shots[i], ref frame);
+                    }
                 }
-            }
 
 #if AUDIO
-            audioPlayer.OnStop();
+                audioPlayer.OnStop();
 #endif
+
+                result = true;
+            }
+
+            return result;
         }
 
         // Returns true if the current frame updated.
