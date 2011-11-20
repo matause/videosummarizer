@@ -26,6 +26,7 @@ namespace VideoPlayer
         bool isVideoLoaded;
         bool isVideoPlaying;
         bool isShotsPlaying;
+        bool isVideoPaused;
 
         float totalVideoPlayTime;
 
@@ -50,6 +51,7 @@ namespace VideoPlayer
             isVideoLoaded = false;
             isVideoPlaying = false;
             isShotsPlaying = false;
+            isVideoPaused = false;
 
             totalVideoPlayTime = 0.0f;
 
@@ -228,24 +230,52 @@ namespace VideoPlayer
         {
             if (isVideoLoaded == true )
             {
-                StopVideoThreads();
+                // Normally start the video
+                if (isVideoPlaying == false)
+                {
+                    StopVideoThreads();
 
-                // No Threads at this point. So, we can just do stuff.
-                video.OnReset();
-                videoTimer.Reset();
+                    // No Threads at this point. So, we can just do stuff.
 
-                // These need started together.
-                videoTimer.Start();
-                video.OnStartPlaying(0, 1100);
+                    long startingVideoTime = 0;
+                    long startingAudioTime = 0;
+                    if (isVideoPaused == true)
+                    {
+                        startingVideoTime = videoTimer.ElapsedMilliseconds;
+                        startingAudioTime = videoTimer.ElapsedMilliseconds;
+                    }
+                    else
+                    {
+                        video.OnReset();
+                        videoTimer.Reset();
+                    }
 
-                // Create and start new playing and streaming threads.
-                videoThread = new Thread(PlayVideo);
-                videoThread.Start();
+                    // These need started together.
+                    video.OnStartPlaying(startingVideoTime, startingAudioTime + 1100);
+                    videoTimer.Start();
 
-                streamThread = new Thread(StreamVideo);
-                streamThread.Start();
+                    // Create and start new playing and streaming threads.
+                    videoThread = new Thread(PlayVideo);
+                    videoThread.Start();
 
-                isVideoPlaying = true;
+                    streamThread = new Thread(StreamVideo);
+                    streamThread.Start();
+
+                    isVideoPlaying = true;
+                    isVideoPaused = false;
+                    playButton.Text = "Pause";
+                }
+                // Pause the video
+                else
+                {
+                    StopVideoThreads();
+                    video.OnStopAudio();
+                    videoTimer.Stop();
+
+                    isVideoPaused = true;
+                    isVideoPlaying = false;
+                    playButton.Text = "Play";
+                }
             }
         }
 
@@ -266,6 +296,8 @@ namespace VideoPlayer
                 shotsVideoThread.Start();
 
                 isShotsPlaying = true;
+                isVideoPaused = false;
+                playButton.Text = "Pause";
             }
         }
 
@@ -284,6 +316,8 @@ namespace VideoPlayer
 
                 isVideoPlaying = false;
                 isShotsPlaying = false;
+                isVideoPaused = false;
+                playButton.Text = "Play";
             }
         }
 
@@ -294,6 +328,11 @@ namespace VideoPlayer
                 // Stop video player
                 StopVideoThreads();
                 video.OnReset();
+
+                isVideoPlaying = false;
+                isShotsPlaying = false;
+                isVideoPaused = false;
+                playButton.Text = "Play";
 
                 // Compute the data for Shot detection analysis
                 video.VideoAnalysis();

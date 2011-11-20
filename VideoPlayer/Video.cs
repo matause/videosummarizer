@@ -129,14 +129,27 @@ namespace VideoPlayer
             }
         }
 
-        public void OnStartPlaying(int startingFrame, uint soundOffset)
+        public void OnStartPlaying(long startingVideoTime, long startingAudioTime)
         {
-            currentFrame = startingFrame;
-            currentFrameTime = 0.0f;
-            
+            float elapsedTime = (float)startingVideoTime / 1000.0f;
+
+            currentFrameTime += elapsedTime;
+            while (currentFrameTime >= secondsPerFrame)
+            {
+                currentFrame = (currentFrame + 1) % totalFramesInRam;
+                currentFrameTime -= secondsPerFrame;
+            }
+           
 #if AUDIO
             audioPlayer.OnStop();
-            audioPlayer.OnPlay(soundOffset);
+            audioPlayer.OnPlay((uint)startingAudioTime);
+#endif
+        }
+
+        public void OnStopAudio()
+        {
+#if AUDIO
+            audioPlayer.OnStop();
 #endif
         }
 

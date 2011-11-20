@@ -196,7 +196,7 @@
             this.Controls.Add(this.mainMenuStrip);
             this.DoubleBuffered = true;
             this.MainMenuStrip = this.mainMenuStrip;
-            this.MinimumSize = new System.Drawing.Size(200, 400);
+            this.MinimumSize = new System.Drawing.Size(400, 400);
             this.Name = "VPMainForm";
             this.Text = "Video Summarizer";
             this.mainMenuStrip.ResumeLayout(false);
