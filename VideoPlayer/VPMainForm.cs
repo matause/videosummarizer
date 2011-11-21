@@ -27,10 +27,7 @@ namespace VideoPlayer
         bool isVideoPlaying;
         bool isShotsPlaying;
         bool isVideoPaused;
-
         bool isVideoSummarized;     
-
-        float totalVideoPlayTime;
 
         const int frameWidth = 320;
         const int frameHeight = 240;
@@ -50,14 +47,14 @@ namespace VideoPlayer
 
         public VPMainForm()
         {
+            TrackBar.CheckForIllegalCrossThreadCalls = false;
+
             isVideoLoaded = false;
             isVideoPlaying = false;
             isShotsPlaying = false;
             isVideoPaused = false;
 
             isVideoSummarized = false;
-
-            totalVideoPlayTime = 0.0f;
 
             clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
             renderer = new Direct2DRenderer(clearColor);
@@ -93,8 +90,10 @@ namespace VideoPlayer
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
             summarizeButton.Click += new EventHandler(OnSummarizeButtonClick);
-            timelineBar.Scroll += new EventHandler(OnTimelineScroll);
             playShotsButton.Click += new EventHandler(OnPlayShotsButtonClick);
+
+            timelineBar.MouseUp += new MouseEventHandler(OnTimelineMouseUp);
+            timelineBar.Scroll += new EventHandler(OnTimelineScroll);
         }
 
         //
@@ -161,17 +160,15 @@ namespace VideoPlayer
         private void OnFileClose(object sender, EventArgs e)
         {
             StopVideoThreads();
+            isVideoPaused = false;
+
             if (video != null)
             {
                 video.OnReset();
                 video = null;
             }
 
-            videoTimer.Stop();
-            
-            isVideoPlaying = false;
-            isVideoLoaded = false;
-            isShotsPlaying = false;
+            timelineBar.Value = 0;
 
             renderer.OnReset();
             renderTarget.Invalidate();
@@ -222,6 +219,10 @@ namespace VideoPlayer
             if (result == true)
             {
                 isVideoLoaded = true;
+
+                timelineBar.Value = 0;
+                timelineBar.Maximum = (int)(video.videoDuration * 1000.0f);
+
                 renderTarget.Invalidate();
             }
         }
@@ -239,14 +240,13 @@ namespace VideoPlayer
                 {
                     StopVideoThreads();
 
-                    // No Threads at this point. So, we can just do stuff.
+                    int startingVideoTime = 0;
+                    int startingAudioTime = 0;
 
-                    long startingVideoTime = 0;
-                    long startingAudioTime = 0;
                     if (isVideoPaused == true)
                     {
-                        startingVideoTime = videoTimer.ElapsedMilliseconds;
-                        startingAudioTime = videoTimer.ElapsedMilliseconds;
+                        startingVideoTime = timelineBar.Value;
+                        startingAudioTime = timelineBar.Value;
                     }
                     else
                     {
@@ -260,7 +260,7 @@ namespace VideoPlayer
 
                     // Create and start new playing and streaming threads.
                     videoThread = new Thread(PlayVideo);
-                    videoThread.Start();
+                    videoThread.Start(startingVideoTime);
 
                     streamThread = new Thread(StreamVideo);
                     streamThread.Start();
@@ -272,12 +272,9 @@ namespace VideoPlayer
                 // Pause the video
                 else
                 {
-                    StopVideoThreads();
-                    video.OnStopAudio();
-                    videoTimer.Stop();
+                    StopVideoThreads();                  
 
                     isVideoPaused = true;
-                    isVideoPlaying = false;
                     playButton.Text = "Play";
                 }
             }
@@ -292,7 +289,6 @@ namespace VideoPlayer
                 // No Threads at this point. So, we can just do stuff.
                 video.ReadShots();
                 videoTimer.Reset();
-
                 videoTimer.Start();
 
                 // Create and start thread to play
@@ -300,7 +296,7 @@ namespace VideoPlayer
                 shotsVideoThread.Start();
 
                 isShotsPlaying = true;
-                isVideoPaused = false;
+                isVideoPaused = true;
                 playButton.Text = "Pause";
             }
         }
@@ -310,18 +306,8 @@ namespace VideoPlayer
             if (isVideoPlaying == true || isShotsPlaying == true)
             {
                 StopVideoThreads();
-                videoTimer.Stop();
-  
-                if (video != null)
-                {
-                    video.OnReset();
-                }
-                renderTarget.Invalidate();
-
-                isVideoPlaying = false;
-                isShotsPlaying = false;
+                timelineBar.Value = 0;
                 isVideoPaused = false;
-                playButton.Text = "Play";
             }
         }
 
@@ -331,12 +317,6 @@ namespace VideoPlayer
             {
                 // Stop video player
                 StopVideoThreads();
-                video.OnReset();
-
-                isVideoPlaying = false;
-                isShotsPlaying = false;
-                isVideoPaused = false;
-                playButton.Text = "Play";
 
                 // Compute the data for Shot detection analysis
                 bool result = video.VideoAnalysis();
@@ -352,7 +332,22 @@ namespace VideoPlayer
 
         private void OnTimelineScroll(object sender, EventArgs e)
         {
-            // TODO
+            if (isVideoPlaying == true || isShotsPlaying == true)
+            {
+                // Puase
+                StopVideoThreads();
+
+                isVideoPaused = true;
+                playButton.Text = "Play";
+            }
+        }
+
+        private void OnTimelineMouseUp(object sender, MouseEventArgs e)
+        {
+            if (isVideoPaused == true)
+            {
+                OnPlayButtonClick(sender, e);
+            }
         }
 
         //
@@ -361,12 +356,12 @@ namespace VideoPlayer
 
         
         // Threaded function for playback.
-        private void PlayVideo()
+        private void PlayVideo(object time)
         {
-            totalVideoPlayTime = 0.0f;
-
+            int startTime = (int)time;
             lock (video)
             {
+                float lastUpdateTime = 0.0f;
                 while(true)
                 {
                     // Update current frame.
@@ -374,10 +369,11 @@ namespace VideoPlayer
                     lock (videoTimer)
                     {
                         totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
+                        timelineBar.Value = (int)videoTimer.ElapsedMilliseconds + startTime;
                     }
 
-                    float elapsedTime = totalTime - totalVideoPlayTime;
-                    totalVideoPlayTime = totalTime;
+                    float elapsedTime = totalTime - lastUpdateTime;
+                    lastUpdateTime = totalTime;
 
                     Monitor.Wait(video);
                     bool result = video.OnUpdate(elapsedTime);
@@ -396,8 +392,7 @@ namespace VideoPlayer
         // Threaded function for play shots.
         private void PlayShots()
         {
-            totalVideoPlayTime = 0.0f;
-
+            float lastUpdateTime = 0.0f;
             while (true)
             {
                 // Update current frame.
@@ -407,8 +402,8 @@ namespace VideoPlayer
                     totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
                 }
 
-                float elapsedTime = totalTime - totalVideoPlayTime;
-                totalVideoPlayTime = totalTime;
+                float elapsedTime = totalTime - lastUpdateTime;
+                lastUpdateTime = totalTime;
 
                 Thread.Sleep(1);
                 bool result = video.OnUpdate(elapsedTime);
@@ -438,24 +433,34 @@ namespace VideoPlayer
         // Helper function to stop threads.
         private void StopVideoThreads()
         {
+            videoTimer.Stop();
+            videoTimer.Reset();
+
             if (isVideoPlaying == true)
             {
                 streamThread.Abort();
                 videoThread.Abort();
-        
+
                 streamThread = null;
                 videoThread = null;
-
-                isVideoPlaying = false;
             }
 
             if (isShotsPlaying == true)
             {
                 shotsVideoThread.Abort();
                 shotsVideoThread = null;
-
-                isShotsPlaying = false;
             }
+
+            if (video != null)
+            {
+                video.OnStopAudio();
+                video.OnReset();
+            }
+            renderTarget.Invalidate();
+
+            isVideoPlaying = false;
+            isShotsPlaying = false;
+            playButton.Text = "Play";
         }
     }
 }

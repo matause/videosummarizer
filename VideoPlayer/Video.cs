@@ -19,13 +19,12 @@ namespace VideoPlayer
     {
         private const int VIDEO_FPS = 24;
 
-
         private int totalFramesInRam = 72;
         private float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
 
         // Metrics
-        private int totalFramesInVideo;
-        private float videoDuration; // in seconds
+        public int totalFramesInVideo;
+        public float videoDuration; // in seconds
 
         public int currentFrame;
         public int startingCachedFrame;
@@ -82,17 +81,10 @@ namespace VideoPlayer
             if( result == false )
                 return false;
 
-            for (int i = 0; i < totalFramesInRam; ++i)
-            {
-                Frame frame = frames[i];
-                result = videoReader.ReadFrame(i, ref frame );
-                
-                if( result == false )
-                    return false;
-            }
+            result = BufferVideo(0);
 
-            lastReadFrame = totalFramesInRam - 1;
-            currentFrameToReadAbsolute = totalFramesInRam;
+            if (result == false)
+                return false;
 
             // Compute some metrics.
             Frame metricFrame = frames[0]; // Just grabbing a frame. Anyone would do.
@@ -108,6 +100,23 @@ namespace VideoPlayer
             if (result == false)
                 return false;
 #endif
+
+            return true;
+        }
+
+        private bool BufferVideo(int startingFrame)
+        {
+            for (int i = 0; i < totalFramesInRam; ++i)
+            {
+                Frame frame = frames[i];
+                bool result = videoReader.ReadFrame(i + startingFrame, ref frame);
+
+                if (result == false)
+                    return false;
+            }
+
+            lastReadFrame = totalFramesInRam - 1;
+            currentFrameToReadAbsolute = totalFramesInRam + startingFrame;
 
             return true;
         }
@@ -131,15 +140,21 @@ namespace VideoPlayer
 
         public void OnStartPlaying(long startingVideoTime, long startingAudioTime)
         {
-            float elapsedTime = (float)startingVideoTime / 1000.0f;
+            currentFrameTime = 0.0f;
+            currentFrame = 0;
 
+            float elapsedTime = (float)startingVideoTime / 1000.0f;
             currentFrameTime += elapsedTime;
+
+            int frameCount = 0;
             while (currentFrameTime >= secondsPerFrame)
             {
-                currentFrame = (currentFrame + 1) % totalFramesInRam;
                 currentFrameTime -= secondsPerFrame;
+                frameCount++;
             }
-           
+
+            BufferVideo(frameCount);
+
 #if AUDIO
             audioPlayer.OnStop();
             audioPlayer.OnPlay((uint)startingAudioTime);

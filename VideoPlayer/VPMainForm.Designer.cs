@@ -185,6 +185,7 @@
             this.timelineBar.Name = "timelineBar";
             this.timelineBar.Size = new System.Drawing.Size(416, 45);
             this.timelineBar.TabIndex = 7;
+            this.timelineBar.TabStop = false;
             this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // VPMainForm
