@@ -33,7 +33,7 @@ namespace VideoPlayer
         public int currentFrameAbsolute;
         public List<Frame> frames;
 
-        private _576vReader videoReader;
+        public _576vReader videoReader;
         public AudioPlayer audioPlayer;
 
         private float currentFrameTime;
@@ -268,7 +268,7 @@ namespace VideoPlayer
             int sum = 0;
             Frame frameA, frameB;
 
-            histogram.OnInitialize();
+            histogram.OnInitialize(this);
 
             // Read the first frame
             frameA = new Frame(1, frameWidth, frameHeight);
@@ -280,7 +280,7 @@ namespace VideoPlayer
                 frameB = new Frame(2, frameWidth, frameHeight);
                 videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                sum = histogram.SumOfBinWiseDiff(ref frameA, ref frameB);
+                sum = histogram.SumOfBinWiseDiff(ref frameB, ref frameA);
 
                 ++framesAnalyzedAbsolute;
 

@@ -26,7 +26,7 @@ namespace VideoPlayer
         public List<List<Pixel>> pixels;
 
         // Histogram variables
-        public Int32[] values;
+        public Int32[, ,] values;
 
         public Frame(int index, int width, int height)
         {
