@@ -169,6 +169,7 @@ namespace VideoPlayer
             }
 
             timelineBar.Value = 0;
+            timeFrameLabel.Text = "00:00:00 / 0";
 
             renderer.OnReset();
             renderTarget.Invalidate();
@@ -307,6 +308,8 @@ namespace VideoPlayer
             {
                 StopVideoThreads();
                 timelineBar.Value = 0;
+                timeFrameLabel.Text = "00:00:00 / 0";
+
                 isVideoPaused = false;
             }
         }
@@ -368,7 +371,7 @@ namespace VideoPlayer
                     float totalTime = 0.0f;
                     lock (videoTimer)
                     {
-                        totalTime = (float)videoTimer.ElapsedMilliseconds / 1000.0f;
+                        totalTime = (float)(videoTimer.ElapsedMilliseconds) / 1000.0f;
                         timelineBar.Value = (int)videoTimer.ElapsedMilliseconds + startTime;
                     }
 
@@ -378,6 +381,34 @@ namespace VideoPlayer
                     Monitor.Wait(video);
                     bool result = video.OnUpdate(elapsedTime);
                     Monitor.Pulse(video);
+
+                    // Update label.
+                    int seconds = (int)(timelineBar.Value / 1000.0f);
+                    int minutes = (int)(seconds / 60.0f);
+                    int hours = (int)(minutes / 60.0f);
+
+                    minutes -= (hours * 60);
+                    seconds -= (minutes * 60);
+
+                    string labelText = "";
+                    if (hours < 10)
+                    {
+                        labelText += "0";
+                    }
+                    labelText += hours.ToString() + ":";
+
+                    if (minutes < 10)
+                    {
+                        labelText += "0";
+                    }
+                    labelText += minutes.ToString() + ":";
+
+                    if (seconds < 10)
+                    {
+                        labelText += "0";
+                    }
+                    labelText += seconds.ToString() + " / " + video.currentFrameAbsolute.ToString();
+                    timeFrameLabel.Text = labelText;
 
                     // Tell GUI to redraw if the frame changed.
                     if (result == true)

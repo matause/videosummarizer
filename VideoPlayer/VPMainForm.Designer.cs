@@ -38,6 +38,7 @@
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
+            this.timeFrameLabel = new System.Windows.Forms.Label();
             this.playShotsButton = new System.Windows.Forms.Button();
             this.summarizeButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
@@ -125,6 +126,7 @@
             // 
             // displaySplitContainer.Panel2
             // 
+            this.displaySplitContainer.Panel2.Controls.Add(this.timeFrameLabel);
             this.displaySplitContainer.Panel2.Controls.Add(this.playShotsButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
@@ -135,6 +137,16 @@
             this.displaySplitContainer.SplitterDistance = 275;
             this.displaySplitContainer.TabIndex = 1;
             this.displaySplitContainer.TabStop = false;
+            // 
+            // timeFrameLabel
+            // 
+            this.timeFrameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.timeFrameLabel.AutoSize = true;
+            this.timeFrameLabel.Location = new System.Drawing.Point(326, 3);
+            this.timeFrameLabel.Name = "timeFrameLabel";
+            this.timeFrameLabel.Size = new System.Drawing.Size(66, 13);
+            this.timeFrameLabel.TabIndex = 8;
+            this.timeFrameLabel.Text = "00:00:00 / 0";
             // 
             // playShotsButton
             // 
@@ -180,10 +192,10 @@
             // 
             this.timelineBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.timelineBar.Location = new System.Drawing.Point(3, 2);
+            this.timelineBar.Location = new System.Drawing.Point(0, 0);
             this.timelineBar.Maximum = 100;
             this.timelineBar.Name = "timelineBar";
-            this.timelineBar.Size = new System.Drawing.Size(416, 45);
+            this.timelineBar.Size = new System.Drawing.Size(330, 45);
             this.timelineBar.TabIndex = 7;
             this.timelineBar.TabStop = false;
             this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -229,6 +241,7 @@
         private System.Windows.Forms.Button summarizeButton;
         private System.Windows.Forms.TrackBar timelineBar;
         private System.Windows.Forms.Button playShotsButton;
+        private System.Windows.Forms.Label timeFrameLabel;
     }
 }
 

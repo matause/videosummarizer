@@ -30,6 +30,7 @@ namespace VideoPlayer
         public int startingCachedFrame;
         public int lastReadFrame;
         public int currentFrameToReadAbsolute;
+        public int currentFrameAbsolute;
         public List<Frame> frames;
 
         private _576vReader videoReader;
@@ -47,6 +48,7 @@ namespace VideoPlayer
         {
             currentFrame = 0;
             startingCachedFrame = 0;
+            currentFrameAbsolute = 0;
             lastReadFrame = 0;
             currentFrameToReadAbsolute = 0;
             framesAnalyzedAbsolute = 0;
@@ -73,6 +75,7 @@ namespace VideoPlayer
             bool result = true;
 
             currentFrame = 0;
+            currentFrameAbsolute = 0;
             startingCachedFrame = 0;
 
             // Set up the video
@@ -154,6 +157,7 @@ namespace VideoPlayer
             }
 
             BufferVideo(frameCount);
+            currentFrameAbsolute = frameCount;
 
 #if AUDIO
             audioPlayer.OnStop();
@@ -172,6 +176,7 @@ namespace VideoPlayer
         {
             currentFrame = 0;
             currentFrameTime = 0.0f;
+            currentFrameAbsolute = 0;
 
             // To play video after playing shots
             totalFramesInRam = 72;                              
@@ -232,7 +237,9 @@ namespace VideoPlayer
             {
                 currentFrame = (currentFrame + 1) % totalFramesInRam;
                 currentFrameTime -= secondsPerFrame;
-                
+
+                currentFrameAbsolute++;
+
                 result = true;
             }
 
