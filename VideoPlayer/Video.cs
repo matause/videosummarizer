@@ -205,16 +205,19 @@ namespace VideoPlayer
                 currentFrame = 0;
                 currentFrameTime = 0.0f;
 
+                if (histogram.shots.Count > frames.Count)
+                {
+                    for (int i = frames.Count; i < histogram.shots.Count; ++i)
+                        frames.Add(new Frame(i, frameWidth, frameHeight));
+                }
+
                 totalFramesInRam = histogram.shots.Count;
                 secondsPerFrame = 1.0f;
 
-                if (histogram.shots.Count > 0)
+                for (int i = 0; i < totalFramesInRam; ++i)
                 {
-                    for (int i = 0; i < totalFramesInRam; ++i)
-                    {
-                        Frame frame = frames[i];
-                        videoReader.ReadFrame(histogram.shots[i], ref frame);
-                    }
+                    Frame frame = frames[i];
+                    videoReader.ReadFrame(histogram.shots[i], ref frame);
                 }
 
 #if AUDIO
