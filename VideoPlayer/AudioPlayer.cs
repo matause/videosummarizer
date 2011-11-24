@@ -75,7 +75,6 @@ namespace VideoPlayer
             if (result == true)
             {
                 source = engine.AddSoundSourceFromIOStream(fileStream, filePath);
-                GetFrame(10.3f);
             }
 
             return result;
@@ -117,7 +116,13 @@ namespace VideoPlayer
             catch {}
         }
 
-        public byte[] GetFrame(float timeInSeconds)
+        /// <summary>
+        /// Returns the bytes of audio in a time window.
+        /// </summary>
+        /// <param name="startTime">Starting point in seconds.</param>
+        /// <param name="duration">Length in seconds.</param>
+        /// <returns></returns>
+        public byte[] GetRawSoundData(float startTime, float endTime)
         {
             // Sanitiy
             if (source == null)
@@ -140,12 +145,13 @@ namespace VideoPlayer
                     long headerDataLength = info.Length - (long)frameDataLength;
 
                     // Seek past the header and up to the current frame.
-                    int offset = (int) Math.Floor(source.AudioFormat.BytesPerSecond * timeInSeconds);
+                    int offset = (int) Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
                     long seekPosition = headerDataLength + offset;
                     reader.BaseStream.Seek( seekPosition, SeekOrigin.Begin );
 
                     // Read the frame
-                    result = reader.ReadBytes(source.AudioFormat.FrameSize);
+                    int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    result = reader.ReadBytes(readSize);
                 }
                 catch {}
 

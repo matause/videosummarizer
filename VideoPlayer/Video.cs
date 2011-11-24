@@ -102,6 +102,25 @@ namespace VideoPlayer
 
             if (result == false)
                 return false;
+
+            // Audio reading example.
+            // Remove this code once you get how to use it.
+            int testFrame = 30;
+            float startTime = testFrame * secondsPerFrame;
+            float endTime = (testFrame + 1) * secondsPerFrame;
+            byte[] rawData = audioPlayer.GetRawSoundData(startTime, endTime);
+
+            float avgPerFrame = 0;
+            int pointer = 0;
+            int count = 0;
+            while (pointer + 2 <= rawData.Length)
+            {
+                avgPerFrame += Math.Abs( BitConverter.ToInt16(rawData, pointer) );
+                pointer += 2;
+                count++;
+            }
+            avgPerFrame /= (float)count;
+            // End of code to remove.
 #endif
 
             return true;
