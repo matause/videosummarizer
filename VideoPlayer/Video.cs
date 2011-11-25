@@ -20,7 +20,7 @@ namespace VideoPlayer
         private const int VIDEO_FPS = 24;
 
         private int totalFramesInRam = 72;
-        private float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
+        public float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
 
         // Metrics
         public int totalFramesInVideo;
@@ -103,24 +103,6 @@ namespace VideoPlayer
             if (result == false)
                 return false;
 
-            // Audio reading example.
-            // Remove this code once you get how to use it.
-            int testFrame = 30;
-            float startTime = testFrame * secondsPerFrame;
-            float endTime = (testFrame + 1) * secondsPerFrame;
-            byte[] rawData = audioPlayer.GetRawSoundData(startTime, endTime);
-
-            float avgPerFrame = 0;
-            int pointer = 0;
-            int count = 0;
-            while (pointer + 2 <= rawData.Length)
-            {
-                avgPerFrame += Math.Abs( BitConverter.ToInt16(rawData, pointer) );
-                pointer += 2;
-                count++;
-            }
-            avgPerFrame /= (float)count;
-            // End of code to remove.
 #endif
 
             return true;
@@ -132,7 +114,7 @@ namespace VideoPlayer
             {
                 Frame frame = frames[i];
                 bool result = videoReader.ReadFrame(i + startingFrame, ref frame);
-
+                
                 if (result == false)
                     return false;
             }
@@ -208,6 +190,7 @@ namespace VideoPlayer
             {
                 Frame frame = frames[i];
                 bool result = videoReader.ReadFrame(i, ref frame);
+                frame.index = i;
             }
 
 #if AUDIO
@@ -236,7 +219,9 @@ namespace VideoPlayer
                 for (int i = 0; i < totalFramesInRam; ++i)
                 {
                     Frame frame = frames[i];
-                    videoReader.ReadFrame(histogram.shots[i], ref frame);
+                    videoReader.ReadFrame(histogram.shots[i].startFrame, ref frame);
+                    Shots s = histogram.shots[i];
+                    frame.index = s.startFrame;
                 }
 
 #if AUDIO
@@ -287,22 +272,21 @@ namespace VideoPlayer
         public bool VideoAnalysis()
         {
             bool result = false;
-            int sum = 0;
             Frame frameA, frameB;
 
             histogram.OnInitialize(this);
 
             // Read the first frame
-            frameA = new Frame(1, frameWidth, frameHeight);
+            frameA = new Frame(framesAnalyzedAbsolute, frameWidth, frameHeight);
             videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
 
             // Histogram Analysis on all frames in the video file
             while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
             {
-                frameB = new Frame(2, frameWidth, frameHeight);
+                frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
                 videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                sum = histogram.SumOfBinWiseDiff(ref frameB, ref frameA);
+                histogram.FillAnalysisData(ref frameB, ref frameA, true);
 
                 ++framesAnalyzedAbsolute;
 
@@ -311,14 +295,19 @@ namespace VideoPlayer
                 frameB = null;
             }
 
-            if (histogram.framesMinWiseDifferences.Count == totalFramesInVideo - 1)
+            if (histogram.videoAnalysisData.Count == totalFramesInVideo - 1)
             {
                 histogram.GenerateCSVFile(histogram.MIN_WISE_DIFF);
 
+                histogram.GenerateCSVFile(histogram.AVG_AUDIO_AMPS);
+
                 // Break video into shots
                 histogram.FindShotTransitions();
-
                 histogram.GenerateCSVFile(histogram.SHOTS);
+
+                // Find Key-frames
+                histogram.FindKeyFrames();
+                histogram.GenerateCSVFile(histogram.KEY_FRAMES);
 
                 result = true;
             }

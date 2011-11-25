@@ -124,7 +124,7 @@ namespace VideoPlayer
         /// <returns></returns>
         public byte[] GetRawSoundData(float startTime, float endTime)
         {
-            // Sanitiy
+            // Sanity
             if (source == null)
             {
                 return null;
@@ -158,7 +158,7 @@ namespace VideoPlayer
                 // Clean up
                 if (reader != null)
                 {
-                    reader.Close();
+                    //reader.Close();
                 }
             }
 

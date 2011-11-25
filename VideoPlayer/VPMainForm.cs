@@ -439,6 +439,13 @@ namespace VideoPlayer
                 Thread.Sleep(1);
                 bool result = video.OnUpdate(elapsedTime);
 
+                // Update label
+                string labelText = "0:0:0 / ";
+
+                Frame frame = video.GetCurrentFrame();
+                labelText += frame.index.ToString();
+                timeFrameLabel.Text = labelText;
+
                 // Tell GUI to redraw if the frame changed.
                 if (result == true)
                 {
