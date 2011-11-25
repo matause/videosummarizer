@@ -47,10 +47,12 @@ namespace VideoPlayer
     {
         public List<AnalysisData> videoAnalysisData;
         public List<Shots> shots;
+        public List<int> summaryFrames;
         public int MIN_WISE_DIFF = 1;
         public int AVG_AUDIO_AMPS = 2;
         public int SHOTS = 3;
         public int KEY_FRAMES = 4;
+        public int VIDEO_SUMMARY = 5;
         public int threshold = 5000;
         public float Tflash = 0.55f;
         public const int colorBinWidth = 64;
@@ -317,6 +319,41 @@ namespace VideoPlayer
             }
         }
 
+        public void GenerateSummaryVideo()
+        {
+            summaryFrames = new List<int>();
+            int surrFrames = 72;
+
+            // N shots boundaries = N-1 shots 
+            for (int i = 0; i < shots.Count - 1; ++i)
+            {
+                // Fetch [3 seconds of video - key frame - 3 seconds of video]
+                for (int j = 0; j < shots[i].keyFrames.Count; ++j)
+                {
+                    // X seconds of video before key frame
+                    for (int k = surrFrames; k >= 1 ; --k)
+                    {
+                        if ((shots[i].keyFrames[j] - k) >= 0)
+                            summaryFrames.Add(shots[i].keyFrames[j] - k);
+                        else
+                            continue;
+                    }
+
+                    // Key frame itself
+                    summaryFrames.Add(shots[i].keyFrames[j]);
+
+                    // X seconds of video after key frame
+                    for (int k = 1; k < surrFrames; ++k)
+                    {
+                        if ((shots[i].keyFrames[j] + k) < videoAnalysisData.Count)
+                            summaryFrames.Add(shots[i].keyFrames[j] + k);
+                        else
+                            break;
+                    }
+                }
+            }
+        }
+
         // Write the Min-wise differences into CSV file for analysis
         public void GenerateCSVFile(int analyse)
         {
@@ -333,7 +370,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\MinWiseDifferences.csv";
+                    filePath = @"C:\MinWiseDifferences.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -351,7 +388,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\AvgAudioAmplitudes.csv";
+                    filePath = @"C:\AvgAudioAmplitudes.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -369,7 +406,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                delimiter = ",";
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\ShotBoundaries.csv";
+                    filePath = @"C:\ShotBoundaries.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -395,7 +432,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\Users\Vishak Nag Ashoka\576_Final_Project\data\sample1\KeyFrames.csv";
+                    filePath = @"C:\KeyFrames.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -408,6 +445,32 @@ namespace VideoPlayer
                     {
                         if(shotMaxAmps.Contains(index))    
                             sb.AppendLine(string.Join(delimiter, videoAnalysisData[index].avgAmp));
+                        else
+                            sb.AppendLine(string.Join(delimiter, 0));
+                    }
+                    File.WriteAllText(filePath, sb.ToString());
+
+                    break;
+
+                case 5:
+                    /*
+                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "VideoSummary.csv" };
+                    filePath = string.Join("", array);
+	                delimiter = ",";
+                    */
+                    filePath = @"C:\VideoSummary.csv";
+
+                    length = videoAnalysisData.Count;
+
+                    List<int> videoSummary = new List<int>();
+                    for (int i = 0; i < summaryFrames.Count; ++i)
+                        videoSummary.Add(summaryFrames[i]);
+
+                    sb = new StringBuilder();
+                    for (int index = 0; index < length; index++)
+                    {
+                        if (videoSummary.Contains(index))
+                            sb.AppendLine(string.Join(delimiter, videoAnalysisData[index].sum));
                         else
                             sb.AppendLine(string.Join(delimiter, 0));
                     }

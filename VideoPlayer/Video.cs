@@ -19,7 +19,7 @@ namespace VideoPlayer
     {
         private const int VIDEO_FPS = 24;
 
-        private int totalFramesInRam = 72;
+        public int totalFramesInRam = 72;
         public float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
 
         // Metrics
@@ -308,6 +308,10 @@ namespace VideoPlayer
                 // Find Key-frames
                 histogram.FindKeyFrames();
                 histogram.GenerateCSVFile(histogram.KEY_FRAMES);
+
+                // Summarize the video
+                histogram.GenerateSummaryVideo();
+                histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY);
 
                 result = true;
             }
