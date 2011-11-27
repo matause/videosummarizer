@@ -355,14 +355,14 @@ namespace VideoPlayer
         }
 
         // Write the Min-wise differences into CSV file for analysis
-        public void GenerateCSVFile(int analyse)
+        public void GenerateCSVFile(int analyze, string path)
         {
             string filePath;
             string delimiter = ",";
             int length;
             StringBuilder sb;
 
-            switch (analyse)
+            switch (analyze)
             {
                 case 1:
                     /*
@@ -370,7 +370,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\MinWiseDifferences.csv";
+                    filePath = path + "\\MinWiseDifferences.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -388,7 +388,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\AvgAudioAmplitudes.csv";
+                    filePath = path + "\\AvgAudioAmplitudes.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -406,7 +406,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                delimiter = ",";
                     */
-                    filePath = @"C:\ShotBoundaries.csv";
+                    filePath = path + "\\ShotBoundaries.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -432,7 +432,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                
                     */
-                    filePath = @"C:\KeyFrames.csv";
+                    filePath = path + "\\KeyFrames.csv";
 
                     length = videoAnalysisData.Count;
 
@@ -458,7 +458,7 @@ namespace VideoPlayer
                     filePath = string.Join("", array);
 	                delimiter = ",";
                     */
-                    filePath = @"C:\VideoSummary.csv";
+                    filePath = path + "\\VideoSummary.csv";
 
                     length = videoAnalysisData.Count;
 

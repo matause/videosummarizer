@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Windows.Forms;
+
 namespace VideoPlayer
 {
     class Video
@@ -297,21 +299,34 @@ namespace VideoPlayer
 
             if (histogram.videoAnalysisData.Count == totalFramesInVideo - 1)
             {
-                histogram.GenerateCSVFile(histogram.MIN_WISE_DIFF);
 
-                histogram.GenerateCSVFile(histogram.AVG_AUDIO_AMPS);
+                FolderBrowserDialog dlg = new FolderBrowserDialog();
+                dlg.Description = "Select a directory to store video metric files.";
+                dlg.ShowNewFolderButton = false;
+
+                DialogResult dlgResult = dlg.ShowDialog();
+                if (dlgResult == DialogResult.Cancel)
+                {
+                    return false;
+                }
+
+                String directory = dlg.SelectedPath;
+
+                histogram.GenerateCSVFile(histogram.MIN_WISE_DIFF, directory);
+
+                histogram.GenerateCSVFile(histogram.AVG_AUDIO_AMPS, directory);
 
                 // Break video into shots
                 histogram.FindShotTransitions();
-                histogram.GenerateCSVFile(histogram.SHOTS);
+                histogram.GenerateCSVFile(histogram.SHOTS, directory);
 
                 // Find Key-frames
                 histogram.FindKeyFrames();
-                histogram.GenerateCSVFile(histogram.KEY_FRAMES);
+                histogram.GenerateCSVFile(histogram.KEY_FRAMES, directory);
 
                 // Summarize the video
                 histogram.GenerateSummaryVideo();
-                histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY);
+                histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY, directory);
 
                 result = true;
             }
