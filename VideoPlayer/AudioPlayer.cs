@@ -13,12 +13,15 @@ using System.Text;
 
 using IrrKlang;
 using System.IO;
+using System.Windows.Forms;
 
 namespace VideoPlayer
 {
     class AudioPlayer
     {
         public bool isSoundLoaded;
+
+        private Video videoRef;
 
         private String soundFilePath;
         private FileStream fileStream;
@@ -35,16 +38,18 @@ namespace VideoPlayer
             engine = new ISoundEngine();
             sound = null;
             source = null;
+            videoRef = null;
 
             soundFilePath = "";
             isSoundLoaded = false;
         }
 
-        public bool OnInitialize(string filePath)
+        public bool OnInitialize(string filePath, Video videoReference)
         {
             bool result = true;
 
             soundFilePath = filePath;
+            videoRef = videoReference;
 
             // Try to open a file stream for the audio file.
             FileInfo info = new FileInfo(filePath);
@@ -154,11 +159,148 @@ namespace VideoPlayer
                     result = reader.ReadBytes(readSize);
                 }
                 catch {}
+            }
 
-                // Clean up
-                if (reader != null)
+            return result;
+        }
+
+        public bool WriteSummary(List<int> frames)
+        {
+            // Sanity
+            if (source == null)
+            {
+                return false;
+            }
+
+            bool result = true;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Save the audio summary.";
+            dlg.Filter = "Wav files (*.wav)|*.wav";
+            dlg.OverwritePrompt = true;
+            dlg.AddExtension = true;
+            dlg.DefaultExt = ".wav";
+
+            DialogResult dlgResult = dlg.ShowDialog();
+            if (dlgResult == DialogResult.OK)
+            {
+                result = WriteSummary(frames, dlg.FileName);
+            }
+
+            return result;
+        }
+
+        private bool WriteSummary(List<int> frames, String filePath)
+        {
+            bool result = true;
+
+            // Open the file to save.
+            FileStream file = null;
+            try
+            {
+                file = new FileStream(filePath, FileMode.OpenOrCreate);
+            }
+            catch
+            {
+                result = false;
+            }
+
+            if (result == true)
+            {
+                result = WriteHeader(file);
+            }
+
+            if( result == true )
+            {
+                // Write all the frames into the audio file.
+                foreach (int frame in frames)
                 {
-                    //reader.Close();
+                    result = WriteFrame(frame, file);
+
+                    if (result == false)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            // Clean up
+            if (file != null)
+            {
+                file.Close();
+            }
+
+            return result;
+        }
+
+        private bool WriteHeader(FileStream file)
+        {
+            bool result = true;
+
+            // Read and store the header
+            FileInfo info = new FileInfo(soundFilePath);
+            if (fileStream != null)
+            {
+                // Create a binary reader and get the data.
+                BinaryReader reader = null;
+                try
+                {
+                    reader = new BinaryReader(fileStream);
+
+                    // Determine length of the header
+                    int frameDataLength = source.AudioFormat.FrameCount * source.AudioFormat.FrameSize;
+                    long headerDataLength = info.Length - (long)frameDataLength;
+
+                    // Read the header
+                    byte[] data = reader.ReadBytes((int)headerDataLength);
+
+                    // Write the header to the summary file.
+                    file.Write(data, 0, data.Length);
+                }
+                catch 
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
+        private bool WriteFrame(int frameNumber, FileStream file)
+        {
+            bool result = true;
+
+            float startTime = frameNumber * videoRef.secondsPerFrame;
+            float endTime = (frameNumber + 1) * videoRef.secondsPerFrame;
+
+            // Read the current frame.
+            FileInfo info = new FileInfo(soundFilePath);
+            if (fileStream != null)
+            {
+                // Create a binary reader and get the data.
+                BinaryReader reader = null;
+                try
+                {
+                    reader = new BinaryReader(fileStream);
+
+                    int frameDataLength = source.AudioFormat.FrameCount * source.AudioFormat.FrameSize;
+                    long headerDataLength = info.Length - (long)frameDataLength;
+
+                    // Seek past the header and up to the current frame.
+                    int offset = (int)Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
+                    long seekPosition = headerDataLength + offset;
+                    reader.BaseStream.Seek(seekPosition, SeekOrigin.Begin);
+
+                    // Read the frame
+                    int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    byte[] data = reader.ReadBytes(readSize);
+
+                    // Write the frame to the summary file.
+                    file.Write(data, 0, data.Length);
+                }
+                catch 
+                {
+                    result = false;
                 }
             }
 

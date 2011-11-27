@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="576vReader.cs" />
+    <Compile Include="576vWriter.cs" />
     <Compile Include="Direct2DRenderer.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="AudioPlayer.cs" />

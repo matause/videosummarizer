@@ -190,7 +190,7 @@ namespace VideoPlayer
             string videoFile = "";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                video = new Video(frameWidth, frameHeight);
+                video = new Video(frameWidth, frameHeight, 1100);
                 videoFile = dlg.FileName;
             }
             else
@@ -256,7 +256,7 @@ namespace VideoPlayer
                     }
 
                     // These need started together.
-                    video.OnStartPlaying(startingVideoTime, startingAudioTime + 1100);
+                    video.OnStartPlaying(startingVideoTime, startingAudioTime);
                     videoTimer.Start();
 
                     // Create and start new playing and streaming threads.

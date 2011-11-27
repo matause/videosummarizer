@@ -28,6 +28,8 @@ namespace VideoPlayer
         public int totalFramesInVideo;
         public float videoDuration; // in seconds
 
+        public int audioOffset;
+
         public int currentFrame;
         public int startingCachedFrame;
         public int lastReadFrame;
@@ -46,8 +48,10 @@ namespace VideoPlayer
         public int frameWidth;
         public int frameHeight;
 
-        public Video(int frameWidth, int frameHeight)
+        public Video(int frameWidth, int frameHeight, int audioOffset)
         {
+            this.audioOffset = audioOffset;
+
             currentFrame = 0;
             startingCachedFrame = 0;
             currentFrameAbsolute = 0;
@@ -100,7 +104,7 @@ namespace VideoPlayer
 
 #if AUDIO
             // Set up the audio.
-            result = audioPlayer.OnInitialize(audioFilePath);
+            result = audioPlayer.OnInitialize(audioFilePath, this);
 
             if (result == false)
                 return false;
@@ -163,6 +167,7 @@ namespace VideoPlayer
             currentFrameAbsolute = frameCount;
 
 #if AUDIO
+            startingAudioTime += audioOffset;
             audioPlayer.OnStop();
             audioPlayer.OnPlay((uint)startingAudioTime);
 #endif
@@ -328,7 +333,15 @@ namespace VideoPlayer
                 histogram.GenerateSummaryVideo();
                 histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY, directory);
 
-                result = true;
+                // Write the summary to disk.
+                _576vWriter writer = new _576vWriter();
+                writer.OnInitialize(videoReader);
+                result = writer.WriteSummary(histogram.summaryFrames);
+
+                if (result == true)
+                {
+                    result = audioPlayer.WriteSummary(histogram.summaryFrames);
+                }
             }
 
             return result;
