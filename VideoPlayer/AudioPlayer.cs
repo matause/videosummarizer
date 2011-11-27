@@ -246,6 +246,7 @@ namespace VideoPlayer
                 try
                 {
                     reader = new BinaryReader(fileStream);
+                    reader.BaseStream.Seek( 0, SeekOrigin.Begin );
 
                     // Determine length of the header
                     int frameDataLength = source.AudioFormat.FrameCount * source.AudioFormat.FrameSize;
