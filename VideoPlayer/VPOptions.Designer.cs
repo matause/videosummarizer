@@ -48,21 +48,23 @@
             // 
             // okButton
             // 
+            this.okButton.BackColor = System.Drawing.Color.Peru;
             this.okButton.Location = new System.Drawing.Point(118, 243);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 0;
             this.okButton.Text = "OK";
-            this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.UseVisualStyleBackColor = false;
             // 
             // cancelButton
             // 
+            this.cancelButton.BackColor = System.Drawing.Color.Peru;
             this.cancelButton.Location = new System.Drawing.Point(197, 243);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.UseVisualStyleBackColor = false;
             // 
             // sceneDurationLabel
             // 
@@ -76,6 +78,7 @@
             // shotGenerationLabel
             // 
             this.shotGenerationLabel.AutoSize = true;
+            this.shotGenerationLabel.BackColor = System.Drawing.Color.LightSeaGreen;
             this.shotGenerationLabel.Location = new System.Drawing.Point(77, 9);
             this.shotGenerationLabel.Name = "shotGenerationLabel";
             this.shotGenerationLabel.Size = new System.Drawing.Size(135, 13);
@@ -85,6 +88,7 @@
             // keyFrameLabel
             // 
             this.keyFrameLabel.AutoSize = true;
+            this.keyFrameLabel.BackColor = System.Drawing.Color.LightSeaGreen;
             this.keyFrameLabel.Location = new System.Drawing.Point(88, 73);
             this.keyFrameLabel.Name = "keyFrameLabel";
             this.keyFrameLabel.Size = new System.Drawing.Size(108, 13);
@@ -103,6 +107,7 @@
             // colorThresholdingButton
             // 
             this.colorThresholdingButton.AutoSize = true;
+            this.colorThresholdingButton.BackColor = System.Drawing.Color.Peru;
             this.colorThresholdingButton.Checked = true;
             this.colorThresholdingButton.Location = new System.Drawing.Point(6, 12);
             this.colorThresholdingButton.Name = "colorThresholdingButton";
@@ -110,11 +115,12 @@
             this.colorThresholdingButton.TabIndex = 6;
             this.colorThresholdingButton.TabStop = true;
             this.colorThresholdingButton.Text = "Color Histogram Thresholding";
-            this.colorThresholdingButton.UseVisualStyleBackColor = true;
+            this.colorThresholdingButton.UseVisualStyleBackColor = false;
             // 
             // audioExcitationButton
             // 
             this.audioExcitationButton.AutoSize = true;
+            this.audioExcitationButton.BackColor = System.Drawing.Color.Peru;
             this.audioExcitationButton.Checked = true;
             this.audioExcitationButton.Location = new System.Drawing.Point(6, 11);
             this.audioExcitationButton.Name = "audioExcitationButton";
@@ -122,7 +128,7 @@
             this.audioExcitationButton.TabIndex = 7;
             this.audioExcitationButton.TabStop = true;
             this.audioExcitationButton.Text = "Audio Excitation";
-            this.audioExcitationButton.UseVisualStyleBackColor = true;
+            this.audioExcitationButton.UseVisualStyleBackColor = false;
             // 
             // shotGenerationGroupBox
             // 
@@ -170,6 +176,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.LightSeaGreen;
             this.ClientSize = new System.Drawing.Size(284, 278);
             this.Controls.Add(this.keyFrameGroupBox);
             this.Controls.Add(this.summaryDuration);

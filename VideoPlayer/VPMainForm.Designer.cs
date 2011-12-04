@@ -53,6 +53,7 @@
             // 
             // mainMenuStrip
             // 
+            this.mainMenuStrip.BackColor = System.Drawing.Color.LightSeaGreen;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem,
             this.aboutMenuItem});
@@ -64,6 +65,7 @@
             // 
             // fileMenuItem
             // 
+            this.fileMenuItem.BackColor = System.Drawing.Color.LightSeaGreen;
             this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileOpenMenuItem,
             this.fileOpenSeperator,
@@ -76,8 +78,9 @@
             // 
             // fileOpenMenuItem
             // 
+            this.fileOpenMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.fileOpenMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fileOpenMenuItem.Text = "Open...";
             // 
             // fileOpenSeperator
@@ -87,8 +90,9 @@
             // 
             // fileCloseMenuItem
             // 
+            this.fileCloseMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileCloseMenuItem.Name = "fileCloseMenuItem";
-            this.fileCloseMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.fileCloseMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fileCloseMenuItem.Text = "Close";
             // 
             // fileCloseSeperator
@@ -98,8 +102,9 @@
             // 
             // fileExitMenuItem
             // 
+            this.fileExitMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileExitMenuItem.Name = "fileExitMenuItem";
-            this.fileExitMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.fileExitMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fileExitMenuItem.Text = "Exit";
             // 
             // aboutMenuItem
@@ -112,8 +117,9 @@
             // 
             // aboutAboutMenuItem
             // 
+            this.aboutAboutMenuItem.BackColor = System.Drawing.Color.Peru;
             this.aboutAboutMenuItem.Name = "aboutAboutMenuItem";
-            this.aboutAboutMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.aboutAboutMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutAboutMenuItem.Text = "About...";
             // 
             // displaySplitContainer
@@ -126,6 +132,7 @@
             // 
             // displaySplitContainer.Panel2
             // 
+            this.displaySplitContainer.Panel2.BackColor = System.Drawing.Color.LightSeaGreen;
             this.displaySplitContainer.Panel2.Controls.Add(this.timeFrameLabel);
             this.displaySplitContainer.Panel2.Controls.Add(this.playShotsButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
@@ -142,6 +149,7 @@
             // 
             this.timeFrameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.timeFrameLabel.AutoSize = true;
+            this.timeFrameLabel.BackColor = System.Drawing.Color.LightSeaGreen;
             this.timeFrameLabel.Location = new System.Drawing.Point(326, 3);
             this.timeFrameLabel.Name = "timeFrameLabel";
             this.timeFrameLabel.Size = new System.Drawing.Size(66, 13);
@@ -151,47 +159,52 @@
             // playShotsButton
             // 
             this.playShotsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.playShotsButton.BackColor = System.Drawing.Color.Peru;
             this.playShotsButton.Location = new System.Drawing.Point(255, 28);
             this.playShotsButton.Name = "playShotsButton";
             this.playShotsButton.Size = new System.Drawing.Size(75, 23);
             this.playShotsButton.TabIndex = 7;
             this.playShotsButton.Text = "Play Shots";
-            this.playShotsButton.UseVisualStyleBackColor = true;
+            this.playShotsButton.UseVisualStyleBackColor = false;
             // 
             // summarizeButton
             // 
             this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.summarizeButton.BackColor = System.Drawing.Color.Peru;
             this.summarizeButton.Location = new System.Drawing.Point(174, 28);
             this.summarizeButton.Name = "summarizeButton";
             this.summarizeButton.Size = new System.Drawing.Size(75, 23);
             this.summarizeButton.TabIndex = 6;
             this.summarizeButton.Text = "Summarize";
-            this.summarizeButton.UseVisualStyleBackColor = true;
+            this.summarizeButton.UseVisualStyleBackColor = false;
             // 
             // playButton
             // 
             this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.playButton.BackColor = System.Drawing.Color.Peru;
             this.playButton.Location = new System.Drawing.Point(12, 29);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(75, 23);
             this.playButton.TabIndex = 4;
             this.playButton.Text = "Play";
-            this.playButton.UseVisualStyleBackColor = true;
+            this.playButton.UseVisualStyleBackColor = false;
             // 
             // stopButton
             // 
             this.stopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.stopButton.BackColor = System.Drawing.Color.Peru;
             this.stopButton.Location = new System.Drawing.Point(93, 28);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(75, 23);
             this.stopButton.TabIndex = 5;
             this.stopButton.Text = "Stop";
-            this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.UseVisualStyleBackColor = false;
             // 
             // timelineBar
             // 
             this.timelineBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.timelineBar.BackColor = System.Drawing.Color.LightSeaGreen;
             this.timelineBar.Location = new System.Drawing.Point(0, 0);
             this.timelineBar.Maximum = 100;
             this.timelineBar.Name = "timelineBar";
@@ -204,6 +217,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(422, 362);
             this.Controls.Add(this.displaySplitContainer);
             this.Controls.Add(this.mainMenuStrip);
