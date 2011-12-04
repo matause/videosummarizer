@@ -321,8 +321,38 @@ namespace VideoPlayer
                 // Stop video player
                 StopVideoThreads();
 
+                // Get analysis variables from the options GUI.
+                VPOptions optionsDlg = new VPOptions();
+                optionsDlg.ShowDialog(this);
+                if (optionsDlg.wasOKPressed == false)
+                {
+                    // User pressed cancel. Just bail.
+                    return;
+                }
+
+                //
+                // Example code to get data from the GUI.
+                //
+
+                //
+                // Try to get the data from the GUI to use in the analysis.
+                // Note: The GetTime functions can fail because the user can enter text
+                // into the numeric fields.  So, we need to check the result.
+                //
+                int sceneTime = 0;
+                bool result = optionsDlg.GetSceneTimeInSeconds(ref sceneTime);
+
+                int summaryTime = 0;
+                if (result == true)
+                {
+                    result = optionsDlg.GetSummaryTimeInSeconds(ref summaryTime);
+                }
+
                 // Compute the data for Shot detection analysis
-                bool result = video.VideoAnalysis();
+                if (result == true)
+                {
+                    result = video.VideoAnalysis();
+                }
                 
                 if(result == true)
                     isVideoSummarized = true;

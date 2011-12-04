@@ -78,6 +78,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VPOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VPOptions.Designer.cs">
+      <DependentUpon>VPOptions.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="VPMainForm.resx">
       <DependentUpon>VPMainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -90,6 +96,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="VPOptions.resx">
+      <DependentUpon>VPOptions.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
