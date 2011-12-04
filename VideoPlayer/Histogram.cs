@@ -26,45 +26,93 @@ namespace VideoPlayer
 
         public AnalysisData()
         {
+            // Color Histogram 
             sum = 0;
+
+            // Audio Amplitude
             avgAmp = 0;
         }
     }
 
-    public class Shots
+    public class Shot
     {
         public int startFrame;
+        public int weight;
         public List<int> keyFrames;
+        public List<int> sortedAudioAmps;
 
-        public Shots()
+        public Shot()
         {
             startFrame = 0;
+            sortedAudioAmps = new List<int>();
             keyFrames = new List<int>();
+            weight = 0;
+        }
+    }
+
+
+    public class shotSort : IComparable<shotSort>
+    {
+        public int shotIndex;
+        public int maxAudioAmp;
+
+        public shotSort()
+        {
+            shotIndex = 0;
+            maxAudioAmp = 0;
+        }
+
+        public int CompareTo(shotSort obj)
+        {
+            if (maxAudioAmp > obj.maxAudioAmp)
+                return -1; //normally greater than = 1
+            if (maxAudioAmp < obj.maxAudioAmp)
+                return 1; // normally smaller than = -1
+            else
+                return 0; // equal
+        }
+    }
+
+    public class SortIntDescending : IComparer<int>
+    {
+        int IComparer<int>.Compare(int a, int b) //implement Compare
+        {
+            if (a > b)
+                return -1; //normally greater than = 1
+            if (a < b)
+                return 1; // normally smaller than = -1
+            else
+                return 0; // equal
         }
     }
 
     class Histogram
     {
         public List<AnalysisData> videoAnalysisData;
-        public List<Shots> shots;
+        public List<Shot> shots;
+        public List<shotSort> sortedShots;
         public List<int> summaryFrames;
-        public int MIN_WISE_DIFF = 1;
-        public int AVG_AUDIO_AMPS = 2;
-        public int SHOTS = 3;
-        public int KEY_FRAMES = 4;
-        public int VIDEO_SUMMARY = 5;
         public int threshold = 5000;
         public float Tflash = 0.55f;
         public const int colorBinWidth = 64;
         public const int colorQuantGroups = 4;
         public Video videoRef;
-                                
+
+        // CSV IDS
+        public int MIN_WISE_DIFF = 1;
+        public int AVG_AUDIO_AMPS = 2;
+        public int SHOTS = 3;
+        public int KEY_FRAMES = 4;
+        public int VIDEO_SUMMARY = 5;
+
+        public int percentage = 50;    // fetch this value given by user in the UI, I have used 50% just as an example
+
         private const int MINIMUM_FRAMES_IN_SHOT = 150;    // 6 Seconds
 
         public void OnInitialize(Video video)
         {
             videoAnalysisData = new List<AnalysisData>();
-            shots = new List<Shots>();
+            shots = new List<Shot>();
             videoRef = video;
         }
 
@@ -103,10 +151,10 @@ namespace VideoPlayer
 
             // Average amplitude of the audio data associated with the video frame
             float startTime = frameCur.index * videoRef.secondsPerFrame;
-	        float endTime = (frameCur.index + 1) * videoRef.secondsPerFrame;
-	        byte[] rawData = videoRef.audioPlayer.GetRawSoundData(startTime, endTime);
-	
-	        Int64 avgPerFrame = 0;
+            float endTime = (frameCur.index + 1) * videoRef.secondsPerFrame;
+            byte[] rawData = videoRef.audioPlayer.GetRawSoundData(startTime, endTime);
+
+            Int64 avgPerFrame = 0;
 
             for (int i = 0; i < rawData.Length; ++i)
             {
@@ -118,7 +166,7 @@ namespace VideoPlayer
             data.sum = sum;
             data.avgAmp = (byte)(avgPerFrame / rawData.Length);
 
-            if(add == true)
+            if (add == true)
                 videoAnalysisData.Add(data);
 
             result = sum;
@@ -223,7 +271,7 @@ namespace VideoPlayer
         public void FindShotTransitions()
         {
             // First frame is the start of the first shot
-            Shots shot = new Shots();
+            Shot shot = new Shot();
             shot.startFrame = 0;
             shots.Add(shot);
 
@@ -242,40 +290,40 @@ namespace VideoPlayer
                     if (ratio < Tflash && ratio > 0)
                     {
 #endif
-                        if (shots[shots.Count - 1].startFrame < (i - MINIMUM_FRAMES_IN_SHOT))
+                    if (shots[shots.Count - 1].startFrame < (i - MINIMUM_FRAMES_IN_SHOT))
+                    {
+                        // Check for shot similarity
+
+                        // Read the current shot selected
+                        Frame frameA;
+                        frameA = new Frame(i, videoRef.frameWidth, videoRef.frameHeight);
+                        videoRef.videoReader.ReadFrame(i, ref frameA);
+
+                        // Read the Last shot that was selected
+                        Frame frameB;
+                        frameB = new Frame(shots[shots.Count - 1].startFrame, videoRef.frameWidth, videoRef.frameHeight);
+                        videoRef.videoReader.ReadFrame(shots[shots.Count - 1].startFrame, ref frameB);
+
+                        int sum = FillAnalysisData(ref frameB, ref frameA, false);
+
+                        // Mark new shot if there exists a major difference between the previous and the current shot
+                        if (sum > 40000)
                         {
-                            // Check for shot similarity
-
-                            // Read the current shot selected
-                            Frame frameA;
-                            frameA = new Frame(i, videoRef.frameWidth, videoRef.frameHeight);
-                            videoRef.videoReader.ReadFrame(i, ref frameA);
-
-                            // Read the Last shot that was selected
-                            Frame frameB;
-                            frameB = new Frame(shots[shots.Count - 1].startFrame, videoRef.frameWidth, videoRef.frameHeight);
-                            videoRef.videoReader.ReadFrame(shots[shots.Count - 1].startFrame, ref frameB);
-
-                            int sum = FillAnalysisData(ref frameB, ref frameA, false);
-
-                            // Mark new shot if there exists a major difference between the previous and the current shot
-                            if (sum > 40000)
-                            {
-                                shots.Add(new Shots());
-                                shots[shots.Count - 1].startFrame = i;
-                            }
-
-                            frameA = frameB = null;
+                            shots.Add(new Shot());
+                            shots[shots.Count - 1].startFrame = i;
                         }
-                        else
+
+                        frameA = frameB = null;
+                    }
+                    else
+                    {
+                        // store Max(previous transition, current transition)
+                        if (videoAnalysisData[shots[shots.Count - 1].startFrame].sum < videoAnalysisData[i].sum)
                         {
-                            // store Max(previous transition, current transition)
-                            if (videoAnalysisData[shots[shots.Count - 1].startFrame].sum < videoAnalysisData[i].sum)
-                            {
-                                Shots s = shots[shots.Count - 1];
-                                s.startFrame = i;
-                            }
+                            Shot s = shots[shots.Count - 1];
+                            s.startFrame = i;
                         }
+                    }
 #if RATIO
                     }
 #endif
@@ -283,15 +331,71 @@ namespace VideoPlayer
             }
         }
 
+        public void SortAudioAmpsInShots()
+        {
+            // N shots boundaries = N-1 shots 
+            for (int i = 0; i < shots.Count - 1; ++i)
+            {
+                // Fetch audio Avg amplitudes for all the frames in shot i
+                for (int j = shots[i].startFrame; j < shots[i + 1].startFrame; ++j)
+                {
+                    shots[i].sortedAudioAmps.Add(videoAnalysisData[j].avgAmp);
+                }
+
+                // Sort in descending order
+                shots[i].sortedAudioAmps.Sort(new SortIntDescending());
+            }
+        }
+
+        public void SortMaxAudioAmpOfShots()
+        {
+            sortedShots = new List<shotSort>();
+
+            // N shots boundaries = N-1 shots 
+            for (int i = 0; i < shots.Count - 1; ++i)
+            {
+                // First value in each sorted list of amplitudes of a shot is the max value 
+                shotSort s = new shotSort();
+                s.maxAudioAmp = shots[i].sortedAudioAmps[0];
+                s.shotIndex = i;
+                sortedShots.Add(s);
+            }
+
+            // Sort in descending order
+            sortedShots.Sort();
+        }
+
+        public void AssignWeightToShots()
+        {
+            int index = 0;
+
+            // N shots boundaries = N-1 shots
+            index = 0;
+            for (int i = sortedShots.Count - 1; i >= 1; --i)
+            {
+                shots[sortedShots[index].shotIndex].weight = i;
+                index++;
+            }
+        }
+
         // Audio excitation based key frame selection within a shot  
         public void FindKeyFrames()
         {
             // Histogram variables
-    	    Int32[] audioAmps;
+            Int32[] audioAmps;
             AForge.Math.Histogram shotAudio;
 
-            // N shots boundaries = N-1 shots 
-            for (int i = 0; i < shots.Count-1; ++i)
+            // Sort all the shots in descending order
+            SortAudioAmpsInShots();
+
+            // Sort Max amplitude of all the shots
+            SortMaxAudioAmpOfShots();
+
+            // Assign weight to shots based on sorted list
+            AssignWeightToShots();
+
+            // N shots boundaries = N-1 shots
+            for (int i = 0; i < shots.Count - 1; ++i)
             {
                 // Sizeof number of frames in shot i
                 audioAmps = new Int32[shots[i + 1].startFrame - shots[i].startFrame];
@@ -315,7 +419,8 @@ namespace VideoPlayer
                 // Instantiate, used to find Mean, median, SD
                 shotAudio = new AForge.Math.Histogram(audioAmps);
 
-                shots[i].keyFrames.Add(MaxKeyFrame);
+                if (!shots[i].keyFrames.Contains(MaxKeyFrame))
+                    shots[i].keyFrames.Add(MaxKeyFrame);
             }
         }
 
@@ -323,18 +428,25 @@ namespace VideoPlayer
         {
             summaryFrames = new List<int>();
             int surrFrames = 72;
+            int minWeight = (int)(percentage / 100.0 * shots.Count);
 
-            // N shots boundaries = N-1 shots 
+            // N shots boundaries = N-1 shots
             for (int i = 0; i < shots.Count - 1; ++i)
             {
+                if (shots[i].weight < minWeight)
+                    continue;
+
                 // Fetch [3 seconds of video - key frame - 3 seconds of video]
                 for (int j = 0; j < shots[i].keyFrames.Count; ++j)
                 {
                     // X seconds of video before key frame
-                    for (int k = surrFrames; k >= 1 ; --k)
+                    for (int k = surrFrames; k >= 1; --k)
                     {
                         if ((shots[i].keyFrames[j] - k) >= 0)
-                            summaryFrames.Add(shots[i].keyFrames[j] - k);
+                        {
+                            if (!summaryFrames.Contains(shots[i].keyFrames[j] - k))
+                                summaryFrames.Add(shots[i].keyFrames[j] - k);
+                        }
                         else
                             continue;
                     }
@@ -346,7 +458,10 @@ namespace VideoPlayer
                     for (int k = 1; k < surrFrames; ++k)
                     {
                         if ((shots[i].keyFrames[j] + k) < videoAnalysisData.Count)
-                            summaryFrames.Add(shots[i].keyFrames[j] + k);
+                        {
+                            if (!summaryFrames.Contains(shots[i].keyFrames[j] + k))
+                                summaryFrames.Add(shots[i].keyFrames[j] + k);
+                        }
                         else
                             break;
                     }
@@ -365,11 +480,6 @@ namespace VideoPlayer
             switch (analyze)
             {
                 case 1:
-                    /*
-                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "MinWiseDifferences.csv" };
-                    filePath = string.Join("", array);
-	                
-                    */
                     filePath = path + "\\MinWiseDifferences.csv";
 
                     length = videoAnalysisData.Count;
@@ -383,11 +493,6 @@ namespace VideoPlayer
                     break;
 
                 case 2:
-                    /*
-                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "AvgAudioAmplitudes.csv" };
-                    filePath = string.Join("", array);
-	                
-                    */
                     filePath = path + "\\AvgAudioAmplitudes.csv";
 
                     length = videoAnalysisData.Count;
@@ -401,23 +506,18 @@ namespace VideoPlayer
                     break;
 
                 case 3:
-                    /*
-                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "ShotBoundaries.csv" };
-                    filePath = string.Join("", array);
-	                delimiter = ",";
-                    */
                     filePath = path + "\\ShotBoundaries.csv";
 
                     length = videoAnalysisData.Count;
 
                     List<int> shotboundaries = new List<int>();
-                    for(int i = 0; i < shots.Count; ++i)
+                    for (int i = 0; i < shots.Count; ++i)
                         shotboundaries.Add(shots[i].startFrame);
 
                     sb = new StringBuilder();
                     for (int index = 0; index < length; index++)
                     {
-                        if(shotboundaries.Contains(index))    
+                        if (shotboundaries.Contains(index))
                             sb.AppendLine(string.Join(delimiter, videoAnalysisData[index].sum));
                         else
                             sb.AppendLine(string.Join(delimiter, 0));
@@ -427,23 +527,18 @@ namespace VideoPlayer
                     break;
 
                 case 4:
-                    /*
-                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "KeyFrames.csv" };
-                    filePath = string.Join("", array);
-	                
-                    */
                     filePath = path + "\\KeyFrames.csv";
 
                     length = videoAnalysisData.Count;
 
                     List<int> shotMaxAmps = new List<int>();
-                    for(int i = 0; i < shots.Count-1; ++i)
+                    for (int i = 0; i < shots.Count - 1; ++i)
                         shotMaxAmps.Add(shots[i].keyFrames[0]);
 
                     sb = new StringBuilder();
                     for (int index = 0; index < length; index++)
                     {
-                        if(shotMaxAmps.Contains(index))    
+                        if (shotMaxAmps.Contains(index))
                             sb.AppendLine(string.Join(delimiter, videoAnalysisData[index].avgAmp));
                         else
                             sb.AppendLine(string.Join(delimiter, 0));
@@ -453,11 +548,6 @@ namespace VideoPlayer
                     break;
 
                 case 5:
-                    /*
-                    array = new string[] { "@", System.AppDomain.CurrentDomain.BaseDirectory, "VideoSummary.csv" };
-                    filePath = string.Join("", array);
-	                delimiter = ",";
-                    */
                     filePath = path + "\\VideoSummary.csv";
 
                     length = videoAnalysisData.Count;

@@ -227,7 +227,7 @@ namespace VideoPlayer
                 {
                     Frame frame = frames[i];
                     videoReader.ReadFrame(histogram.shots[i].startFrame, ref frame);
-                    Shots s = histogram.shots[i];
+                    Shot s = histogram.shots[i];
                     frame.index = s.startFrame;
                 }
 
