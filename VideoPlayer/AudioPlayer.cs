@@ -196,9 +196,11 @@ namespace VideoPlayer
 
             // Open the file to save.
             FileStream file = null;
+            BinaryWriter writer = null;
             try
             {
                 file = new FileStream(filePath, FileMode.OpenOrCreate);
+                writer = new BinaryWriter(file);
             }
             catch
             {
@@ -207,16 +209,26 @@ namespace VideoPlayer
 
             if (result == true)
             {
-                result = WriteHeader(file);
+                result = WriteHeader(writer, frames.Count);
             }
 
             if( result == true )
             {
                 // Write all the frames into the audio file.
-                foreach (int frame in frames)
+                int startFrame = 0;
+                int endFrame = 0;
+                for (int i = 0; i < frames.Count; ++i)
                 {
-                    result = WriteFrame(frame, file);
+                    // Conglomerate a group of consecutive frames.
+                    startFrame = endFrame = frames[i];
+                    endFrame++;
+                    while (endFrame < frames.Count && frames[i + 1] == endFrame)
+                    {
+                        ++endFrame;
+                        ++i;
+                    }
 
+                    result = WriteBlockOfFrames(startFrame, endFrame, writer);
                     if (result == false)
                     {
                         break;
@@ -225,6 +237,11 @@ namespace VideoPlayer
             }
 
             // Clean up
+            if (writer != null)
+            {
+                writer.Close();
+            }
+
             if (file != null)
             {
                 file.Close();
@@ -233,7 +250,7 @@ namespace VideoPlayer
             return result;
         }
 
-        private bool WriteHeader(FileStream file)
+        private bool WriteHeader(BinaryWriter writer, int numberOfFrames)
         {
             bool result = true;
 
@@ -256,7 +273,38 @@ namespace VideoPlayer
                     byte[] data = reader.ReadBytes((int)headerDataLength);
 
                     // Write the header to the summary file.
-                    file.Write(data, 0, data.Length);
+                    writer.Write(data, 0, data.Length);
+
+                    //
+                    // We need to make some adjustments to the header to account for the new file.
+                    //
+
+                    //
+                    // Rewrite chunk size.
+                    //
+
+                    //  chunkSize = (remainerOfHeader) + 
+                    //              bytesPerFrame * 
+                    //              numberOfFrames
+                    int chunkSize = (int)(headerDataLength - 8) + 
+                        (int)Math.Floor(source.AudioFormat.BytesPerSecond * videoRef.secondsPerFrame) *
+                        numberOfFrames;
+
+                    // Seek to chunk and write it out.
+                    writer.Seek(4, SeekOrigin.Begin);
+                    writer.Write(chunkSize);
+
+                    //
+                    // Rewrite second chunk size.
+                    //
+                    
+                    // chunkSize = bytesPerFrame * numberOfFrames
+                    chunkSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * videoRef.secondsPerFrame) *
+                        numberOfFrames;
+
+                    // Seek to chunk and write it out.
+                    writer.Seek((int)(headerDataLength - 4), SeekOrigin.Begin);
+                    writer.Write(chunkSize);
                 }
                 catch 
                 {
@@ -267,12 +315,12 @@ namespace VideoPlayer
             return result;
         }
 
-        private bool WriteFrame(int frameNumber, FileStream file)
+        private bool WriteBlockOfFrames(int startFrame, int endFrame, BinaryWriter writer)
         {
             bool result = true;
 
-            float startTime = frameNumber * videoRef.secondsPerFrame;
-            float endTime = (frameNumber + 1) * videoRef.secondsPerFrame;
+            float startTime = startFrame * videoRef.secondsPerFrame;
+            float endTime = endFrame * videoRef.secondsPerFrame;
 
             // Read the current frame.
             FileInfo info = new FileInfo(soundFilePath);
@@ -289,15 +337,27 @@ namespace VideoPlayer
 
                     // Seek past the header and up to the current frame.
                     int offset = (int)Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
+                    if (offset % 2 != 0)
+                    {
+                        // We need to be always reading 2 bytes at a time.
+                        offset++;
+                    }
+
                     long seekPosition = headerDataLength + offset;
                     reader.BaseStream.Seek(seekPosition, SeekOrigin.Begin);
 
                     // Read the frame
                     int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    if (readSize % 2 != 0)
+                    {
+                        // Again, always 2 bytes at a time.
+                        readSize++;
+                    }
+
                     byte[] data = reader.ReadBytes(readSize);
 
                     // Write the frame to the summary file.
-                    file.Write(data, 0, data.Length);
+                    writer.Write(data, 0, data.Length);
                 }
                 catch 
                 {

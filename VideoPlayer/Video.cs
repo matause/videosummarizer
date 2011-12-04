@@ -280,8 +280,8 @@ namespace VideoPlayer
         public bool VideoAnalysis(int sceneTime, int summaryPercentage)
         {
             bool result = false;
-            Frame frameA, frameB;
 
+            Frame frameA, frameB;
             histogram.OnInitialize(this);
 
             // Read the first frame
