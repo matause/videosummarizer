@@ -36,16 +36,14 @@
             this.summaryDuration = new System.Windows.Forms.Label();
             this.colorThresholdingButton = new System.Windows.Forms.RadioButton();
             this.audioExcitationButton = new System.Windows.Forms.RadioButton();
-            this.sceneMinutesBox = new System.Windows.Forms.TextBox();
-            this.sceneSecondsBox = new System.Windows.Forms.TextBox();
-            this.sceneMinutesLabel = new System.Windows.Forms.Label();
-            this.sceneSecondsLabel = new System.Windows.Forms.Label();
             this.shotGenerationGroupBox = new System.Windows.Forms.GroupBox();
             this.keyFrameGroupBox = new System.Windows.Forms.GroupBox();
             this.summaryTrackBar = new System.Windows.Forms.TrackBar();
+            this.sceneTrackBar = new System.Windows.Forms.TrackBar();
             this.shotGenerationGroupBox.SuspendLayout();
             this.keyFrameGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sceneTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
@@ -126,38 +124,6 @@
             this.audioExcitationButton.Text = "Audio Excitation";
             this.audioExcitationButton.UseVisualStyleBackColor = true;
             // 
-            // sceneMinutesBox
-            // 
-            this.sceneMinutesBox.Location = new System.Drawing.Point(27, 161);
-            this.sceneMinutesBox.Name = "sceneMinutesBox";
-            this.sceneMinutesBox.Size = new System.Drawing.Size(54, 20);
-            this.sceneMinutesBox.TabIndex = 8;
-            // 
-            // sceneSecondsBox
-            // 
-            this.sceneSecondsBox.Location = new System.Drawing.Point(124, 161);
-            this.sceneSecondsBox.Name = "sceneSecondsBox";
-            this.sceneSecondsBox.Size = new System.Drawing.Size(54, 20);
-            this.sceneSecondsBox.TabIndex = 9;
-            // 
-            // sceneMinutesLabel
-            // 
-            this.sceneMinutesLabel.AutoSize = true;
-            this.sceneMinutesLabel.Location = new System.Drawing.Point(84, 164);
-            this.sceneMinutesLabel.Name = "sceneMinutesLabel";
-            this.sceneMinutesLabel.Size = new System.Drawing.Size(34, 13);
-            this.sceneMinutesLabel.TabIndex = 10;
-            this.sceneMinutesLabel.Text = "(mins)";
-            // 
-            // sceneSecondsLabel
-            // 
-            this.sceneSecondsLabel.AutoSize = true;
-            this.sceneSecondsLabel.Location = new System.Drawing.Point(180, 164);
-            this.sceneSecondsLabel.Name = "sceneSecondsLabel";
-            this.sceneSecondsLabel.Size = new System.Drawing.Size(35, 13);
-            this.sceneSecondsLabel.TabIndex = 11;
-            this.sceneSecondsLabel.Text = "(secs)";
-            // 
             // shotGenerationGroupBox
             // 
             this.shotGenerationGroupBox.Controls.Add(this.colorThresholdingButton);
@@ -188,16 +154,24 @@
             this.summaryTrackBar.TickFrequency = 10;
             this.summaryTrackBar.Value = 50;
             // 
+            // sceneTrackBar
+            // 
+            this.sceneTrackBar.LargeChange = 2;
+            this.sceneTrackBar.Location = new System.Drawing.Point(12, 161);
+            this.sceneTrackBar.Maximum = 8;
+            this.sceneTrackBar.Minimum = 1;
+            this.sceneTrackBar.Name = "sceneTrackBar";
+            this.sceneTrackBar.Size = new System.Drawing.Size(260, 45);
+            this.sceneTrackBar.TabIndex = 19;
+            this.sceneTrackBar.TabStop = false;
+            this.sceneTrackBar.Value = 3;
+            // 
             // VPOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 278);
             this.Controls.Add(this.keyFrameGroupBox);
-            this.Controls.Add(this.sceneSecondsLabel);
-            this.Controls.Add(this.sceneMinutesLabel);
-            this.Controls.Add(this.sceneSecondsBox);
-            this.Controls.Add(this.sceneMinutesBox);
             this.Controls.Add(this.summaryDuration);
             this.Controls.Add(this.keyFrameLabel);
             this.Controls.Add(this.shotGenerationLabel);
@@ -206,6 +180,7 @@
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.shotGenerationGroupBox);
             this.Controls.Add(this.summaryTrackBar);
+            this.Controls.Add(this.sceneTrackBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(290, 306);
@@ -218,6 +193,7 @@
             this.keyFrameGroupBox.ResumeLayout(false);
             this.keyFrameGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sceneTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -233,12 +209,9 @@
         private System.Windows.Forms.Label summaryDuration;
         private System.Windows.Forms.RadioButton colorThresholdingButton;
         private System.Windows.Forms.RadioButton audioExcitationButton;
-        private System.Windows.Forms.TextBox sceneMinutesBox;
-        private System.Windows.Forms.TextBox sceneSecondsBox;
-        private System.Windows.Forms.Label sceneMinutesLabel;
-        private System.Windows.Forms.Label sceneSecondsLabel;
         private System.Windows.Forms.GroupBox shotGenerationGroupBox;
         private System.Windows.Forms.GroupBox keyFrameGroupBox;
         private System.Windows.Forms.TrackBar summaryTrackBar;
+        private System.Windows.Forms.TrackBar sceneTrackBar;
     }
 }

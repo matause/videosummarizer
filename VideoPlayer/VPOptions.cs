@@ -16,17 +16,11 @@ namespace VideoPlayer
     {
         public bool wasOKPressed;
 
-        private const String DEFAULT_SCENE_MINUTES = "0";
-        private const String DEFAULT_SCENE_SECONDS = "3";
-
         public VPOptions()
         {
             wasOKPressed = false;
 
             InitializeComponent();
-
-            sceneMinutesBox.Text = DEFAULT_SCENE_MINUTES;
-            sceneSecondsBox.Text = DEFAULT_SCENE_SECONDS;
 
             okButton.Click += new EventHandler(OnOKButtonClick);
             cancelButton.Click += new EventHandler(OnCancelButtonClick);
@@ -43,23 +37,9 @@ namespace VideoPlayer
             this.Close();
         }
 
-        // Retrieve information from the GUI
-        public bool GetSceneTimeInSeconds(ref int result)
+        public int GetSceneDuration()
         {
-            bool isDataValid = true;
-
-            result = 0;
-            try
-            {
-                result = Int32.Parse(sceneSecondsBox.Text);
-                result += Int32.Parse(sceneMinutesBox.Text) * 60;
-            }
-            catch
-            {
-                isDataValid = false;
-            }
-
-            return isDataValid;
+            return sceneTrackBar.Value;
         }
 
         public int GetSummaryPercentage()

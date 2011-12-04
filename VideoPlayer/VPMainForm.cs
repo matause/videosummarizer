@@ -334,25 +334,11 @@ namespace VideoPlayer
                 // Example code to get data from the GUI.
                 //
 
-                //
-                // Try to get the data from the GUI to use in the analysis.
-                // Note: The GetTime functions can fail because the user can enter text
-                // into the numeric fields.  So, we need to check the result.
-                //
-                int sceneTime = 0;
-                bool result = optionsDlg.GetSceneTimeInSeconds(ref sceneTime);
-
-                int summaryPercentage = 0;
-                if (result == true)
-                {
-                    summaryPercentage = optionsDlg.GetSummaryPercentage();
-                }
+                int sceneTime = optionsDlg.GetSceneDuration();
+                int summaryPercentage = optionsDlg.GetSummaryPercentage();
 
                 // Compute the data for Shot detection analysis
-                if (result == true)
-                {
-                    result = video.VideoAnalysis(sceneTime, summaryPercentage);
-                }
+                bool result = video.VideoAnalysis(sceneTime, summaryPercentage);
                 
                 if(result == true)
                     isVideoSummarized = true;
