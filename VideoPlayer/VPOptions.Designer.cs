@@ -40,14 +40,12 @@
             this.sceneSecondsBox = new System.Windows.Forms.TextBox();
             this.sceneMinutesLabel = new System.Windows.Forms.Label();
             this.sceneSecondsLabel = new System.Windows.Forms.Label();
-            this.summarySecondsLabel = new System.Windows.Forms.Label();
-            this.summaryMinutesLabel = new System.Windows.Forms.Label();
-            this.summarySecondsBox = new System.Windows.Forms.TextBox();
-            this.summaryMinutesBox = new System.Windows.Forms.TextBox();
             this.shotGenerationGroupBox = new System.Windows.Forms.GroupBox();
             this.keyFrameGroupBox = new System.Windows.Forms.GroupBox();
+            this.summaryTrackBar = new System.Windows.Forms.TrackBar();
             this.shotGenerationGroupBox.SuspendLayout();
             this.keyFrameGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
@@ -86,11 +84,11 @@
             this.shotGenerationLabel.TabIndex = 3;
             this.shotGenerationLabel.Text = "Shot Generation Algorithms";
             // 
-            // keyFrameLabell
+            // keyFrameLabel
             // 
             this.keyFrameLabel.AutoSize = true;
             this.keyFrameLabel.Location = new System.Drawing.Point(88, 73);
-            this.keyFrameLabel.Name = "keyFrameLabell";
+            this.keyFrameLabel.Name = "keyFrameLabel";
             this.keyFrameLabel.Size = new System.Drawing.Size(108, 13);
             this.keyFrameLabel.TabIndex = 4;
             this.keyFrameLabel.Text = "Key Frame Algorithms";
@@ -160,38 +158,6 @@
             this.sceneSecondsLabel.TabIndex = 11;
             this.sceneSecondsLabel.Text = "(secs)";
             // 
-            // summarySecondsLabel
-            // 
-            this.summarySecondsLabel.AutoSize = true;
-            this.summarySecondsLabel.Location = new System.Drawing.Point(180, 212);
-            this.summarySecondsLabel.Name = "summarySecondsLabel";
-            this.summarySecondsLabel.Size = new System.Drawing.Size(35, 13);
-            this.summarySecondsLabel.TabIndex = 15;
-            this.summarySecondsLabel.Text = "(secs)";
-            // 
-            // summaryMinutesLabel
-            // 
-            this.summaryMinutesLabel.AutoSize = true;
-            this.summaryMinutesLabel.Location = new System.Drawing.Point(84, 212);
-            this.summaryMinutesLabel.Name = "summaryMinutesLabel";
-            this.summaryMinutesLabel.Size = new System.Drawing.Size(34, 13);
-            this.summaryMinutesLabel.TabIndex = 14;
-            this.summaryMinutesLabel.Text = "(mins)";
-            // 
-            // summarySecondsBox
-            // 
-            this.summarySecondsBox.Location = new System.Drawing.Point(124, 209);
-            this.summarySecondsBox.Name = "summarySecondsBox";
-            this.summarySecondsBox.Size = new System.Drawing.Size(54, 20);
-            this.summarySecondsBox.TabIndex = 13;
-            // 
-            // summaryMinutesBox
-            // 
-            this.summaryMinutesBox.Location = new System.Drawing.Point(27, 209);
-            this.summaryMinutesBox.Name = "summaryMinutesBox";
-            this.summaryMinutesBox.Size = new System.Drawing.Size(54, 20);
-            this.summaryMinutesBox.TabIndex = 12;
-            // 
             // shotGenerationGroupBox
             // 
             this.shotGenerationGroupBox.Controls.Add(this.colorThresholdingButton);
@@ -210,16 +176,24 @@
             this.keyFrameGroupBox.TabIndex = 17;
             this.keyFrameGroupBox.TabStop = false;
             // 
+            // summaryTrackBar
+            // 
+            this.summaryTrackBar.LargeChange = 10;
+            this.summaryTrackBar.Location = new System.Drawing.Point(12, 210);
+            this.summaryTrackBar.Maximum = 100;
+            this.summaryTrackBar.Name = "summaryTrackBar";
+            this.summaryTrackBar.Size = new System.Drawing.Size(260, 45);
+            this.summaryTrackBar.TabIndex = 18;
+            this.summaryTrackBar.TabStop = false;
+            this.summaryTrackBar.TickFrequency = 10;
+            this.summaryTrackBar.Value = 50;
+            // 
             // VPOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 278);
             this.Controls.Add(this.keyFrameGroupBox);
-            this.Controls.Add(this.summarySecondsLabel);
-            this.Controls.Add(this.summaryMinutesLabel);
-            this.Controls.Add(this.summarySecondsBox);
-            this.Controls.Add(this.summaryMinutesBox);
             this.Controls.Add(this.sceneSecondsLabel);
             this.Controls.Add(this.sceneMinutesLabel);
             this.Controls.Add(this.sceneSecondsBox);
@@ -231,6 +205,7 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.shotGenerationGroupBox);
+            this.Controls.Add(this.summaryTrackBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(290, 306);
@@ -242,6 +217,7 @@
             this.shotGenerationGroupBox.PerformLayout();
             this.keyFrameGroupBox.ResumeLayout(false);
             this.keyFrameGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -261,11 +237,8 @@
         private System.Windows.Forms.TextBox sceneSecondsBox;
         private System.Windows.Forms.Label sceneMinutesLabel;
         private System.Windows.Forms.Label sceneSecondsLabel;
-        private System.Windows.Forms.Label summarySecondsLabel;
-        private System.Windows.Forms.Label summaryMinutesLabel;
-        private System.Windows.Forms.TextBox summarySecondsBox;
-        private System.Windows.Forms.TextBox summaryMinutesBox;
-        public System.Windows.Forms.GroupBox shotGenerationGroupBox;
-        public System.Windows.Forms.GroupBox keyFrameGroupBox;
+        private System.Windows.Forms.GroupBox shotGenerationGroupBox;
+        private System.Windows.Forms.GroupBox keyFrameGroupBox;
+        private System.Windows.Forms.TrackBar summaryTrackBar;
     }
 }

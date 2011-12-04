@@ -105,8 +105,6 @@ namespace VideoPlayer
         public int KEY_FRAMES = 4;
         public int VIDEO_SUMMARY = 5;
 
-        public int percentage = 50;    // fetch this value given by user in the UI, I have used 50% just as an example
-
         private const int MINIMUM_FRAMES_IN_SHOT = 150;    // 6 Seconds
 
         public void OnInitialize(Video video)
@@ -424,7 +422,7 @@ namespace VideoPlayer
             }
         }
 
-        public void GenerateSummaryVideo()
+        public void GenerateSummaryVideo(int percentage)
         {
             summaryFrames = new List<int>();
             int surrFrames = 72;

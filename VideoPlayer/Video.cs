@@ -276,7 +276,8 @@ namespace VideoPlayer
             return frame;
         }
 
-        public bool VideoAnalysis()
+        // TODO: Still need to do something with sceneTime
+        public bool VideoAnalysis(int sceneTime, int summaryPercentage)
         {
             bool result = false;
             Frame frameA, frameB;
@@ -330,7 +331,7 @@ namespace VideoPlayer
                 histogram.GenerateCSVFile(histogram.KEY_FRAMES, directory);
 
                 // Summarize the video
-                histogram.GenerateSummaryVideo();
+                histogram.GenerateSummaryVideo(summaryPercentage);
                 histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY, directory);
 
                 // Write the summary to disk.

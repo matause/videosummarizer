@@ -18,8 +18,6 @@ namespace VideoPlayer
 
         private const String DEFAULT_SCENE_MINUTES = "0";
         private const String DEFAULT_SCENE_SECONDS = "3";
-        private const String DEFAULT_SUMMARY_MINUTES = "3";
-        private const String DEFAULT_SUMMARY_SECONDS = "0";
 
         public VPOptions()
         {
@@ -29,9 +27,6 @@ namespace VideoPlayer
 
             sceneMinutesBox.Text = DEFAULT_SCENE_MINUTES;
             sceneSecondsBox.Text = DEFAULT_SCENE_SECONDS;
-
-            summaryMinutesBox.Text = DEFAULT_SUMMARY_MINUTES;
-            summarySecondsBox.Text = DEFAULT_SUMMARY_SECONDS;
 
             okButton.Click += new EventHandler(OnOKButtonClick);
             cancelButton.Click += new EventHandler(OnCancelButtonClick);
@@ -67,22 +62,9 @@ namespace VideoPlayer
             return isDataValid;
         }
 
-        public bool GetSummaryTimeInSeconds(ref int result)
+        public int GetSummaryPercentage()
         {
-            bool isDataValid = true;
-
-            result = 0;
-            try
-            {
-                result = Int32.Parse(summarySecondsBox.Text);
-                result += Int32.Parse(summaryMinutesBox.Text) * 60;
-            }
-            catch
-            {
-                isDataValid = false;
-            }
-
-            return isDataValid;
+            return summaryTrackBar.Value;
         }
     }
 }

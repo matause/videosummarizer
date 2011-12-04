@@ -342,16 +342,16 @@ namespace VideoPlayer
                 int sceneTime = 0;
                 bool result = optionsDlg.GetSceneTimeInSeconds(ref sceneTime);
 
-                int summaryTime = 0;
+                int summaryPercentage = 0;
                 if (result == true)
                 {
-                    result = optionsDlg.GetSummaryTimeInSeconds(ref summaryTime);
+                    summaryPercentage = optionsDlg.GetSummaryPercentage();
                 }
 
                 // Compute the data for Shot detection analysis
                 if (result == true)
                 {
-                    result = video.VideoAnalysis();
+                    result = video.VideoAnalysis(sceneTime, summaryPercentage);
                 }
                 
                 if(result == true)
