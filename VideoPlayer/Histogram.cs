@@ -422,10 +422,10 @@ namespace VideoPlayer
             }
         }
 
-        public void GenerateSummaryVideo(int percentage)
+        public void GenerateSummaryVideo(int sceneTime, int percentage)
         {
             summaryFrames = new List<int>();
-            int surrFrames = 72;
+            int surrFrames = (int)(sceneTime / 2.0 * 24);
             int minWeight = (int)(percentage / 100.0 * shots.Count);
 
             // N shots boundaries = N-1 shots
@@ -434,7 +434,7 @@ namespace VideoPlayer
                 if (shots[i].weight < minWeight)
                     continue;
 
-                // Fetch [3 seconds of video - key frame - 3 seconds of video]
+                // Fetch sceneTime/2 seconds of video before the key frame
                 for (int j = 0; j < shots[i].keyFrames.Count; ++j)
                 {
                     // X seconds of video before key frame
@@ -452,7 +452,7 @@ namespace VideoPlayer
                     // Key frame itself
                     summaryFrames.Add(shots[i].keyFrames[j]);
 
-                    // X seconds of video after key frame
+                    // Fetch sceneTime/2 seconds of video after the key frame
                     for (int k = 1; k < surrFrames; ++k)
                     {
                         if ((shots[i].keyFrames[j] + k) < videoAnalysisData.Count)

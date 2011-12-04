@@ -331,7 +331,7 @@ namespace VideoPlayer
                 histogram.GenerateCSVFile(histogram.KEY_FRAMES, directory);
 
                 // Summarize the video
-                histogram.GenerateSummaryVideo(summaryPercentage);
+                histogram.GenerateSummaryVideo(sceneTime, summaryPercentage);
                 histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY, directory);
 
                 // Write the summary to disk.
