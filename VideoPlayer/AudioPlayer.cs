@@ -151,11 +151,23 @@ namespace VideoPlayer
 
                     // Seek past the header and up to the current frame.
                     int offset = (int) Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
+                    if (offset % 2 != 0)
+                    {
+                        // We need to be always reading 2 bytes at a time.
+                        offset++;
+                    }
+
                     long seekPosition = headerDataLength + offset;
                     reader.BaseStream.Seek( seekPosition, SeekOrigin.Begin );
 
                     // Read the frame
                     int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    if (readSize % 2 != 0)
+                    {
+                        // Again, 2 bytes at a time;
+                        readSize++;
+                    }
+
                     result = reader.ReadBytes(readSize);
                 }
                 catch {}
