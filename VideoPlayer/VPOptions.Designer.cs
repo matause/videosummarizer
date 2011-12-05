@@ -71,9 +71,9 @@
             this.sceneDurationLabel.AutoSize = true;
             this.sceneDurationLabel.Location = new System.Drawing.Point(9, 144);
             this.sceneDurationLabel.Name = "sceneDurationLabel";
-            this.sceneDurationLabel.Size = new System.Drawing.Size(81, 13);
+            this.sceneDurationLabel.Size = new System.Drawing.Size(124, 13);
             this.sceneDurationLabel.TabIndex = 2;
-            this.sceneDurationLabel.Text = "Scene Duration";
+            this.sceneDurationLabel.Text = "Scene Duration: 3 (secs)";
             // 
             // shotGenerationLabel
             // 
@@ -100,9 +100,9 @@
             this.summaryDuration.AutoSize = true;
             this.summaryDuration.Location = new System.Drawing.Point(9, 193);
             this.summaryDuration.Name = "summaryDuration";
-            this.summaryDuration.Size = new System.Drawing.Size(93, 13);
+            this.summaryDuration.Size = new System.Drawing.Size(119, 13);
             this.summaryDuration.TabIndex = 5;
-            this.summaryDuration.Text = "Summary Duration";
+            this.summaryDuration.Text = "Summary Duration: 50%";
             // 
             // colorThresholdingButton
             // 

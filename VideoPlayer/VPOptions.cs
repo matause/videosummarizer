@@ -16,14 +16,22 @@ namespace VideoPlayer
     {
         public bool wasOKPressed;
 
+        private const String DEFAULT_SCENE_LABEL = "Scene Duration: ";
+        private const String DEFAULT_SUMMARY_LABEL = "Summary Duration: ";
+
         public VPOptions()
         {
             wasOKPressed = false;
 
             InitializeComponent();
 
+            // Button Callbacks
             okButton.Click += new EventHandler(OnOKButtonClick);
             cancelButton.Click += new EventHandler(OnCancelButtonClick);
+
+            // Trackbar Callbacks
+            sceneTrackBar.Scroll += new EventHandler(OnSceneTrackbarScroll);
+            summaryTrackBar.Scroll += new EventHandler(OnSummaryTrackbarScroll);
         }
 
         private void OnCancelButtonClick(object sender, EventArgs e)
@@ -35,6 +43,16 @@ namespace VideoPlayer
         {
             wasOKPressed = true;
             this.Close();
+        }
+
+        private void OnSceneTrackbarScroll(object sender, EventArgs e)
+        {
+            sceneDurationLabel.Text = DEFAULT_SCENE_LABEL + sceneTrackBar.Value + " (secs)";
+        }
+
+        private void OnSummaryTrackbarScroll(object sender, EventArgs e)
+        {
+            summaryDuration.Text = DEFAULT_SUMMARY_LABEL + summaryTrackBar.Value + "%";
         }
 
         public int GetSceneDuration()
