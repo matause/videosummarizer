@@ -148,8 +148,8 @@ namespace VideoPlayer
             }
 
             // Average amplitude of the audio data associated with the video frame
-            float startTime = frameCur.index * videoRef.secondsPerFrame;
-            float endTime = (frameCur.index + 1) * videoRef.secondsPerFrame;
+            float startTime = frameCur.index * Video.secondsPerFrame;
+            float endTime = (frameCur.index + 1) * Video.secondsPerFrame;
             byte[] rawData = videoRef.audioPlayer.GetRawSoundData(startTime, endTime);
 
             Int64 avgPerFrame = 0;

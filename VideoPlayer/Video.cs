@@ -20,9 +20,7 @@ namespace VideoPlayer
     class Video
     {
         private const int VIDEO_FPS = 24;
-
-        public int totalFramesInRam = 72;
-        public float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
+        public const float secondsPerFrame = 1.0f / (float)VIDEO_FPS;
 
         // Metrics
         public int totalFramesInVideo;
@@ -30,12 +28,10 @@ namespace VideoPlayer
 
         public int audioOffset;
 
-        public int currentFrame;
+        public int currentFrameID;
+        public Frame currentFrame;
+
         public int startingCachedFrame;
-        public int lastReadFrame;
-        public int currentFrameToReadAbsolute;
-        public int currentFrameAbsolute;
-        public List<Frame> frames;
 
         public _576vReader videoReader;
         public AudioPlayer audioPlayer;
@@ -52,11 +48,8 @@ namespace VideoPlayer
         {
             this.audioOffset = audioOffset;
 
-            currentFrame = 0;
+            currentFrameID = 0;
             startingCachedFrame = 0;
-            currentFrameAbsolute = 0;
-            lastReadFrame = 0;
-            currentFrameToReadAbsolute = 0;
             framesAnalyzedAbsolute = 0;
             currentFrameTime = 0.0f;
 
@@ -69,19 +62,14 @@ namespace VideoPlayer
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
 
-            frames = new List<Frame>();
-            for (int i = 0; i < totalFramesInRam; ++i)
-            {
-                frames.Add(new Frame(i, frameWidth, frameHeight));
-            }
+            currentFrame = new Frame(0, frameWidth, frameHeight);
         }
 
         public bool OnInitialize(string videoFilePath, string audioFilePath)
         {
             bool result = true;
 
-            currentFrame = 0;
-            currentFrameAbsolute = 0;
+            currentFrameID = 0;
             startingCachedFrame = 0;
 
             // Set up the video
@@ -90,21 +78,21 @@ namespace VideoPlayer
             if( result == false )
                 return false;
 
-            result = BufferVideo(0);
+            result = BufferVideo(currentFrameID);
 
             if (result == false)
                 return false;
 
             // Compute some metrics.
-            Frame metricFrame = frames[0]; // Just grabbing a frame. Anyone would do.
             long fileSize = videoReader.GetFileSize();
-            totalFramesInVideo = (int)(fileSize / (long)(metricFrame.width * metricFrame.height * Frame.bytesPerPixelInFile));
+            totalFramesInVideo = (int)(fileSize / (long)(currentFrame.width * currentFrame.height 
+                * Frame.bytesPerPixelInFile));
 
             videoDuration = (float)totalFramesInVideo / (float)VIDEO_FPS;
 
 #if AUDIO
             // Set up the audio.
-            result = audioPlayer.OnInitialize(audioFilePath, this);
+            result = audioPlayer.OnInitialize(audioFilePath);
 
             if (result == false)
                 return false;
@@ -116,55 +104,36 @@ namespace VideoPlayer
 
         private bool BufferVideo(int startingFrame)
         {
-            for (int i = 0; i < totalFramesInRam; ++i)
-            {
-                Frame frame = frames[i];
-                bool result = videoReader.ReadFrame(i + startingFrame, ref frame);
-                
-                if (result == false)
-                    return false;
-            }
 
-            lastReadFrame = totalFramesInRam - 1;
-            currentFrameToReadAbsolute = totalFramesInRam + startingFrame;
+            bool result = videoReader.ReadFrame(startingFrame, 
+                ref currentFrame);
+                
+            if (result == false)
+                return false;
 
             return true;
         }
 
-        public void StreamNewFrames()
-        {
-            int nextFrameToRead = (lastReadFrame + 1) % totalFramesInRam;
-            while (isSequenceMoreRecent(nextFrameToRead, currentFrame, totalFramesInRam) == true)
-            {
-                Frame frame = frames[nextFrameToRead];
-
-                // I don't know how to handle if the reading fails.
-                bool result = videoReader.ReadFrame(currentFrameToReadAbsolute, ref frame);
-
-                lastReadFrame = nextFrameToRead;
-
-                nextFrameToRead = (nextFrameToRead + 1) % totalFramesInRam;
-                currentFrameToReadAbsolute++;
-            }
-        }
-
-        public void OnStartPlaying(long startingVideoTime, long startingAudioTime)
+        public void OnSetCurrentFrame(long startingVideoTime)
         {
             currentFrameTime = 0.0f;
-            currentFrame = 0;
+            currentFrameID = 0;
 
             float elapsedTime = (float)startingVideoTime / 1000.0f;
             currentFrameTime += elapsedTime;
 
-            int frameCount = 0;
             while (currentFrameTime >= secondsPerFrame)
             {
                 currentFrameTime -= secondsPerFrame;
-                frameCount++;
+                currentFrameID++;
             }
 
-            BufferVideo(frameCount);
-            currentFrameAbsolute = frameCount;
+            BufferVideo(currentFrameID);
+        }
+
+        public void OnStartPlaying(long startingVideoTime, long startingAudioTime)
+        {
+            OnSetCurrentFrame(startingVideoTime);
 
 #if AUDIO
             startingAudioTime += audioOffset;
@@ -182,66 +151,17 @@ namespace VideoPlayer
 
         public void OnReset()
         {
-            currentFrame = 0;
+            currentFrameID = 0;
             currentFrameTime = 0.0f;
-            currentFrameAbsolute = 0;
 
-            // To play video after playing shots
-            totalFramesInRam = 72;                              
-            secondsPerFrame = 1.0f / (float)VIDEO_FPS;
-
-            lastReadFrame = totalFramesInRam - 1;
-            currentFrameToReadAbsolute = totalFramesInRam;
-
-            for (int i = 0; i < totalFramesInRam; ++i)
-            {
-                Frame frame = frames[i];
-                bool result = videoReader.ReadFrame(i, ref frame);
-                frame.index = i;
-            }
+            videoReader.ReadFrame(currentFrameID, 
+                ref currentFrame);
 
 #if AUDIO
             audioPlayer.OnStop();
 #endif
         }
 
-        public bool ReadShots()
-        {
-            bool result = false;
-
-            if (histogram.shots.Count > 0)
-            {
-                currentFrame = 0;
-                currentFrameTime = 0.0f;
-
-                if (histogram.shots.Count > frames.Count)
-                {
-                    for (int i = frames.Count; i < histogram.shots.Count; ++i)
-                        frames.Add(new Frame(i, frameWidth, frameHeight));
-                }
-
-                totalFramesInRam = histogram.shots.Count;
-                secondsPerFrame = 1.0f;
-
-                for (int i = 0; i < totalFramesInRam; ++i)
-                {
-                    Frame frame = frames[i];
-                    videoReader.ReadFrame(histogram.shots[i].startFrame, ref frame);
-                    Shot s = histogram.shots[i];
-                    frame.index = s.startFrame;
-                }
-
-#if AUDIO
-                audioPlayer.OnStop();
-#endif
-
-                result = true;
-            }
-
-            return result;
-        }
-
-        // Returns true if the current frame updated.
         public bool OnUpdate(float elapsedTime)
         {
             bool result = false;
@@ -249,12 +169,18 @@ namespace VideoPlayer
             currentFrameTime += elapsedTime;
             while( currentFrameTime >= secondsPerFrame )
             {
-                currentFrame = (currentFrame + 1) % totalFramesInRam;
+                currentFrameID++;
                 currentFrameTime -= secondsPerFrame;
 
-                currentFrameAbsolute++;
-
                 result = true;
+            }
+
+            // If the result is true, we have updated the currentFrameID.
+            // So, we need to read in a new frame.
+            if (result == true)
+            {
+                result = videoReader.ReadFrame(currentFrameID,
+                    ref currentFrame);
             }
 
             return result;
@@ -262,21 +188,9 @@ namespace VideoPlayer
 
         public Frame GetCurrentFrame()
         {
-            Frame frame;
-
-            if (currentFrame < totalFramesInRam)
-            {
-                frame = frames[currentFrame];
-            }
-            else
-            {
-                frame = frames[totalFramesInRam - 1];
-            }
-
-            return frame;
+            return currentFrame;
         }
 
-        // TODO: Still need to do something with sceneTime
         public bool VideoAnalysis(int sceneTime, int summaryPercentage)
         {
             bool result = false;
@@ -349,14 +263,43 @@ namespace VideoPlayer
         }
 
         //
-        // Helper Function
+        // No Longer integrated into the logic of the GUI.
         //
 
-        // Deals with wrap arounds
-        private static bool isSequenceMoreRecent(int s1, int s2, int squenceMax)
-        {
-            return (s1 > s2) && (s1 - s2 <= squenceMax / 2) ||
-                    (s2 > s1) && (s2 - s1 > squenceMax / 2);
-        }
+        //        public bool ReadShots()
+        //        {
+        //            bool result = false;
+
+        //            if (histogram.shots.Count > 0)
+        //            {
+        //                currentFrame = 0;
+        //                currentFrameTime = 0.0f;
+
+        //                if (histogram.shots.Count > frames.Count)
+        //                {
+        //                    for (int i = frames.Count; i < histogram.shots.Count; ++i)
+        //                        frames.Add(new Frame(i, frameWidth, frameHeight));
+        //                }
+
+        //                totalFramesInRam = histogram.shots.Count;
+        //                secondsPerFrame = 1.0f;
+
+        //                for (int i = 0; i < totalFramesInRam; ++i)
+        //                {
+        //                    Frame frame = frames[i];
+        //                    videoReader.ReadFrame(histogram.shots[i].startFrame, ref frame);
+        //                    Shot s = histogram.shots[i];
+        //                    frame.index = s.startFrame;
+        //                }
+
+        //#if AUDIO
+        //                audioPlayer.OnStop();
+        //#endif
+
+        //                result = true;
+        //            }
+
+        //            return result;
+        //        }
     }
 }

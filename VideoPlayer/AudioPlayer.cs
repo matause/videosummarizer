@@ -21,8 +21,6 @@ namespace VideoPlayer
     {
         public bool isSoundLoaded;
 
-        private Video videoRef;
-
         private String soundFilePath;
         private FileStream fileStream;
 
@@ -38,18 +36,16 @@ namespace VideoPlayer
             engine = new ISoundEngine();
             sound = null;
             source = null;
-            videoRef = null;
 
             soundFilePath = "";
             isSoundLoaded = false;
         }
 
-        public bool OnInitialize(string filePath, Video videoReference)
+        public bool OnInitialize(string filePath)
         {
             bool result = true;
 
             soundFilePath = filePath;
-            videoRef = videoReference;
 
             // Try to open a file stream for the audio file.
             FileInfo info = new FileInfo(filePath);
@@ -298,8 +294,8 @@ namespace VideoPlayer
                     //  chunkSize = (remainerOfHeader) + 
                     //              bytesPerFrame * 
                     //              numberOfFrames
-                    int chunkSize = (int)(headerDataLength - 8) + 
-                        (int)Math.Floor(source.AudioFormat.BytesPerSecond * videoRef.secondsPerFrame) *
+                    int chunkSize = (int)(headerDataLength - 8) +
+                        (int)Math.Floor(source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
                         numberOfFrames;
 
                     // Seek to chunk and write it out.
@@ -311,7 +307,7 @@ namespace VideoPlayer
                     //
                     
                     // chunkSize = bytesPerFrame * numberOfFrames
-                    chunkSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * videoRef.secondsPerFrame) *
+                    chunkSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
                         numberOfFrames;
 
                     // Seek to chunk and write it out.
@@ -331,8 +327,8 @@ namespace VideoPlayer
         {
             bool result = true;
 
-            float startTime = startFrame * videoRef.secondsPerFrame;
-            float endTime = endFrame * videoRef.secondsPerFrame;
+            float startTime = startFrame * Video.secondsPerFrame;
+            float endTime = endFrame * Video.secondsPerFrame;
 
             // Read the current frame.
             FileInfo info = new FileInfo(soundFilePath);
