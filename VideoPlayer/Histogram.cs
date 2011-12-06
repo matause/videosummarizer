@@ -425,8 +425,8 @@ namespace VideoPlayer
         public void GenerateSummaryVideo(int sceneTime, int percentage)
         {
             summaryFrames = new List<int>();
-            int surrFrames = (int)(sceneTime / 2.0 * 24);
-            int minWeight = (int)(percentage / 100.0 * shots.Count);
+            int surrFrames = (int)( sceneTime / 2.0 * 24 );
+            int minWeight = (int)( ( 100 - percentage ) / 100.0 * shots.Count );
 
             // N shots boundaries = N-1 shots
             for (int i = 0; i < shots.Count - 1; ++i)
