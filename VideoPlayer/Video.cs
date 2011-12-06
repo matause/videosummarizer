@@ -40,9 +40,12 @@ namespace VideoPlayer
 
         // Analysis variables
         public int framesAnalyzedAbsolute;
-        public Histogram histogram;
+        public Summarizer summarizer;
         public int frameWidth;
         public int frameHeight;
+
+        public bool colorHistogramAlgorithm = false;
+        public bool motionVectorAlgorithm = true;
 
         public Video(int frameWidth, int frameHeight, int audioOffset)
         {
@@ -58,7 +61,7 @@ namespace VideoPlayer
 
             videoReader = new _576vReader();
             audioPlayer = new AudioPlayer();
-            histogram = new Histogram();
+            summarizer = new Summarizer();
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
 
@@ -196,28 +199,48 @@ namespace VideoPlayer
             bool result = false;
 
             Frame frameA, frameB;
-            histogram.OnInitialize(this);
+            summarizer.OnInitialize(this);
 
             // Read the first frame
             frameA = new Frame(framesAnalyzedAbsolute, frameWidth, frameHeight);
             videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
 
-            // Histogram Analysis on all frames in the video file
-            while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+            if (colorHistogramAlgorithm)
             {
-                frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
-                videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
+                // Histogram Analysis on all frames in the video file
+                while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                {
+                    frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
+                    videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                histogram.FillAnalysisData(ref frameB, ref frameA, true);
+                    summarizer.FillAnalysisData(ref frameB, ref frameA, true);
 
-                ++framesAnalyzedAbsolute;
+                    ++framesAnalyzedAbsolute;
 
-                // shift analysis window
-                frameA = frameB;
-                frameB = null;
+                    // shift analysis window
+                    frameA = frameB;
+                    frameB = null;
+                }
+            }
+            else if (motionVectorAlgorithm)
+            {
+                // Motion vector Analysis between every frameStep frames in the video file
+                while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                {
+                    frameB = new Frame(framesAnalyzedAbsolute + summarizer.frameStep, frameWidth, frameHeight);
+                    videoReader.ReadFrame(framesAnalyzedAbsolute + summarizer.frameStep, ref frameB);
+
+                    summarizer.FillAnalysisData(ref frameB, ref frameA, true);
+
+                    framesAnalyzedAbsolute += summarizer.frameStep;
+
+                    // shift analysis pair
+                    frameA = frameB;
+                    frameB = null;
+                }
             }
 
-            if (histogram.videoAnalysisData.Count == totalFramesInVideo - 1)
+            if (framesAnalyzedAbsolute >= totalFramesInVideo - 1)
             {
 
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
@@ -232,30 +255,37 @@ namespace VideoPlayer
 
                 String directory = dlg.SelectedPath;
 
-                histogram.GenerateCSVFile(histogram.MIN_WISE_DIFF, directory);
+                if (colorHistogramAlgorithm)
+                {
+                    summarizer.GenerateCSVFile(summarizer.MIN_WISE_DIFF, directory);
+                }
+                else if (motionVectorAlgorithm)
+                {
+                    summarizer.GenerateCSVFile(summarizer.MOTION_VECTOR_BEST_MATCH, directory);
+                }
 
-                histogram.GenerateCSVFile(histogram.AVG_AUDIO_AMPS, directory);
+                summarizer.GenerateCSVFile(summarizer.AVG_AUDIO_AMPS, directory);
 
                 // Break video into shots
-                histogram.FindShotTransitions();
-                histogram.GenerateCSVFile(histogram.SHOTS, directory);
+                summarizer.FindShotTransitions();
+                summarizer.GenerateCSVFile(summarizer.SHOTS, directory);
 
                 // Find Key-frames
-                histogram.FindKeyFrames();
-                histogram.GenerateCSVFile(histogram.KEY_FRAMES, directory);
+                summarizer.FindKeyFrames();
+                summarizer.GenerateCSVFile(summarizer.KEY_FRAMES, directory);
 
                 // Summarize the video
-                histogram.GenerateSummaryVideo(sceneTime, summaryPercentage);
-                histogram.GenerateCSVFile(histogram.VIDEO_SUMMARY, directory);
+                summarizer.GenerateSummaryVideo(sceneTime, summaryPercentage);
+                summarizer.GenerateCSVFile(summarizer.VIDEO_SUMMARY, directory);
 
                 // Write the summary to disk.
                 _576vWriter writer = new _576vWriter();
                 writer.OnInitialize(videoReader);
-                result = writer.WriteSummary(histogram.summaryFrames);
+                result = writer.WriteSummary(summarizer.summaryFrames);
 
                 if (result == true)
                 {
-                    result = audioPlayer.WriteSummary(histogram.summaryFrames);
+                    result = audioPlayer.WriteSummary(summarizer.summaryFrames);
                 }
             }
 
@@ -270,25 +300,25 @@ namespace VideoPlayer
         //        {
         //            bool result = false;
 
-        //            if (histogram.shots.Count > 0)
+        //            if (summarizer.shots.Count > 0)
         //            {
         //                currentFrame = 0;
         //                currentFrameTime = 0.0f;
 
-        //                if (histogram.shots.Count > frames.Count)
+        //                if (summarizer.shots.Count > frames.Count)
         //                {
-        //                    for (int i = frames.Count; i < histogram.shots.Count; ++i)
+        //                    for (int i = frames.Count; i < summarizer.shots.Count; ++i)
         //                        frames.Add(new Frame(i, frameWidth, frameHeight));
         //                }
 
-        //                totalFramesInRam = histogram.shots.Count;
+        //                totalFramesInRam = summarizer.shots.Count;
         //                secondsPerFrame = 1.0f;
 
         //                for (int i = 0; i < totalFramesInRam; ++i)
         //                {
         //                    Frame frame = frames[i];
-        //                    videoReader.ReadFrame(histogram.shots[i].startFrame, ref frame);
-        //                    Shot s = histogram.shots[i];
+        //                    videoReader.ReadFrame(summarizer.shots[i].startFrame, ref frame);
+        //                    Shot s = summarizer.shots[i];
         //                    frame.index = s.startFrame;
         //                }
 

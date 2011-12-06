@@ -9,7 +9,7 @@ using System.IO;
 using AForge.Math;
 using AForge.Imaging;
 
-/*  SHOT DETECTION ALGORITHM
+/*  COLOR HISTOGRAM BASED SHOT BOUNDARY DETECTION ALGORITHM
     1. Quantize 2^24 colors and build a histogram of 64 bins for each frame 
     2. Compute Color Histogram difference for every consecutive frames
        The difference measure is the sum of the absolute bin-wise histogram differences.
@@ -26,7 +26,8 @@ namespace VideoPlayer
 
         public AnalysisData()
         {
-            // Color Histogram 
+            // Color Histogram  - Absolute difference between frame A & B
+            // Motion Vector  - Minimum motion variation between frame A & B
             sum = 0;
 
             // Audio Amplitude
@@ -86,7 +87,43 @@ namespace VideoPlayer
         }
     }
 
-    class Histogram
+    public class Coord
+    {
+        public int x;
+        public int y;
+
+        public Coord()
+        {
+            x = 0;
+            y = 0;
+        }
+    }
+
+    public class ColorErrorSum
+    {
+        public int colError;
+        public Coord index;
+        
+        public ColorErrorSum(int err, int x, int y)
+        {
+            index = new Coord();
+            colError = err;
+            index.x = x;
+            index.y = y;
+        }
+    }
+
+    public class BestMatchDistance
+    {
+        public int sum;
+
+        public BestMatchDistance(int value)
+        {
+            sum = value;
+        }
+    }
+
+    class Summarizer
     {
         public List<AnalysisData> videoAnalysisData;
         public List<Shot> shots;
@@ -104,14 +141,26 @@ namespace VideoPlayer
         public int SHOTS = 3;
         public int KEY_FRAMES = 4;
         public int VIDEO_SUMMARY = 5;
+        public int MOTION_VECTOR_BEST_MATCH = 6;
 
         private const int MINIMUM_FRAMES_IN_SHOT = 150;    // 6 Seconds
+
+        // Motion vector
+        public int frameStep = 24;
+        public int macroBlockSideLen = 32;
+        public int scanWindowSideLen = 20;
+        public Coord blockCount;
+        public Coord macroBlocksStart;
+        List<BestMatchDistance> BestMatchdata;
 
         public void OnInitialize(Video video)
         {
             videoAnalysisData = new List<AnalysisData>();
             shots = new List<Shot>();
             videoRef = video;
+
+            // Motion
+            BestMatchdata = new List<BestMatchDistance>();
         }
 
         public void GenerateColorHistogram(ref Frame frame)  // STEP 2
@@ -127,24 +176,142 @@ namespace VideoPlayer
             }
         }
 
+        // Color Difference
+        public double ColorDifference(ref Pixel A, ref Pixel B)
+        {
+            return Math.Sqrt( Math.Pow((double)(B.r - A.r), 2.0) + Math.Pow((double)(B.g - A.g), 2.0) + Math.Pow((double)(B.b - A.b), 2.0) );
+        }
+
+        // Motion vector distance between best match and current macroblock
+        public double MotionVectorDistance(ref Coord A, ref Coord B)
+        {
+            return Math.Sqrt( Math.Pow((double)(B.x - A.x), 2.0) + Math.Pow((double)(B.y - A.y), 2.0) );
+        }
+
+        // Find best motion vector for the current macroblock using the error values in color
+        public Coord BestBlockMatchScan(ref Frame frameCur, ref Frame frameLeft ,ref Coord blockCur)
+        {
+            List<ColorErrorSum> err = new List<ColorErrorSum>();
+
+            Coord scanWindow = new Coord();
+            scanWindow.x = ( macroBlocksStart.x + blockCur.x * macroBlockSideLen ) - scanWindowSideLen;
+            scanWindow.y = ( macroBlocksStart.y + blockCur.y * macroBlockSideLen ) - scanWindowSideLen;
+
+            // For all pixels in the current macroBlockSideLen block
+            Coord curStart = new Coord();
+            curStart.x = (macroBlocksStart.x + blockCur.x * macroBlockSideLen);
+            curStart.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen);
+
+            // Compare with all possible matchings in the scan window around the current block
+            for (int windowi = scanWindow.x; windowi < scanWindow.x + ( 2 * scanWindowSideLen ); ++windowi)
+            {
+                for (int windowj = scanWindow.y; windowj < scanWindow.y + ( 2 * scanWindowSideLen ); ++windowj)
+                {
+                    // [ windowi, windowj ] - Current scan window macroblock start
+
+                    int row = -1;
+                    int col = -1;
+                    int sum = 0;
+                    for (int i = curStart.x; i < curStart.x + macroBlockSideLen; ++i)
+                    {
+                        ++col;
+                        for (int j = curStart.y; j < curStart.y + macroBlockSideLen; ++j)
+                        {
+                            // [ i,j ] - Current macroblock pixel to be compared with respective window current macro block pixel
+                            ++row;
+
+                            Pixel curP = frameCur.pixels[i][j];
+                            Pixel prevP = frameLeft.pixels[windowi + col][windowj + row];
+
+                            // Color error sum for all pixels of macroblock
+                            sum += (int)ColorDifference(ref curP, ref prevP);
+                        }
+                        row = -1;
+                    }
+
+                    // Stores error sum values of all the possible matchings
+                    err.Add(new ColorErrorSum(sum, windowi, windowj) );
+
+                }
+            }
+
+            // Find the minimum error sum and associated index of the window macro block which resulted in the minimum error sum 
+            int min = err[0].colError;
+            int index = 0;
+            for (int i = 1; i < err.Count; i++)
+            {
+                if (err[i].colError < min)
+                {
+                    min = err[i].colError;
+                    index = i;
+                }
+            }
+
+            // Start index of the best matching window macro block
+            return err[index].index;
+        }
+
         public int FillAnalysisData(ref Frame frameCur, ref Frame frameLeft, bool add)
         {
             int sum = 0;
             int result = 0;
-
-            GenerateColorHistogram(ref frameCur);
-            GenerateColorHistogram(ref frameLeft);
-
-            // Sum of Bin-wise absolute difference
-            for (int i = 0; i < colorQuantGroups; ++i)
+            
+            if (videoRef.colorHistogramAlgorithm)
             {
-                for (int j = 0; j < colorQuantGroups; ++j)
+                GenerateColorHistogram(ref frameCur);
+                GenerateColorHistogram(ref frameLeft);
+
+                // Sum of Bin-wise absolute difference
+                for (int i = 0; i < colorQuantGroups; ++i)
                 {
-                    for (int k = 0; k < colorQuantGroups; ++k)
+                    for (int j = 0; j < colorQuantGroups; ++j)
                     {
-                        sum += Math.Abs(frameCur.values[i, j, k] - frameLeft.values[i, j, k]);
+                        for (int k = 0; k < colorQuantGroups; ++k)
+                        {
+                            sum += Math.Abs(frameCur.values[i, j, k] - frameLeft.values[i, j, k]);
+                        }
                     }
                 }
+            }
+            else if (videoRef.motionVectorAlgorithm)
+            {
+                double bestMatchDistance = 0.0;
+
+                blockCount = new Coord();
+                blockCount.x = 8;
+                blockCount.y = 6;
+
+                macroBlocksStart = new Coord();
+                macroBlocksStart.x = (videoRef.frameWidth - (macroBlockSideLen * blockCount.x)) / 2;
+                macroBlocksStart.y = (videoRef.frameHeight - (macroBlockSideLen * blockCount.y)) / 2;
+ 
+                // frame n + 1 Macroblock best match from regions in frame n macroblock scan window
+                for (int i = 0; i < blockCount.x; ++i)
+                {
+                    for (int j = 0; j < blockCount.y; ++j)
+                    {
+                        Coord blockCur = new Coord();
+                        blockCur.x = i;
+                        blockCur.y = j;
+
+                        Coord motionVector = new Coord();
+                        motionVector = BestBlockMatchScan(ref frameCur, ref frameLeft, ref blockCur);
+
+                        // For all pixels in the current block
+                        Coord currentCenter = new Coord();
+                        currentCenter.x = (macroBlocksStart.x + blockCur.x * macroBlockSideLen) + macroBlockSideLen / 2;
+                        currentCenter.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen) + macroBlockSideLen / 2;
+
+                        Coord bestMatchCenter = new Coord();
+                        bestMatchCenter.x = motionVector.x + macroBlockSideLen / 2;
+                        bestMatchCenter.y = motionVector.y + macroBlockSideLen / 2;
+
+                        bestMatchDistance += MotionVectorDistance(ref currentCenter, ref bestMatchCenter);
+                    }
+                }
+
+                // Sum of the motion vector magnitudes of all macroblocks 
+                BestMatchdata.Add(new BestMatchDistance((int)bestMatchDistance));
             }
 
             // Average amplitude of the audio data associated with the video frame
@@ -565,6 +732,20 @@ namespace VideoPlayer
                     File.WriteAllText(filePath, sb.ToString());
 
                     break;
+
+                case 6:
+                    filePath = path + "\\BestMatchDistMagSum.csv";
+
+                    length = BestMatchdata.Count;
+
+                    sb = new StringBuilder();
+                    for (int index = 0; index < length; index++)
+                        sb.AppendLine(string.Join(delimiter, BestMatchdata[index].sum));
+
+                    File.WriteAllText(filePath, sb.ToString());
+
+                    break;
+
             }
         }
     }
