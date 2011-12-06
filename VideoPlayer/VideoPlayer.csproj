@@ -70,6 +70,12 @@
     <Compile Include="Histogram.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Video.cs" />
+    <Compile Include="VPAboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VPAboutForm.Designer.cs">
+      <DependentUpon>VPAboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VPMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,12 +84,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VPOptions.cs">
+    <Compile Include="VPOptionsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VPOptions.Designer.cs">
-      <DependentUpon>VPOptions.cs</DependentUpon>
+    <Compile Include="VPOptionsForm.Designer.cs">
+      <DependentUpon>VPOptionsForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="VPAboutForm.resx">
+      <DependentUpon>VPAboutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VPMainForm.resx">
       <DependentUpon>VPMainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,8 +105,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="VPOptions.resx">
-      <DependentUpon>VPOptions.cs</DependentUpon>
+    <EmbeddedResource Include="VPOptionsForm.resx">
+      <DependentUpon>VPOptionsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

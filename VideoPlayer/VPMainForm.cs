@@ -94,6 +94,8 @@ namespace VideoPlayer
 
             timelineBar.MouseUp += new MouseEventHandler(OnTimelineMouseUp);
             timelineBar.Scroll += new EventHandler(OnTimelineScroll);
+
+            aboutAboutMenuItem.Click += new EventHandler(OnAboutClick);
         }
 
         //
@@ -228,6 +230,43 @@ namespace VideoPlayer
             }
         }
 
+        private void OnSummarizeMenuClick(object sender, EventArgs e)
+        {
+            if (isVideoLoaded == true)
+            {
+                // Stop video player
+                StopVideoThreads();
+
+                // Get analysis variables from the options GUI.
+                VPOptionsForm optionsDlg = new VPOptionsForm();
+                optionsDlg.ShowDialog(this);
+                if (optionsDlg.wasOKPressed == false)
+                {
+                    // User pressed cancel. Just bail.
+                    return;
+                }
+
+                //
+                // Example code to get data from the GUI.
+                //
+
+                int sceneTime = optionsDlg.GetSceneDuration();
+                int summaryPercentage = optionsDlg.GetSummaryPercentage();
+
+                // Compute the data for Shot detection analysis
+                bool result = video.VideoAnalysis(sceneTime, summaryPercentage);
+
+                if (result == true)
+                    isVideoSummarized = true;
+            }
+        }
+
+        private void OnAboutClick(object sender, EventArgs e)
+        {
+            VPAboutForm aboutDlg = new VPAboutForm();
+            DialogResult result = aboutDlg.ShowDialog(this);
+        }
+
         //
         // Button Callbacks.
         //
@@ -314,37 +353,6 @@ namespace VideoPlayer
                 timeFrameLabel.Text = "00:00:00 / 0";
 
                 isVideoPaused = false;
-            }
-        }
-
-        private void OnSummarizeMenuClick(object sender, EventArgs e)
-        {
-            if (isVideoLoaded == true)
-            {
-                // Stop video player
-                StopVideoThreads();
-
-                // Get analysis variables from the options GUI.
-                VPOptions optionsDlg = new VPOptions();
-                optionsDlg.ShowDialog(this);
-                if (optionsDlg.wasOKPressed == false)
-                {
-                    // User pressed cancel. Just bail.
-                    return;
-                }
-
-                //
-                // Example code to get data from the GUI.
-                //
-
-                int sceneTime = optionsDlg.GetSceneDuration();
-                int summaryPercentage = optionsDlg.GetSummaryPercentage();
-
-                // Compute the data for Shot detection analysis
-                bool result = video.VideoAnalysis(sceneTime, summaryPercentage);
-
-                if (result == true)
-                    isVideoSummarized = true;
             }
         }
 

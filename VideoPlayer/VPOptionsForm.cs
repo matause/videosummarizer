@@ -15,14 +15,14 @@ using System.Windows.Forms;
 
 namespace VideoPlayer
 {
-    public partial class VPOptions : Form
+    public partial class VPOptionsForm : Form
     {
         public bool wasOKPressed;
 
         private const String DEFAULT_SCENE_LABEL = "Scene Duration: ";
         private const String DEFAULT_SUMMARY_LABEL = "Summary Duration: ";
 
-        public VPOptions()
+        public VPOptionsForm()
         {
             wasOKPressed = false;
 

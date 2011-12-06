@@ -1,6 +1,6 @@
 ﻿namespace VideoPlayer
 {
-    partial class VPOptions
+    partial class VPOptionsForm
     {
         /// <summary>
         /// Required designer variable.
