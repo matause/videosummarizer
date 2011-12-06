@@ -308,16 +308,19 @@ namespace VideoPlayer
 
         private void OnStopButtonClick(object sender, EventArgs e)
         {
-            if (isVideoPlaying == true)
+            if (isVideoLoaded == true)
             {
                 StopVideoThreads();
-                timelineBar.Value = 0;
-                timeFrameLabel.Text = "00:00:00 / 0";
-
-                isVideoPaused = false;
-                isScrollPaused = false;
                 video.OnReset();
             }
+
+            timelineBar.Value = 0;
+            timeFrameLabel.Text = "00:00:00 / 0";
+
+            isVideoPaused = false;
+            isScrollPaused = false;
+
+            this.Invalidate();
         }
 
         //
@@ -335,7 +338,10 @@ namespace VideoPlayer
                 playButton.Text = "Play";
             }
 
-            video.OnSetCurrentFrame(timelineBar.Value);
+            if (video != null)
+            {
+                video.OnSetCurrentFrame(timelineBar.Value);
+            }
             renderTarget.Invalidate();
 
             UpdateTimelineLabel();
@@ -370,7 +376,29 @@ namespace VideoPlayer
                 lock (videoTimer)
                 {
                     totalTime = (float)(videoTimer.ElapsedMilliseconds) / 1000.0f;
-                    timelineBar.Value = (int)videoTimer.ElapsedMilliseconds + startTime;
+
+                    int newTime = (int)videoTimer.ElapsedMilliseconds + startTime;
+                    if (newTime > timelineBar.Maximum)
+                    {
+                        //
+                        // We've reached the end of the video
+                        //
+
+                        // Do some house keeping.
+                        lock (video)
+                        {
+                            video.currentFrameID = video.totalFramesInVideo - 1;
+                        }
+
+                        timelineBar.Value = timelineBar.Maximum;
+                        UpdateTimelineLabel();
+
+                        // Then, bail.
+                        OnStopButtonClick(this, null);
+                        return;
+                    }
+
+                    timelineBar.Value = newTime;
                 }
 
                 float elapsedTime = totalTime - lastUpdateTime;
@@ -422,7 +450,14 @@ namespace VideoPlayer
             {
                 labelText += "0";
             }
-            labelText += seconds.ToString() + " / " + video.currentFrameID.ToString();
+            if (video != null)
+            {
+                labelText += seconds.ToString() + " / " + video.currentFrameID.ToString();
+            }
+            else
+            {
+                labelText += seconds.ToString() + " / 0";
+            }
             timeFrameLabel.Text = labelText;
         }
 
