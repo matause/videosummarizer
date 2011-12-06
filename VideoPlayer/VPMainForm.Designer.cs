@@ -39,11 +39,10 @@
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
             this.timeFrameLabel = new System.Windows.Forms.Label();
-            this.playShotsButton = new System.Windows.Forms.Button();
-            this.summarizeButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.timelineBar = new System.Windows.Forms.TrackBar();
+            this.fileSummarizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
@@ -68,6 +67,7 @@
             this.fileMenuItem.BackColor = System.Drawing.Color.LightSeaGreen;
             this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileOpenMenuItem,
+            this.fileSummarizeMenuItem,
             this.fileOpenSeperator,
             this.fileCloseMenuItem,
             this.fileCloseSeperator,
@@ -85,8 +85,9 @@
             // 
             // fileOpenSeperator
             // 
+            this.fileOpenSeperator.BackColor = System.Drawing.Color.Peru;
             this.fileOpenSeperator.Name = "fileOpenSeperator";
-            this.fileOpenSeperator.Size = new System.Drawing.Size(109, 6);
+            this.fileOpenSeperator.Size = new System.Drawing.Size(149, 6);
             // 
             // fileCloseMenuItem
             // 
@@ -97,8 +98,9 @@
             // 
             // fileCloseSeperator
             // 
+            this.fileCloseSeperator.BackColor = System.Drawing.Color.Peru;
             this.fileCloseSeperator.Name = "fileCloseSeperator";
-            this.fileCloseSeperator.Size = new System.Drawing.Size(109, 6);
+            this.fileCloseSeperator.Size = new System.Drawing.Size(149, 6);
             // 
             // fileExitMenuItem
             // 
@@ -119,7 +121,7 @@
             // 
             this.aboutAboutMenuItem.BackColor = System.Drawing.Color.Peru;
             this.aboutAboutMenuItem.Name = "aboutAboutMenuItem";
-            this.aboutAboutMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutAboutMenuItem.Size = new System.Drawing.Size(116, 22);
             this.aboutAboutMenuItem.Text = "About...";
             // 
             // displaySplitContainer
@@ -134,8 +136,6 @@
             // 
             this.displaySplitContainer.Panel2.BackColor = System.Drawing.Color.LightSeaGreen;
             this.displaySplitContainer.Panel2.Controls.Add(this.timeFrameLabel);
-            this.displaySplitContainer.Panel2.Controls.Add(this.playShotsButton);
-            this.displaySplitContainer.Panel2.Controls.Add(this.summarizeButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.playButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.stopButton);
             this.displaySplitContainer.Panel2.Controls.Add(this.timelineBar);
@@ -155,28 +155,6 @@
             this.timeFrameLabel.Size = new System.Drawing.Size(66, 13);
             this.timeFrameLabel.TabIndex = 8;
             this.timeFrameLabel.Text = "00:00:00 / 0";
-            // 
-            // playShotsButton
-            // 
-            this.playShotsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.playShotsButton.BackColor = System.Drawing.Color.Peru;
-            this.playShotsButton.Location = new System.Drawing.Point(255, 28);
-            this.playShotsButton.Name = "playShotsButton";
-            this.playShotsButton.Size = new System.Drawing.Size(75, 23);
-            this.playShotsButton.TabIndex = 7;
-            this.playShotsButton.Text = "Play Shots";
-            this.playShotsButton.UseVisualStyleBackColor = false;
-            // 
-            // summarizeButton
-            // 
-            this.summarizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.summarizeButton.BackColor = System.Drawing.Color.Peru;
-            this.summarizeButton.Location = new System.Drawing.Point(174, 28);
-            this.summarizeButton.Name = "summarizeButton";
-            this.summarizeButton.Size = new System.Drawing.Size(75, 23);
-            this.summarizeButton.TabIndex = 6;
-            this.summarizeButton.Text = "Summarize";
-            this.summarizeButton.UseVisualStyleBackColor = false;
             // 
             // playButton
             // 
@@ -212,6 +190,13 @@
             this.timelineBar.TabIndex = 7;
             this.timelineBar.TabStop = false;
             this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            // 
+            // fileSummarizeMenuItem
+            // 
+            this.fileSummarizeMenuItem.BackColor = System.Drawing.Color.Peru;
+            this.fileSummarizeMenuItem.Name = "fileSummarizeMenuItem";
+            this.fileSummarizeMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileSummarizeMenuItem.Text = "Summarize...";
             // 
             // VPMainForm
             // 
@@ -252,10 +237,9 @@
         private System.Windows.Forms.SplitContainer displaySplitContainer;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button stopButton;
-        private System.Windows.Forms.Button summarizeButton;
         private System.Windows.Forms.TrackBar timelineBar;
-        private System.Windows.Forms.Button playShotsButton;
         private System.Windows.Forms.Label timeFrameLabel;
+        private System.Windows.Forms.ToolStripMenuItem fileSummarizeMenuItem;
     }
 }
 

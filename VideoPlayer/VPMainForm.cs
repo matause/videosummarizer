@@ -89,8 +89,8 @@ namespace VideoPlayer
 
             playButton.Click += new EventHandler(OnPlayButtonClick);
             stopButton.Click += new EventHandler(OnStopButtonClick);
-            summarizeButton.Click += new EventHandler(OnSummarizeButtonClick);
-            playShotsButton.Click += new EventHandler(OnPlayShotsButtonClick);
+
+            fileSummarizeMenuItem.Click += new EventHandler(OnSummarizeMenuClick);
 
             timelineBar.MouseUp += new MouseEventHandler(OnTimelineMouseUp);
             timelineBar.Scroll += new EventHandler(OnTimelineScroll);
@@ -281,6 +281,9 @@ namespace VideoPlayer
             }
         }
 
+        //
+        // No longer hooked up to the GUI
+        //
         private void OnPlayShotsButtonClick(object sender, EventArgs e)
         {
             if (isVideoLoaded == true && isVideoSummarized == true)
@@ -314,7 +317,7 @@ namespace VideoPlayer
             }
         }
 
-        private void OnSummarizeButtonClick(object sender, EventArgs e)
+        private void OnSummarizeMenuClick(object sender, EventArgs e)
         {
             if (isVideoLoaded == true)
             {
@@ -339,8 +342,8 @@ namespace VideoPlayer
 
                 // Compute the data for Shot detection analysis
                 bool result = video.VideoAnalysis(sceneTime, summaryPercentage);
-                
-                if(result == true)
+
+                if (result == true)
                     isVideoSummarized = true;
             }
         }

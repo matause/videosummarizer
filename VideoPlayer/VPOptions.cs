@@ -1,4 +1,7 @@
 ﻿
+//
+// Contains summarization options.
+//
 
 
 using System;
