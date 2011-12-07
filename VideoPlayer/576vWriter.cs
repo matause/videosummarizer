@@ -47,7 +47,7 @@ namespace VideoPlayer
             FileStream file = null;
             try
             {
-                file = new FileStream(filePath, FileMode.OpenOrCreate);
+                file = new FileStream(filePath, FileMode.Create);
             }
             catch
             {

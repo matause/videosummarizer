@@ -147,7 +147,7 @@ namespace VideoPlayer
                     long headerDataLength = info.Length - (long)frameDataLength;
 
                     // Seek past the header and up to the current frame.
-                    int offset = (int) Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
+                    int offset = (int) Math.Floor((float)source.AudioFormat.BytesPerSecond * startTime);
                     if (offset % 2 != 0)
                     {
                         // We need to be always reading 2 bytes at a time.
@@ -281,7 +281,7 @@ namespace VideoPlayer
                     //              bytesPerFrame * 
                     //              numberOfFrames
                     int chunkSize = (int)(headerDataLength - 8) +
-                        (int)Math.Floor(source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
+                        (int)Math.Floor((float)source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
                         numberOfFrames;
 
                     // Seek to chunk and write it out.
