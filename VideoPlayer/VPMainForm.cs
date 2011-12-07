@@ -188,7 +188,7 @@ namespace VideoPlayer
             string videoFile = "";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                video = new Video(frameWidth, frameHeight, 1100);
+                video = new Video(frameWidth, frameHeight);
                 videoFile = dlg.FileName;
             }
             else

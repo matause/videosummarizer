@@ -158,7 +158,7 @@ namespace VideoPlayer
                     reader.BaseStream.Seek( seekPosition, SeekOrigin.Begin );
 
                     // Read the frame
-                    int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    int readSize = (int)Math.Ceiling((float)source.AudioFormat.BytesPerSecond * (endTime - startTime));
                     if (readSize % 2 != 0)
                     {
                         // Again, 2 bytes at a time;
@@ -193,7 +193,7 @@ namespace VideoPlayer
             BinaryWriter writer = null;
             try
             {
-                file = new FileStream(filePath, FileMode.OpenOrCreate);
+                file = new FileStream(filePath, FileMode.Create);
                 writer = new BinaryWriter(file);
             }
             catch
@@ -293,7 +293,7 @@ namespace VideoPlayer
                     //
                     
                     // chunkSize = bytesPerFrame * numberOfFrames
-                    chunkSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
+                    chunkSize = (int)Math.Floor((float)source.AudioFormat.BytesPerSecond * Video.secondsPerFrame) *
                         numberOfFrames;
 
                     // Seek to chunk and write it out.
@@ -330,7 +330,7 @@ namespace VideoPlayer
                     long headerDataLength = info.Length - (long)frameDataLength;
 
                     // Seek past the header and up to the current frame.
-                    int offset = (int)Math.Floor(source.AudioFormat.BytesPerSecond * startTime);
+                    int offset = (int)Math.Floor((float)source.AudioFormat.BytesPerSecond * startTime);
                     if (offset % 2 != 0)
                     {
                         // We need to be always reading 2 bytes at a time.
@@ -341,7 +341,7 @@ namespace VideoPlayer
                     reader.BaseStream.Seek(seekPosition, SeekOrigin.Begin);
 
                     // Read the frame
-                    int readSize = (int)Math.Floor(source.AudioFormat.BytesPerSecond * (endTime - startTime));
+                    int readSize = (int)Math.Ceiling((float)source.AudioFormat.BytesPerSecond * (endTime - startTime));
                     if (readSize % 2 != 0)
                     {
                         // Again, always 2 bytes at a time.

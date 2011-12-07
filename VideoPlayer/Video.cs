@@ -29,8 +29,6 @@ namespace VideoPlayer
         public int totalFramesInVideo;
         public float videoDuration; // in seconds
 
-        public int audioOffset;
-
         public int currentFrameID;
         public Frame currentFrame;
 
@@ -47,10 +45,8 @@ namespace VideoPlayer
         public int frameWidth;
         public int frameHeight;
 
-        public Video(int frameWidth, int frameHeight, int audioOffset)
+        public Video(int frameWidth, int frameHeight)
         {
-            this.audioOffset = audioOffset;
-
             currentFrameID = 0;
             startingCachedFrame = 0;
             framesAnalyzedAbsolute = 0;
@@ -139,7 +135,6 @@ namespace VideoPlayer
             OnSetCurrentFrame(startingVideoTime);
 
 #if AUDIO
-            startingAudioTime += audioOffset;
             audioPlayer.OnStop();
             audioPlayer.OnPlay((uint)startingAudioTime);
 #endif
@@ -240,7 +235,7 @@ namespace VideoPlayer
                     frameB = null;
                 }
             }
-
+            
             if (framesAnalyzedAbsolute >= totalFramesInVideo - 1)
             {
 #if CVS
@@ -289,7 +284,6 @@ namespace VideoPlayer
                 _576vWriter writer = new _576vWriter();
                 writer.OnInitialize(videoReader);
                 result = writer.WriteSummary(videoFilePath, summarizer.summaryFrames);
-
                 if (result == true)
                 {
                     result = audioPlayer.WriteSummary(audioFilePath, summarizer.summaryFrames);
