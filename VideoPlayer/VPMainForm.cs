@@ -245,6 +245,33 @@ namespace VideoPlayer
                     return;
                 }
 
+                SaveFileDialog saveDlg = new SaveFileDialog();
+                saveDlg.Title = "Save the video summary.";
+                saveDlg.Filter = "576v files (*.576v)|*.576v";
+                saveDlg.OverwritePrompt = true;
+                saveDlg.AddExtension = true;
+                saveDlg.DefaultExt = ".576v";
+
+                DialogResult dlgResult = saveDlg.ShowDialog();
+                if (dlgResult != DialogResult.OK)
+                {
+                    // User pressed cancel. Just bail.
+                    return;
+                }
+                String videoFilePath = saveDlg.FileName;
+
+                saveDlg.Title = "Save the audio summary.";
+                saveDlg.Filter = "Wav files (*.wav)|*.wav";
+                saveDlg.DefaultExt = ".wav";
+
+                dlgResult = saveDlg.ShowDialog();
+                if (dlgResult != DialogResult.OK)
+                {
+                    // User pressed cancel. Just bail.
+                    return;
+                }
+                String audioFilePath = saveDlg.FileName;
+
                 //
                 // Example code to get data from the GUI.
                 //
@@ -254,7 +281,8 @@ namespace VideoPlayer
                 KeyFrameAlgorithm kfAlg = optionsDlg.GetKeyFrameAlgorithm();
 
                 // Compute the data for Shot detection analysis
-                bool result = video.VideoAnalysis(kfAlg, sceneTime, summaryPercentage);
+                bool result = video.VideoAnalysis(videoFilePath, audioFilePath, kfAlg, 
+                    sceneTime, summaryPercentage);
             }
         }
 

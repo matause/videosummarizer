@@ -28,7 +28,7 @@ namespace VideoPlayer
             isInitialized = true;
         }
 
-        public bool WriteSummary(List<int> frames)
+        public bool WriteSummary(String audioFilePath, List<int> frames)
         {
             // Sanity
             if (isInitialized == false)
@@ -36,22 +36,7 @@ namespace VideoPlayer
                 return false;
             }
 
-            bool result = false;
-
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Save the video summary.";
-            dlg.Filter = "576v files (*.576v)|*.576v";
-            dlg.OverwritePrompt = true;
-            dlg.AddExtension = true;
-            dlg.DefaultExt = ".576v";
-
-            DialogResult dlgResult = dlg.ShowDialog();
-            if (dlgResult == DialogResult.OK)
-            {
-                result = WriteSummary(frames, dlg.FileName);
-            }
-
-            return result;
+            return WriteSummary(frames, audioFilePath);
         }
 
         private bool WriteSummary(List<int> frames, String filePath)

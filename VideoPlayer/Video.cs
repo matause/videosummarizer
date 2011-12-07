@@ -194,7 +194,8 @@ namespace VideoPlayer
             return currentFrame;
         }
 
-        public bool VideoAnalysis(KeyFrameAlgorithm kfAlg, int sceneTime, int summaryPercentage)
+        public bool VideoAnalysis(String videoFilePath, String audioFilePath, KeyFrameAlgorithm kfAlg, 
+            int sceneTime, int summaryPercentage)
         {
             bool result = false;
 
@@ -287,11 +288,11 @@ namespace VideoPlayer
                 // Write the summary to disk.
                 _576vWriter writer = new _576vWriter();
                 writer.OnInitialize(videoReader);
-                result = writer.WriteSummary(summarizer.summaryFrames);
+                result = writer.WriteSummary(videoFilePath, summarizer.summaryFrames);
 
                 if (result == true)
                 {
-                    result = audioPlayer.WriteSummary(summarizer.summaryFrames);
+                    result = audioPlayer.WriteSummary(audioFilePath, summarizer.summaryFrames);
                 }
             }
 

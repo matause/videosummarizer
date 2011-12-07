@@ -172,7 +172,7 @@ namespace VideoPlayer
             return result;
         }
 
-        public bool WriteSummary(List<int> frames)
+        public bool WriteSummary(String audioFilePath, List<int> frames)
         {
             // Sanity
             if (source == null)
@@ -180,22 +180,7 @@ namespace VideoPlayer
                 return false;
             }
 
-            bool result = true;
-
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Save the audio summary.";
-            dlg.Filter = "Wav files (*.wav)|*.wav";
-            dlg.OverwritePrompt = true;
-            dlg.AddExtension = true;
-            dlg.DefaultExt = ".wav";
-
-            DialogResult dlgResult = dlg.ShowDialog();
-            if (dlgResult == DialogResult.OK)
-            {
-                result = WriteSummary(frames, dlg.FileName);
-            }
-
-            return result;
+            return WriteSummary(frames, audioFilePath);
         }
 
         private bool WriteSummary(List<int> frames, String filePath)
