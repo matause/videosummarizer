@@ -8,6 +8,9 @@
 // to listen to audio.
 #define AUDIO
 
+// Comment this to output CVS files
+//#define CVS
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -239,7 +242,7 @@ namespace VideoPlayer
 
             if (framesAnalyzedAbsolute >= totalFramesInVideo - 1)
             {
-
+#if CVS
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a directory to store video metric files.";
                 dlg.ShowNewFolderButton = false;
@@ -262,18 +265,24 @@ namespace VideoPlayer
                 }
 
                 summarizer.GenerateCSVFile(summarizer.AVG_AUDIO_AMPS, directory);
-
+#endif
                 // Break video into shots
                 summarizer.FindShotTransitions(kfAlg);
+#if CVS
                 summarizer.GenerateCSVFile(summarizer.SHOTS, directory);
+#endif
 
                 // Find Key-frames
                 summarizer.FindKeyFrames();
+#if CVS
                 summarizer.GenerateCSVFile(summarizer.KEY_FRAMES, directory);
+#endif
 
                 // Summarize the video
                 summarizer.GenerateSummaryVideo(sceneTime, summaryPercentage);
+#if CVS
                 summarizer.GenerateCSVFile(summarizer.VIDEO_SUMMARY, directory);
+#endif
 
                 // Write the summary to disk.
                 _576vWriter writer = new _576vWriter();
