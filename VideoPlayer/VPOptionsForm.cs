@@ -15,6 +15,12 @@ using System.Windows.Forms;
 
 namespace VideoPlayer
 {
+    public enum KeyFrameAlgorithm
+    {
+        HISTOGRAM,
+        MOTION
+    };
+
     public partial class VPOptionsForm : Form
     {
         public bool wasOKPressed;
@@ -66,6 +72,18 @@ namespace VideoPlayer
         public int GetSummaryPercentage()
         {
             return summaryTrackBar.Value;
+        }
+
+        public KeyFrameAlgorithm GetKeyFrameAlgorithm()
+        {
+            KeyFrameAlgorithm result = KeyFrameAlgorithm.HISTOGRAM;
+
+            if( motionAnalysisButton.Checked == true )
+            {
+                result = KeyFrameAlgorithm.MOTION;
+            }
+
+            return result;
         }
     }
 }

@@ -40,6 +40,7 @@
             this.keyFrameGroupBox = new System.Windows.Forms.GroupBox();
             this.summaryTrackBar = new System.Windows.Forms.TrackBar();
             this.sceneTrackBar = new System.Windows.Forms.TrackBar();
+            this.motionAnalysisButton = new System.Windows.Forms.RadioButton();
             this.shotGenerationGroupBox.SuspendLayout();
             this.keyFrameGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).BeginInit();
@@ -49,7 +50,7 @@
             // okButton
             // 
             this.okButton.BackColor = System.Drawing.Color.Peru;
-            this.okButton.Location = new System.Drawing.Point(118, 243);
+            this.okButton.Location = new System.Drawing.Point(118, 278);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 0;
@@ -59,7 +60,7 @@
             // cancelButton
             // 
             this.cancelButton.BackColor = System.Drawing.Color.Peru;
-            this.cancelButton.Location = new System.Drawing.Point(197, 243);
+            this.cancelButton.Location = new System.Drawing.Point(197, 278);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 1;
@@ -69,7 +70,7 @@
             // sceneDurationLabel
             // 
             this.sceneDurationLabel.AutoSize = true;
-            this.sceneDurationLabel.Location = new System.Drawing.Point(9, 144);
+            this.sceneDurationLabel.Location = new System.Drawing.Point(9, 162);
             this.sceneDurationLabel.Name = "sceneDurationLabel";
             this.sceneDurationLabel.Size = new System.Drawing.Size(124, 13);
             this.sceneDurationLabel.TabIndex = 2;
@@ -89,7 +90,7 @@
             // 
             this.keyFrameLabel.AutoSize = true;
             this.keyFrameLabel.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.keyFrameLabel.Location = new System.Drawing.Point(88, 73);
+            this.keyFrameLabel.Location = new System.Drawing.Point(88, 94);
             this.keyFrameLabel.Name = "keyFrameLabel";
             this.keyFrameLabel.Size = new System.Drawing.Size(108, 13);
             this.keyFrameLabel.TabIndex = 4;
@@ -98,7 +99,7 @@
             // summaryDuration
             // 
             this.summaryDuration.AutoSize = true;
-            this.summaryDuration.Location = new System.Drawing.Point(9, 193);
+            this.summaryDuration.Location = new System.Drawing.Point(9, 220);
             this.summaryDuration.Name = "summaryDuration";
             this.summaryDuration.Size = new System.Drawing.Size(119, 13);
             this.summaryDuration.TabIndex = 5;
@@ -122,7 +123,7 @@
             this.audioExcitationButton.AutoSize = true;
             this.audioExcitationButton.BackColor = System.Drawing.Color.Peru;
             this.audioExcitationButton.Checked = true;
-            this.audioExcitationButton.Location = new System.Drawing.Point(6, 11);
+            this.audioExcitationButton.Location = new System.Drawing.Point(6, 13);
             this.audioExcitationButton.Name = "audioExcitationButton";
             this.audioExcitationButton.Size = new System.Drawing.Size(101, 17);
             this.audioExcitationButton.TabIndex = 7;
@@ -132,26 +133,27 @@
             // 
             // shotGenerationGroupBox
             // 
+            this.shotGenerationGroupBox.Controls.Add(this.motionAnalysisButton);
             this.shotGenerationGroupBox.Controls.Add(this.colorThresholdingButton);
             this.shotGenerationGroupBox.Location = new System.Drawing.Point(12, 24);
             this.shotGenerationGroupBox.Name = "shotGenerationGroupBox";
-            this.shotGenerationGroupBox.Size = new System.Drawing.Size(260, 37);
+            this.shotGenerationGroupBox.Size = new System.Drawing.Size(260, 59);
             this.shotGenerationGroupBox.TabIndex = 16;
             this.shotGenerationGroupBox.TabStop = false;
             // 
             // keyFrameGroupBox
             // 
             this.keyFrameGroupBox.Controls.Add(this.audioExcitationButton);
-            this.keyFrameGroupBox.Location = new System.Drawing.Point(12, 89);
+            this.keyFrameGroupBox.Location = new System.Drawing.Point(12, 110);
             this.keyFrameGroupBox.Name = "keyFrameGroupBox";
-            this.keyFrameGroupBox.Size = new System.Drawing.Size(260, 34);
+            this.keyFrameGroupBox.Size = new System.Drawing.Size(260, 37);
             this.keyFrameGroupBox.TabIndex = 17;
             this.keyFrameGroupBox.TabStop = false;
             // 
             // summaryTrackBar
             // 
             this.summaryTrackBar.LargeChange = 10;
-            this.summaryTrackBar.Location = new System.Drawing.Point(12, 210);
+            this.summaryTrackBar.Location = new System.Drawing.Point(12, 237);
             this.summaryTrackBar.Maximum = 100;
             this.summaryTrackBar.Name = "summaryTrackBar";
             this.summaryTrackBar.Size = new System.Drawing.Size(260, 45);
@@ -163,7 +165,7 @@
             // sceneTrackBar
             // 
             this.sceneTrackBar.LargeChange = 2;
-            this.sceneTrackBar.Location = new System.Drawing.Point(12, 161);
+            this.sceneTrackBar.Location = new System.Drawing.Point(12, 179);
             this.sceneTrackBar.Maximum = 8;
             this.sceneTrackBar.Minimum = 1;
             this.sceneTrackBar.Name = "sceneTrackBar";
@@ -172,12 +174,24 @@
             this.sceneTrackBar.TabStop = false;
             this.sceneTrackBar.Value = 3;
             // 
-            // VPOptions
+            // motionAnalysisButton
+            // 
+            this.motionAnalysisButton.AutoSize = true;
+            this.motionAnalysisButton.BackColor = System.Drawing.Color.Peru;
+            this.motionAnalysisButton.Location = new System.Drawing.Point(6, 35);
+            this.motionAnalysisButton.Name = "motionAnalysisButton";
+            this.motionAnalysisButton.Size = new System.Drawing.Size(98, 17);
+            this.motionAnalysisButton.TabIndex = 9;
+            this.motionAnalysisButton.TabStop = true;
+            this.motionAnalysisButton.Text = "Motion Analysis";
+            this.motionAnalysisButton.UseVisualStyleBackColor = false;
+            // 
+            // VPOptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.ClientSize = new System.Drawing.Size(284, 278);
+            this.ClientSize = new System.Drawing.Size(284, 313);
             this.Controls.Add(this.keyFrameGroupBox);
             this.Controls.Add(this.summaryDuration);
             this.Controls.Add(this.keyFrameLabel);
@@ -190,10 +204,8 @@
             this.Controls.Add(this.sceneTrackBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(290, 306);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(290, 306);
-            this.Name = "VPOptions";
+            this.Name = "VPOptionsForm";
             this.Text = "Summary Options";
             this.shotGenerationGroupBox.ResumeLayout(false);
             this.shotGenerationGroupBox.PerformLayout();
@@ -220,5 +232,6 @@
         private System.Windows.Forms.GroupBox keyFrameGroupBox;
         private System.Windows.Forms.TrackBar summaryTrackBar;
         private System.Windows.Forms.TrackBar sceneTrackBar;
+        private System.Windows.Forms.RadioButton motionAnalysisButton;
     }
 }

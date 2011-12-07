@@ -251,12 +251,12 @@ namespace VideoPlayer
             return err[index].index;
         }
 
-        public int FillAnalysisData(ref Frame frameCur, ref Frame frameLeft, bool add)
+        public int FillAnalysisData(KeyFrameAlgorithm kfAlg, ref Frame frameCur, ref Frame frameLeft, bool add)
         {
             int sum = 0;
             int result = 0;
             
-            if (videoRef.colorHistogramAlgorithm)
+            if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM)
             {
                 GenerateColorHistogram(ref frameCur);
                 GenerateColorHistogram(ref frameLeft);
@@ -273,7 +273,7 @@ namespace VideoPlayer
                     }
                 }
             }
-            else if (videoRef.motionVectorAlgorithm)
+            else if ( kfAlg == KeyFrameAlgorithm.MOTION )
             {
                 double bestMatchDistance = 0.0;
 
@@ -433,7 +433,7 @@ namespace VideoPlayer
 #endif
 
         // Detect the frame numbers at which new shots begin
-        public void FindShotTransitions()
+        public void FindShotTransitions(KeyFrameAlgorithm kfAlg)
         {
             // First frame is the start of the first shot
             Shot shot = new Shot();
@@ -469,7 +469,7 @@ namespace VideoPlayer
                         frameB = new Frame(shots[shots.Count - 1].startFrame, videoRef.frameWidth, videoRef.frameHeight);
                         videoRef.videoReader.ReadFrame(shots[shots.Count - 1].startFrame, ref frameB);
 
-                        int sum = FillAnalysisData(ref frameB, ref frameA, false);
+                        int sum = FillAnalysisData(kfAlg, ref frameB, ref frameA, false);
 
                         // Mark new shot if there exists a major difference between the previous and the current shot
                         if (sum > 40000)

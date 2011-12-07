@@ -44,9 +44,6 @@ namespace VideoPlayer
         public int frameWidth;
         public int frameHeight;
 
-        public bool colorHistogramAlgorithm = false;
-        public bool motionVectorAlgorithm = true;
-
         public Video(int frameWidth, int frameHeight, int audioOffset)
         {
             this.audioOffset = audioOffset;
@@ -194,7 +191,7 @@ namespace VideoPlayer
             return currentFrame;
         }
 
-        public bool VideoAnalysis(int sceneTime, int summaryPercentage)
+        public bool VideoAnalysis(KeyFrameAlgorithm kfAlg, int sceneTime, int summaryPercentage)
         {
             bool result = false;
 
@@ -205,7 +202,7 @@ namespace VideoPlayer
             frameA = new Frame(framesAnalyzedAbsolute, frameWidth, frameHeight);
             videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
 
-            if (colorHistogramAlgorithm)
+            if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM )
             {
                 // Histogram Analysis on all frames in the video file
                 while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
@@ -213,7 +210,7 @@ namespace VideoPlayer
                     frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
                     videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                    summarizer.FillAnalysisData(ref frameB, ref frameA, true);
+                    summarizer.FillAnalysisData( kfAlg, ref frameB, ref frameA, true);
 
                     ++framesAnalyzedAbsolute;
 
@@ -222,7 +219,7 @@ namespace VideoPlayer
                     frameB = null;
                 }
             }
-            else if (motionVectorAlgorithm)
+            else if ( kfAlg == KeyFrameAlgorithm.MOTION )
             {
                 // Motion vector Analysis between every frameStep frames in the video file
                 while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
@@ -230,7 +227,7 @@ namespace VideoPlayer
                     frameB = new Frame(framesAnalyzedAbsolute + summarizer.frameStep, frameWidth, frameHeight);
                     videoReader.ReadFrame(framesAnalyzedAbsolute + summarizer.frameStep, ref frameB);
 
-                    summarizer.FillAnalysisData(ref frameB, ref frameA, true);
+                    summarizer.FillAnalysisData( kfAlg, ref frameB, ref frameA, true);
 
                     framesAnalyzedAbsolute += summarizer.frameStep;
 
@@ -255,11 +252,11 @@ namespace VideoPlayer
 
                 String directory = dlg.SelectedPath;
 
-                if (colorHistogramAlgorithm)
+                if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM )
                 {
                     summarizer.GenerateCSVFile(summarizer.MIN_WISE_DIFF, directory);
                 }
-                else if (motionVectorAlgorithm)
+                else if ( kfAlg == KeyFrameAlgorithm.MOTION )
                 {
                     summarizer.GenerateCSVFile(summarizer.MOTION_VECTOR_BEST_MATCH, directory);
                 }
@@ -267,7 +264,7 @@ namespace VideoPlayer
                 summarizer.GenerateCSVFile(summarizer.AVG_AUDIO_AMPS, directory);
 
                 // Break video into shots
-                summarizer.FindShotTransitions();
+                summarizer.FindShotTransitions(kfAlg);
                 summarizer.GenerateCSVFile(summarizer.SHOTS, directory);
 
                 // Find Key-frames

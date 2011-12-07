@@ -252,9 +252,10 @@ namespace VideoPlayer
 
                 int sceneTime = optionsDlg.GetSceneDuration();
                 int summaryPercentage = optionsDlg.GetSummaryPercentage();
+                KeyFrameAlgorithm kfAlg = optionsDlg.GetKeyFrameAlgorithm();
 
                 // Compute the data for Shot detection analysis
-                bool result = video.VideoAnalysis(sceneTime, summaryPercentage);
+                bool result = video.VideoAnalysis(kfAlg, sceneTime, summaryPercentage);
             }
         }
 
