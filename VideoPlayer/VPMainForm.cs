@@ -33,7 +33,6 @@ namespace VideoPlayer
 
         Color4 clearColor;
         
-        //SplitterPanel renderTarget;
         Direct2DRenderer renderer;
         RenderForm renderTarget;
 
@@ -160,7 +159,7 @@ namespace VideoPlayer
 
             if (video != null)
             {
-                video.OnReset();
+                video.videoReader.OnClose();
                 video = null;
             }
 
