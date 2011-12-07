@@ -76,6 +76,7 @@ namespace VideoPlayer
             if (result == true)
             {
                 source = engine.AddSoundSourceFromIOStream(fileStream, filePath);
+                source.StreamMode = StreamMode.Streaming;
             }
 
             return result;
@@ -215,7 +216,7 @@ namespace VideoPlayer
                     // Conglomerate a group of consecutive frames.
                     startFrame = endFrame = frames[i];
                     endFrame++;
-                    while (endFrame < frames.Count && frames[i + 1] == endFrame)
+                    while (i + 1 < frames.Count && frames[i + 1] == endFrame)
                     {
                         ++endFrame;
                         ++i;
