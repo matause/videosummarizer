@@ -35,7 +35,7 @@ namespace VideoPlayer
         const int frameHeight = 240;
 
         Color4 clearColor;
-        
+
         Direct2DRenderer renderer;
         RenderForm renderTarget;
 
@@ -82,7 +82,7 @@ namespace VideoPlayer
             fileExitMenuItem.Click += new EventHandler(OnFileExit);
             fileOpenMenuItem.Click += new EventHandler(OnFileOpen);
             fileCloseMenuItem.Click += new EventHandler(OnFileClose);
-    
+
             renderTarget.Paint += new PaintEventHandler(OnRender);
             displaySplitContainer.Panel1.Paint += new PaintEventHandler(OnRender);
             displaySplitContainer.Panel1.Resize += new EventHandler(OnResize);
@@ -109,7 +109,7 @@ namespace VideoPlayer
             // Try to load up Direct2D
             bool result = renderer.OnInitialize(renderTarget.Handle, renderTarget.Width,
                 renderTarget.Height);
-            
+
             if (result == false)
             {
                 MessageBox.Show("Direct2D failed to load." +
@@ -144,9 +144,6 @@ namespace VideoPlayer
 
             // Draw the frame.
             renderer.OnRender();
-
-            // Update the histogram.
-            OnUpdateHistogram();
         }
 
         private void OnResize(object sender, EventArgs e)
@@ -289,10 +286,10 @@ namespace VideoPlayer
 
                 int sceneTime = optionsDlg.GetSceneDuration();
                 int summaryPercentage = optionsDlg.GetSummaryPercentage();
-                KeyFrameAlgorithm kfAlg = optionsDlg.GetKeyFrameAlgorithm();
+                ShotSelectionAlgorithm sSAlg = optionsDlg.GetShotSelectionAlgorithm();
 
                 // Compute the data for Shot detection analysis
-                bool result = video.VideoAnalysis(videoFilePath, audioFilePath, kfAlg, 
+                bool result = video.VideoAnalysis(videoFilePath, audioFilePath, sSAlg,
                     sceneTime, summaryPercentage);
             }
         }
@@ -307,35 +304,22 @@ namespace VideoPlayer
         {
             if (isShowingHistogram == true)
             {
-                isShowingHistogram = false;
-
                 // Hide the histogram window.
                 if (histogramForm != null)
                 {
                     histogramForm.Hide();
                     histogramForm = null;
                 }
+
+                isShowingHistogram = false;
             }
             else
             {
-                isShowingHistogram = true;
-
                 // Display the histogram window.
                 histogramForm = new VPHistogramForm();
-                OnUpdateHistogram();
                 histogramForm.Show(this);
-            }
-        }
 
-        //
-        // Helper function to update histogram form.
-        //
-        private void OnUpdateHistogram()
-        {
-            if (histogramForm != null && video != null)
-            {
-                long[] data = video.GetCurrentFrameHistogram();
-                histogramForm.SetValues( data );
+                isShowingHistogram = true;
             }
         }
 
@@ -345,7 +329,7 @@ namespace VideoPlayer
 
         private void OnPlayButtonClick(object sender, EventArgs e)
         {
-            if (isVideoLoaded == true )
+            if (isVideoLoaded == true)
             {
                 // Normally start the video
                 if (isVideoPlaying == false)
@@ -362,7 +346,7 @@ namespace VideoPlayer
 
                     // This starts the audio.
                     video.OnStartPlaying(startingVideoTime, startingAudioTime);
-                    
+
                     // Start timer and video thread.
                     videoTimer.Start();
                     videoThread.Start(startingVideoTime);
@@ -375,7 +359,7 @@ namespace VideoPlayer
                 else
                 {
                     isVideoPaused = true;
-                    StopVideoThreads();                 
+                    StopVideoThreads();
                     playButton.Text = "Play";
                 }
             }
@@ -434,13 +418,13 @@ namespace VideoPlayer
         //
         // Helper Threading Functions
         //
-        
+
         // Threaded function for playback.
         private void PlayVideo(object time)
         {
             int startTime = (int)time;
             float lastUpdateTime = 0.0f;
-            while(true)
+            while (true)
             {
                 //
                 // Update current frame.

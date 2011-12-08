@@ -8,8 +8,8 @@
 // to listen to audio.
 #define AUDIO
 
-// Uncomment this to output CVS files
-//#define CVS
+// Comment this to output CVS files
+#define CVS
 
 using System;
 using System.Collections.Generic;
@@ -45,6 +45,8 @@ namespace VideoPlayer
         public int frameWidth;
         public int frameHeight;
 
+        public bool usePreProcessedData = true;
+
         public Video(int frameWidth, int frameHeight)
         {
             currentFrameID = 0;
@@ -74,7 +76,7 @@ namespace VideoPlayer
             // Set up the video
             result = videoReader.OnInitialize(videoFilePath);
 
-            if( result == false )
+            if (result == false)
                 return false;
 
             result = BufferVideo(currentFrameID);
@@ -84,7 +86,7 @@ namespace VideoPlayer
 
             // Compute some metrics.
             long fileSize = videoReader.GetFileSize();
-            totalFramesInVideo = (int)(fileSize / (long)(currentFrame.width * currentFrame.height 
+            totalFramesInVideo = (int)(fileSize / (long)(currentFrame.width * currentFrame.height
                 * Frame.bytesPerPixelInFile));
 
             videoDuration = (float)totalFramesInVideo / (float)VIDEO_FPS;
@@ -104,9 +106,9 @@ namespace VideoPlayer
         private bool BufferVideo(int startingFrame)
         {
 
-            bool result = videoReader.ReadFrame(startingFrame, 
+            bool result = videoReader.ReadFrame(startingFrame,
                 ref currentFrame);
-                
+
             if (result == false)
                 return false;
 
@@ -152,7 +154,7 @@ namespace VideoPlayer
             currentFrameID = 0;
             currentFrameTime = 0.0f;
 
-            videoReader.ReadFrame(currentFrameID, 
+            videoReader.ReadFrame(currentFrameID,
                 ref currentFrame);
 
 #if AUDIO
@@ -165,7 +167,7 @@ namespace VideoPlayer
             bool result = false;
 
             currentFrameTime += elapsedTime;
-            while( currentFrameTime >= secondsPerFrame )
+            while (currentFrameTime >= secondsPerFrame)
             {
                 currentFrameID++;
                 currentFrameTime -= secondsPerFrame;
@@ -189,7 +191,7 @@ namespace VideoPlayer
             return currentFrame;
         }
 
-        public bool VideoAnalysis(String videoFilePath, String audioFilePath, KeyFrameAlgorithm kfAlg, 
+        public bool VideoAnalysis(String videoFilePath, String audioFilePath, ShotSelectionAlgorithm sSAlg,
             int sceneTime, int summaryPercentage)
         {
             bool result = false;
@@ -201,7 +203,7 @@ namespace VideoPlayer
             frameA = new Frame(framesAnalyzedAbsolute, frameWidth, frameHeight);
             videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
 
-            if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM )
+            if (sSAlg == ShotSelectionAlgorithm.HISTOGRAM)
             {
                 // Histogram Analysis on all frames in the video file
                 while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
@@ -209,7 +211,7 @@ namespace VideoPlayer
                     frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
                     videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                    summarizer.FillAnalysisData( kfAlg, ref frameB, ref frameA, true);
+                    summarizer.FillAnalysisDataHistogram(ref frameB, ref frameA, true);
 
                     ++framesAnalyzedAbsolute;
 
@@ -218,24 +220,66 @@ namespace VideoPlayer
                     frameB = null;
                 }
             }
-            else if ( kfAlg == KeyFrameAlgorithm.MOTION )
+            else if (sSAlg == ShotSelectionAlgorithm.MOTION)
             {
-                // Motion vector Analysis between every frameStep frames in the video file
-                while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                if (usePreProcessedData)
                 {
-                    frameB = new Frame(framesAnalyzedAbsolute + summarizer.frameStep, frameWidth, frameHeight);
-                    videoReader.ReadFrame(framesAnalyzedAbsolute + summarizer.frameStep, ref frameB);
+                    summarizer.ReadMotionDataFromFile();
 
-                    summarizer.FillAnalysisData( kfAlg, ref frameB, ref frameA, true);
+                    while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                    {
+                        frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
+                        videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
 
-                    framesAnalyzedAbsolute += summarizer.frameStep;
+                        summarizer.FillAudiodataForMotion(ref frameB, ref frameA);
 
-                    // shift analysis pair
-                    frameA = frameB;
-                    frameB = null;
+                        ++framesAnalyzedAbsolute;
+
+                        // shift analysis pair
+                        frameA = frameB;
+                        frameB = null;
+                    }
+                }
+                else
+                {
+                    // Motion vector Analysis between every frameStep frames in the video file
+                    while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                    {
+                        frameB = new Frame(framesAnalyzedAbsolute + summarizer.frameStep, frameWidth, frameHeight);
+                        videoReader.ReadFrame(framesAnalyzedAbsolute + summarizer.frameStep, ref frameB);
+
+                        summarizer.ComputeMotionDataOnFly(ref frameB, ref frameA, true);
+
+                        framesAnalyzedAbsolute += summarizer.frameStep;
+
+                        // shift analysis pair
+                        frameA = frameB;
+                        frameB = null;
+                    }
+
+                    framesAnalyzedAbsolute = 0;
+
+                    // Read the first frame again to begin audio analysis
+                    frameA = new Frame(framesAnalyzedAbsolute, frameWidth, frameHeight);
+                    videoReader.ReadFrame(framesAnalyzedAbsolute, ref frameA);
+
+                    // Compute audio avgs for every consecutive pair
+                    while (framesAnalyzedAbsolute < totalFramesInVideo - 1)
+                    {
+                        frameB = new Frame(framesAnalyzedAbsolute + 1, frameWidth, frameHeight);
+                        videoReader.ReadFrame(framesAnalyzedAbsolute + 1, ref frameB);
+
+                        summarizer.FillAudiodataForMotion(ref frameB, ref frameA);
+
+                        ++framesAnalyzedAbsolute;
+
+                        // shift analysis pair
+                        frameA = frameB;
+                        frameB = null;
+                    }
                 }
             }
-            
+
             if (framesAnalyzedAbsolute >= totalFramesInVideo - 1)
             {
 #if CVS
@@ -251,11 +295,11 @@ namespace VideoPlayer
 
                 String directory = dlg.SelectedPath;
 
-                if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM )
+                if (sSAlg == ShotSelectionAlgorithm.HISTOGRAM)
                 {
                     summarizer.GenerateCSVFile(summarizer.MIN_WISE_DIFF, directory);
                 }
-                else if ( kfAlg == KeyFrameAlgorithm.MOTION )
+                else if (sSAlg == ShotSelectionAlgorithm.MOTION && !usePreProcessedData)
                 {
                     summarizer.GenerateCSVFile(summarizer.MOTION_VECTOR_BEST_MATCH, directory);
                 }
@@ -263,7 +307,7 @@ namespace VideoPlayer
                 summarizer.GenerateCSVFile(summarizer.AVG_AUDIO_AMPS, directory);
 #endif
                 // Break video into shots
-                summarizer.FindShotTransitions(kfAlg);
+                summarizer.FindShotTransitions(sSAlg);
 #if CVS
                 summarizer.GenerateCSVFile(summarizer.SHOTS, directory);
 #endif
@@ -288,29 +332,6 @@ namespace VideoPlayer
                 {
                     result = audioPlayer.WriteSummary(audioFilePath, summarizer.summaryFrames);
                 }
-            }
-
-            return result;
-        }
-
-        public long[] GetCurrentFrameHistogram()
-        {
-            long[] result = null;
-
-            if (currentFrame != null)
-            {
-                // TODO: Get histogram from the currentFrame...
-
-                // REMOVE THIS. Sample/TEST code
-                Random random = new Random();
-
-                List<long> theList = new List<long>();
-                for (int i = 0; i < 256; ++i)
-                {
-                    theList.Add( random.Next(50) );
-                }
-
-                result = theList.ToArray();
             }
 
             return result;

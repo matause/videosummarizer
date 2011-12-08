@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace VideoPlayer
 {
-    public enum KeyFrameAlgorithm
+    public enum ShotSelectionAlgorithm
     {
         HISTOGRAM,
         MOTION
@@ -74,13 +74,13 @@ namespace VideoPlayer
             return summaryTrackBar.Value;
         }
 
-        public KeyFrameAlgorithm GetKeyFrameAlgorithm()
+        public ShotSelectionAlgorithm GetShotSelectionAlgorithm()
         {
-            KeyFrameAlgorithm result = KeyFrameAlgorithm.HISTOGRAM;
+            ShotSelectionAlgorithm result = ShotSelectionAlgorithm.HISTOGRAM;
 
-            if( motionAnalysisButton.Checked == true )
+            if (motionAnalysisButton.Checked == true)
             {
-                result = KeyFrameAlgorithm.MOTION;
+                result = ShotSelectionAlgorithm.MOTION;
             }
 
             return result;

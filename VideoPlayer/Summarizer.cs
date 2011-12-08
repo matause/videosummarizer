@@ -103,7 +103,7 @@ namespace VideoPlayer
     {
         public int colError;
         public Coord index;
-        
+
         public ColorErrorSum(int err, int x, int y)
         {
             index = new Coord();
@@ -151,16 +151,17 @@ namespace VideoPlayer
         public int scanWindowSideLen = 20;
         public Coord blockCount;
         public Coord macroBlocksStart;
-        List<BestMatchDistance> BestMatchdata;
+        // Pre-processed
+        public List<int> ppFileData;
+        public List<int> ppAudioDataForMotionAnalysis;
 
         public void OnInitialize(Video video)
         {
             videoAnalysisData = new List<AnalysisData>();
             shots = new List<Shot>();
             videoRef = video;
-
-            // Motion
-            BestMatchdata = new List<BestMatchDistance>();
+            if (videoRef.usePreProcessedData)
+                ppAudioDataForMotionAnalysis = new List<int>();
         }
 
         public void GenerateColorHistogram(ref Frame frame)  // STEP 2
@@ -179,23 +180,23 @@ namespace VideoPlayer
         // Color Difference
         public double ColorDifference(ref Pixel A, ref Pixel B)
         {
-            return Math.Sqrt( Math.Pow((double)(B.r - A.r), 2.0) + Math.Pow((double)(B.g - A.g), 2.0) + Math.Pow((double)(B.b - A.b), 2.0) );
+            return Math.Sqrt(Math.Pow((double)(B.r - A.r), 2.0) + Math.Pow((double)(B.g - A.g), 2.0) + Math.Pow((double)(B.b - A.b), 2.0));
         }
 
         // Motion vector distance between best match and current macroblock
         public double MotionVectorDistance(ref Coord A, ref Coord B)
         {
-            return Math.Sqrt( Math.Pow((double)(B.x - A.x), 2.0) + Math.Pow((double)(B.y - A.y), 2.0) );
+            return Math.Sqrt(Math.Pow((double)(B.x - A.x), 2.0) + Math.Pow((double)(B.y - A.y), 2.0));
         }
 
         // Find best motion vector for the current macroblock using the error values in color
-        public Coord BestBlockMatchScan(ref Frame frameCur, ref Frame frameLeft ,ref Coord blockCur)
+        public Coord BestBlockMatchScan(ref Frame frameCur, ref Frame frameLeft, ref Coord blockCur)
         {
             List<ColorErrorSum> err = new List<ColorErrorSum>();
 
             Coord scanWindow = new Coord();
-            scanWindow.x = ( macroBlocksStart.x + blockCur.x * macroBlockSideLen ) - scanWindowSideLen;
-            scanWindow.y = ( macroBlocksStart.y + blockCur.y * macroBlockSideLen ) - scanWindowSideLen;
+            scanWindow.x = (macroBlocksStart.x + blockCur.x * macroBlockSideLen) - scanWindowSideLen;
+            scanWindow.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen) - scanWindowSideLen;
 
             // For all pixels in the current macroBlockSideLen block
             Coord curStart = new Coord();
@@ -203,9 +204,9 @@ namespace VideoPlayer
             curStart.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen);
 
             // Compare with all possible matchings in the scan window around the current block
-            for (int windowi = scanWindow.x; windowi < scanWindow.x + ( 2 * scanWindowSideLen ); ++windowi)
+            for (int windowi = scanWindow.x; windowi < scanWindow.x + (2 * scanWindowSideLen); ++windowi)
             {
-                for (int windowj = scanWindow.y; windowj < scanWindow.y + ( 2 * scanWindowSideLen ); ++windowj)
+                for (int windowj = scanWindow.y; windowj < scanWindow.y + (2 * scanWindowSideLen); ++windowj)
                 {
                     // [ windowi, windowj ] - Current scan window macroblock start
 
@@ -230,7 +231,7 @@ namespace VideoPlayer
                     }
 
                     // Stores error sum values of all the possible matchings
-                    err.Add(new ColorErrorSum(sum, windowi, windowj) );
+                    err.Add(new ColorErrorSum(sum, windowi, windowj));
 
                 }
             }
@@ -251,67 +252,123 @@ namespace VideoPlayer
             return err[index].index;
         }
 
-        public int FillAnalysisData(KeyFrameAlgorithm kfAlg, ref Frame frameCur, ref Frame frameLeft, bool add)
+        public void ReadMotionDataFromFile()
+        {
+            ppFileData = new List<int>();
+            string delimiter = "\r\n";
+
+            //first make sure the preprocessed data file exists
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\PreProcessed-MotionData-Terminator1.csv"))
+            {
+                //create a StreamReader and open our Preprocessed Motion analysis data file
+                StreamReader reader = new StreamReader(Directory.GetCurrentDirectory() + "\\PreProcessed-MotionData-Terminator1.csv");
+
+                //read the first line in and split it into columns
+                string[] str = reader.ReadToEnd().Split(delimiter.ToCharArray());
+
+                for (int i = 0; i < str.Length; i = i + 2)
+                {
+                    if (!str[i].Equals(""))
+                        ppFileData.Add((int)Convert.ToUInt32(str[i]));
+
+                    for (int j = 0; j < frameStep - 1; ++j)
+                        ppFileData.Add(0);
+                }
+            }
+        }
+
+        public void FillAudiodataForMotion(ref Frame frameCur, ref Frame frameLeft)
+        {
+            // Average amplitude of the audio data associated with the video frame
+            float startTime = frameCur.index * Video.secondsPerFrame;
+            float endTime = (frameCur.index + 1) * Video.secondsPerFrame;
+            byte[] rawData = videoRef.audioPlayer.GetRawSoundData(startTime, endTime);
+
+            Int64 avgPerFrame = 0;
+
+            for (int i = 0; i < rawData.Length; ++i)
+            {
+                avgPerFrame += rawData[i];
+            }
+
+            // Frame analysis data
+            AnalysisData data = new AnalysisData();
+
+            data.sum = ppFileData[frameCur.index];
+            data.avgAmp = (byte)(avgPerFrame / rawData.Length);
+
+            videoAnalysisData.Add(data);
+        }
+
+        public int ComputeMotionDataOnFly(ref Frame frameCur, ref Frame frameLeft, bool add)
+        {
+            int result = 0;
+            ppFileData = new List<int>();
+
+            double bestMatchDistance = 0.0;
+
+            blockCount = new Coord();
+            blockCount.x = 8;
+            blockCount.y = 6;
+
+            macroBlocksStart = new Coord();
+            macroBlocksStart.x = (videoRef.frameWidth - (macroBlockSideLen * blockCount.x)) / 2;
+            macroBlocksStart.y = (videoRef.frameHeight - (macroBlockSideLen * blockCount.y)) / 2;
+
+            // frame n + 1 Macroblock best match from regions in frame n macroblock scan window
+            for (int i = 0; i < blockCount.x; ++i)
+            {
+                for (int j = 0; j < blockCount.y; ++j)
+                {
+                    Coord blockCur = new Coord();
+                    blockCur.x = i;
+                    blockCur.y = j;
+
+                    Coord motionVector = new Coord();
+                    motionVector = BestBlockMatchScan(ref frameCur, ref frameLeft, ref blockCur);
+
+                    // For all pixels in the current block
+                    Coord currentCenter = new Coord();
+                    currentCenter.x = (macroBlocksStart.x + blockCur.x * macroBlockSideLen) + macroBlockSideLen / 2;
+                    currentCenter.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen) + macroBlockSideLen / 2;
+
+                    Coord bestMatchCenter = new Coord();
+                    bestMatchCenter.x = motionVector.x + macroBlockSideLen / 2;
+                    bestMatchCenter.y = motionVector.y + macroBlockSideLen / 2;
+
+                    bestMatchDistance += MotionVectorDistance(ref currentCenter, ref bestMatchCenter);
+                }
+            }
+
+            // Sum of the motion vector magnitudes of all macroblocks 
+            ppFileData.Add((int)bestMatchDistance);
+
+            for (int j = 0; j < frameStep - 1; ++j)
+                ppFileData.Add(0);
+
+            result = (int)bestMatchDistance;
+
+            return result;
+        }
+
+        public int FillAnalysisDataHistogram(ref Frame frameCur, ref Frame frameLeft, bool add)
         {
             int sum = 0;
             int result = 0;
-            
-            if ( kfAlg == KeyFrameAlgorithm.HISTOGRAM)
-            {
-                GenerateColorHistogram(ref frameCur);
-                GenerateColorHistogram(ref frameLeft);
 
-                // Sum of Bin-wise absolute difference
-                for (int i = 0; i < colorQuantGroups; ++i)
+            GenerateColorHistogram(ref frameCur);
+            GenerateColorHistogram(ref frameLeft);
+
+            // Sum of Bin-wise absolute difference
+            for (int i = 0; i < colorQuantGroups; ++i)
+            {
+                for (int j = 0; j < colorQuantGroups; ++j)
                 {
-                    for (int j = 0; j < colorQuantGroups; ++j)
+                    for (int k = 0; k < colorQuantGroups; ++k)
                     {
-                        for (int k = 0; k < colorQuantGroups; ++k)
-                        {
-                            sum += Math.Abs(frameCur.values[i, j, k] - frameLeft.values[i, j, k]);
-                        }
+                        sum += Math.Abs(frameCur.values[i, j, k] - frameLeft.values[i, j, k]);
                     }
                 }
-            }
-            else if ( kfAlg == KeyFrameAlgorithm.MOTION )
-            {
-                double bestMatchDistance = 0.0;
-
-                blockCount = new Coord();
-                blockCount.x = 8;
-                blockCount.y = 6;
-
-                macroBlocksStart = new Coord();
-                macroBlocksStart.x = (videoRef.frameWidth - (macroBlockSideLen * blockCount.x)) / 2;
-                macroBlocksStart.y = (videoRef.frameHeight - (macroBlockSideLen * blockCount.y)) / 2;
- 
-                // frame n + 1 Macroblock best match from regions in frame n macroblock scan window
-                for (int i = 0; i < blockCount.x; ++i)
-                {
-                    for (int j = 0; j < blockCount.y; ++j)
-                    {
-                        Coord blockCur = new Coord();
-                        blockCur.x = i;
-                        blockCur.y = j;
-
-                        Coord motionVector = new Coord();
-                        motionVector = BestBlockMatchScan(ref frameCur, ref frameLeft, ref blockCur);
-
-                        // For all pixels in the current block
-                        Coord currentCenter = new Coord();
-                        currentCenter.x = (macroBlocksStart.x + blockCur.x * macroBlockSideLen) + macroBlockSideLen / 2;
-                        currentCenter.y = (macroBlocksStart.y + blockCur.y * macroBlockSideLen) + macroBlockSideLen / 2;
-
-                        Coord bestMatchCenter = new Coord();
-                        bestMatchCenter.x = motionVector.x + macroBlockSideLen / 2;
-                        bestMatchCenter.y = motionVector.y + macroBlockSideLen / 2;
-
-                        bestMatchDistance += MotionVectorDistance(ref currentCenter, ref bestMatchCenter);
-                    }
-                }
-
-                // Sum of the motion vector magnitudes of all macroblocks 
-                BestMatchdata.Add(new BestMatchDistance((int)bestMatchDistance));
             }
 
             // Average amplitude of the audio data associated with the video frame
@@ -433,72 +490,97 @@ namespace VideoPlayer
 #endif
 
         // Detect the frame numbers at which new shots begin
-        public void FindShotTransitions(KeyFrameAlgorithm kfAlg)
+        public void FindShotTransitions(ShotSelectionAlgorithm sSAlg)
         {
             // First frame is the start of the first shot
             Shot shot = new Shot();
             shot.startFrame = 0;
             shots.Add(shot);
 
-            for (int i = 1; i < videoAnalysisData.Count; ++i)
+            if (sSAlg == ShotSelectionAlgorithm.HISTOGRAM)
             {
-                threshold = AdaptiveThreshold(i);
-
-                // Check for Abrupt Transition
-                if (videoAnalysisData[i].sum > threshold)
+                for (int i = 1; i < videoAnalysisData.Count; ++i)
                 {
+                    threshold = AdaptiveThreshold(i);
+
+                    // Check for Abrupt Transition
+                    if (videoAnalysisData[i].sum > threshold)
+                    {
 
 #if RATIO
-                    // Compute ratio to find if this is a shot boundary or flash
-                    float ratio = ComputeRatio(i);
+                        // Compute ratio to find if this is a shot boundary or flash
+                        float ratio = ComputeRatio(i);
 
-                    if (ratio < Tflash && ratio > 0)
-                    {
+                        if (ratio < Tflash && ratio > 0)
+                        {
 #endif
-                    if (shots[shots.Count - 1].startFrame < (i - MINIMUM_FRAMES_IN_SHOT))
+                        if (shots[shots.Count - 1].startFrame < (i - MINIMUM_FRAMES_IN_SHOT))
+                        {
+                            // Check for shot similarity
+
+                            // Read the current shot selected
+                            Frame frameA;
+                            frameA = new Frame(i, videoRef.frameWidth, videoRef.frameHeight);
+                            videoRef.videoReader.ReadFrame(i, ref frameA);
+
+                            // Read the Last shot that was selected
+                            Frame frameB;
+                            frameB = new Frame(shots[shots.Count - 1].startFrame, videoRef.frameWidth, videoRef.frameHeight);
+                            videoRef.videoReader.ReadFrame(shots[shots.Count - 1].startFrame, ref frameB);
+
+                            int sum = FillAnalysisDataHistogram(ref frameB, ref frameA, false);
+
+                            // Mark new shot if there exists a major difference between the previous and the current shot
+                            if (sum > 40000)
+                            {
+                                shots.Add(new Shot());
+                                shots[shots.Count - 1].startFrame = i;
+                            }
+
+                            frameA = frameB = null;
+                        }
+                        else
+                        {
+                            // store Max(previous transition, current transition)
+                            if (videoAnalysisData[shots[shots.Count - 1].startFrame].sum < videoAnalysisData[i].sum)
+                            {
+                                Shot s = shots[shots.Count - 1];
+                                s.startFrame = i;
+                            }
+                        }
+#if RATIO
+                        }
+#endif
+                    }
+                }
+            }
+            else if (sSAlg == ShotSelectionAlgorithm.MOTION)
+            {
+                for (int i = 1; i < videoAnalysisData.Count; ++i)
+                {
+                    if (videoAnalysisData[i].sum > 1000)
                     {
-                        // Check for shot similarity
-
-                        // Read the current shot selected
-                        Frame frameA;
-                        frameA = new Frame(i, videoRef.frameWidth, videoRef.frameHeight);
-                        videoRef.videoReader.ReadFrame(i, ref frameA);
-
-                        // Read the Last shot that was selected
-                        Frame frameB;
-                        frameB = new Frame(shots[shots.Count - 1].startFrame, videoRef.frameWidth, videoRef.frameHeight);
-                        videoRef.videoReader.ReadFrame(shots[shots.Count - 1].startFrame, ref frameB);
-
-                        int sum = FillAnalysisData(kfAlg, ref frameB, ref frameA, false);
-
-                        // Mark new shot if there exists a major difference between the previous and the current shot
-                        if (sum > 40000)
+                        if (shots[shots.Count - 1].startFrame < (i - MINIMUM_FRAMES_IN_SHOT))
                         {
                             shots.Add(new Shot());
                             shots[shots.Count - 1].startFrame = i;
                         }
-
-                        frameA = frameB = null;
-                    }
-                    else
-                    {
-                        // store Max(previous transition, current transition)
-                        if (videoAnalysisData[shots[shots.Count - 1].startFrame].sum < videoAnalysisData[i].sum)
+                        else
                         {
-                            Shot s = shots[shots.Count - 1];
-                            s.startFrame = i;
+                            if (videoAnalysisData[shots[shots.Count - 1].startFrame].sum < videoAnalysisData[i].sum)
+                            {
+                                Shot s = shots[shots.Count - 1];
+                                s.startFrame = i;
+                            }
                         }
                     }
-#if RATIO
-                    }
-#endif
                 }
             }
         }
 
         public void SortAudioAmpsInShots()
         {
-            // N shots boundaries = N-1 shots 
+            // N shots boundaries = N-1 shots
             for (int i = 0; i < shots.Count - 1; ++i)
             {
                 // Fetch audio Avg amplitudes for all the frames in shot i
@@ -584,7 +666,14 @@ namespace VideoPlayer
                 // Instantiate, used to find Mean, median, SD
                 shotAudio = new AForge.Math.Histogram(audioAmps);
 
-                if (!shots[i].keyFrames.Contains(MaxKeyFrame))
+                bool flag = false;
+                for (int j = 0; j < shots.Count; ++j)
+                {
+                    if (shots[j].keyFrames.Contains(MaxKeyFrame))
+                        flag = true;
+                }
+
+                if (!flag)
                     shots[i].keyFrames.Add(MaxKeyFrame);
             }
         }
@@ -592,8 +681,8 @@ namespace VideoPlayer
         public void GenerateSummaryVideo(int sceneTime, int percentage)
         {
             summaryFrames = new List<int>();
-            int surrFrames = (int)( sceneTime / 2.0 * 24 );
-            int minWeight = (int)( ( 100 - percentage ) / 100.0 * shots.Count );
+            int surrFrames = (int)(sceneTime / 2.0 * 24);
+            int minWeight = (int)((100 - percentage) / 100.0 * shots.Count);
 
             // N shots boundaries = N-1 shots
             for (int i = 0; i < shots.Count - 1; ++i)
@@ -736,11 +825,11 @@ namespace VideoPlayer
                 case 6:
                     filePath = path + "\\BestMatchDistMagSum.csv";
 
-                    length = BestMatchdata.Count;
+                    length = videoAnalysisData.Count;
 
                     sb = new StringBuilder();
                     for (int index = 0; index < length; index++)
-                        sb.AppendLine(string.Join(delimiter, BestMatchdata[index].sum));
+                        sb.AppendLine(string.Join(delimiter, videoAnalysisData[index].sum));
 
                     File.WriteAllText(filePath, sb.ToString());
 
