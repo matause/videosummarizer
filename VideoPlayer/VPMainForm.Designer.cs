@@ -31,6 +31,7 @@
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileOpenMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileSummarizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileOpenSeperator = new System.Windows.Forms.ToolStripSeparator();
             this.fileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileCloseSeperator = new System.Windows.Forms.ToolStripSeparator();
@@ -42,7 +43,8 @@
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.timelineBar = new System.Windows.Forms.TrackBar();
-            this.fileSummarizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showHideHistogramMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
@@ -55,6 +57,7 @@
             this.mainMenuStrip.BackColor = System.Drawing.Color.LightSeaGreen;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenuItem,
+            this.optionsMenuItem,
             this.aboutMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
@@ -82,6 +85,13 @@
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
             this.fileOpenMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fileOpenMenuItem.Text = "Open...";
+            // 
+            // fileSummarizeMenuItem
+            // 
+            this.fileSummarizeMenuItem.BackColor = System.Drawing.Color.Peru;
+            this.fileSummarizeMenuItem.Name = "fileSummarizeMenuItem";
+            this.fileSummarizeMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileSummarizeMenuItem.Text = "Summarize...";
             // 
             // fileOpenSeperator
             // 
@@ -121,7 +131,7 @@
             // 
             this.aboutAboutMenuItem.BackColor = System.Drawing.Color.Peru;
             this.aboutAboutMenuItem.Name = "aboutAboutMenuItem";
-            this.aboutAboutMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.aboutAboutMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutAboutMenuItem.Text = "About...";
             // 
             // displaySplitContainer
@@ -191,12 +201,20 @@
             this.timelineBar.TabStop = false;
             this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
-            // fileSummarizeMenuItem
+            // optionsMenuItem
             // 
-            this.fileSummarizeMenuItem.BackColor = System.Drawing.Color.Peru;
-            this.fileSummarizeMenuItem.Name = "fileSummarizeMenuItem";
-            this.fileSummarizeMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.fileSummarizeMenuItem.Text = "Summarize...";
+            this.optionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showHideHistogramMenuItem});
+            this.optionsMenuItem.Name = "optionsMenuItem";
+            this.optionsMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsMenuItem.Text = "Options";
+            // 
+            // showHideHistogramMenuItem
+            // 
+            this.showHideHistogramMenuItem.BackColor = System.Drawing.Color.Peru;
+            this.showHideHistogramMenuItem.Name = "showHideHistogramMenuItem";
+            this.showHideHistogramMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.showHideHistogramMenuItem.Text = "Show/Hide Histogram";
             // 
             // VPMainForm
             // 
@@ -240,6 +258,8 @@
         private System.Windows.Forms.TrackBar timelineBar;
         private System.Windows.Forms.Label timeFrameLabel;
         private System.Windows.Forms.ToolStripMenuItem fileSummarizeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showHideHistogramMenuItem;
     }
 }
 

@@ -67,6 +67,12 @@
     <Compile Include="Direct2DRenderer.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="AudioPlayer.cs" />
+    <Compile Include="HistogramControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HistogramControl.Designer.cs">
+      <DependentUpon>HistogramControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Summarizer.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Video.cs" />
@@ -75,6 +81,12 @@
     </Compile>
     <Compile Include="VPAboutForm.Designer.cs">
       <DependentUpon>VPAboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VPHistogramForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VPHistogramForm.Designer.cs">
+      <DependentUpon>VPHistogramForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VPMainForm.cs">
       <SubType>Form</SubType>
@@ -92,6 +104,9 @@
     </Compile>
     <EmbeddedResource Include="VPAboutForm.resx">
       <DependentUpon>VPAboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VPHistogramForm.resx">
+      <DependentUpon>VPHistogramForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VPMainForm.resx">
       <DependentUpon>VPMainForm.cs</DependentUpon>

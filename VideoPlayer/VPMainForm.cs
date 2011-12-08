@@ -28,6 +28,9 @@ namespace VideoPlayer
         bool isVideoPaused;
         bool isScrollPaused;
 
+        bool isShowingHistogram;
+        VPHistogramForm histogramForm;
+
         const int frameWidth = 320;
         const int frameHeight = 240;
 
@@ -49,6 +52,9 @@ namespace VideoPlayer
             isVideoPlaying = false;
             isVideoPaused = false;
             isScrollPaused = false;
+
+            isShowingHistogram = false;
+            histogramForm = null;
 
             clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
             renderer = new Direct2DRenderer(clearColor);
@@ -90,6 +96,8 @@ namespace VideoPlayer
             timelineBar.Scroll += new EventHandler(OnTimelineScroll);
 
             aboutAboutMenuItem.Click += new EventHandler(OnAboutClick);
+
+            showHideHistogramMenuItem.Click += new EventHandler(OnShowHideHistogramClick);
         }
 
         //
@@ -290,6 +298,29 @@ namespace VideoPlayer
         {
             VPAboutForm aboutDlg = new VPAboutForm();
             DialogResult result = aboutDlg.ShowDialog(this);
+        }
+
+        private void OnShowHideHistogramClick(object sender, EventArgs e)
+        {
+            if (isShowingHistogram == true)
+            {
+                // Hide the histogram window.
+                if (histogramForm != null)
+                {
+                    histogramForm.Hide();
+                    histogramForm = null;
+                }
+
+                isShowingHistogram = false;
+            }
+            else
+            {
+                // Display the histogram window.
+                histogramForm = new VPHistogramForm();
+                histogramForm.Show(this);
+
+                isShowingHistogram = true;
+            }
         }
 
         //
