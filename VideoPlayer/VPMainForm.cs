@@ -287,6 +287,7 @@ namespace VideoPlayer
                 int sceneTime = optionsDlg.GetSceneDuration();
                 int summaryPercentage = optionsDlg.GetSummaryPercentage();
                 ShotSelectionAlgorithm sSAlg = optionsDlg.GetShotSelectionAlgorithm();
+                video.usePreProcessedData = optionsDlg.UsePreProcessedMotionData();
 
                 // Compute the data for Shot detection analysis
                 bool result = video.VideoAnalysis(videoFilePath, audioFilePath, sSAlg,

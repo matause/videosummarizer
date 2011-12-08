@@ -37,10 +37,11 @@
             this.colorThresholdingButton = new System.Windows.Forms.RadioButton();
             this.audioExcitationButton = new System.Windows.Forms.RadioButton();
             this.shotGenerationGroupBox = new System.Windows.Forms.GroupBox();
+            this.motionAnalysisButton = new System.Windows.Forms.RadioButton();
             this.keyFrameGroupBox = new System.Windows.Forms.GroupBox();
             this.summaryTrackBar = new System.Windows.Forms.TrackBar();
             this.sceneTrackBar = new System.Windows.Forms.TrackBar();
-            this.motionAnalysisButton = new System.Windows.Forms.RadioButton();
+            this.motionAnalysisCheckBox = new System.Windows.Forms.CheckBox();
             this.shotGenerationGroupBox.SuspendLayout();
             this.keyFrameGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.summaryTrackBar)).BeginInit();
@@ -50,7 +51,7 @@
             // okButton
             // 
             this.okButton.BackColor = System.Drawing.Color.Peru;
-            this.okButton.Location = new System.Drawing.Point(118, 278);
+            this.okButton.Location = new System.Drawing.Point(118, 301);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 0;
@@ -60,7 +61,7 @@
             // cancelButton
             // 
             this.cancelButton.BackColor = System.Drawing.Color.Peru;
-            this.cancelButton.Location = new System.Drawing.Point(197, 278);
+            this.cancelButton.Location = new System.Drawing.Point(197, 301);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 1;
@@ -70,7 +71,7 @@
             // sceneDurationLabel
             // 
             this.sceneDurationLabel.AutoSize = true;
-            this.sceneDurationLabel.Location = new System.Drawing.Point(9, 162);
+            this.sceneDurationLabel.Location = new System.Drawing.Point(9, 185);
             this.sceneDurationLabel.Name = "sceneDurationLabel";
             this.sceneDurationLabel.Size = new System.Drawing.Size(124, 13);
             this.sceneDurationLabel.TabIndex = 2;
@@ -90,7 +91,7 @@
             // 
             this.keyFrameLabel.AutoSize = true;
             this.keyFrameLabel.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.keyFrameLabel.Location = new System.Drawing.Point(88, 94);
+            this.keyFrameLabel.Location = new System.Drawing.Point(88, 117);
             this.keyFrameLabel.Name = "keyFrameLabel";
             this.keyFrameLabel.Size = new System.Drawing.Size(108, 13);
             this.keyFrameLabel.TabIndex = 4;
@@ -99,7 +100,7 @@
             // summaryDuration
             // 
             this.summaryDuration.AutoSize = true;
-            this.summaryDuration.Location = new System.Drawing.Point(9, 220);
+            this.summaryDuration.Location = new System.Drawing.Point(9, 243);
             this.summaryDuration.Name = "summaryDuration";
             this.summaryDuration.Size = new System.Drawing.Size(119, 13);
             this.summaryDuration.TabIndex = 5;
@@ -133,46 +134,14 @@
             // 
             // shotGenerationGroupBox
             // 
+            this.shotGenerationGroupBox.Controls.Add(this.motionAnalysisCheckBox);
             this.shotGenerationGroupBox.Controls.Add(this.motionAnalysisButton);
             this.shotGenerationGroupBox.Controls.Add(this.colorThresholdingButton);
             this.shotGenerationGroupBox.Location = new System.Drawing.Point(12, 24);
             this.shotGenerationGroupBox.Name = "shotGenerationGroupBox";
-            this.shotGenerationGroupBox.Size = new System.Drawing.Size(260, 59);
+            this.shotGenerationGroupBox.Size = new System.Drawing.Size(260, 83);
             this.shotGenerationGroupBox.TabIndex = 16;
             this.shotGenerationGroupBox.TabStop = false;
-            // 
-            // keyFrameGroupBox
-            // 
-            this.keyFrameGroupBox.Controls.Add(this.audioExcitationButton);
-            this.keyFrameGroupBox.Location = new System.Drawing.Point(12, 110);
-            this.keyFrameGroupBox.Name = "keyFrameGroupBox";
-            this.keyFrameGroupBox.Size = new System.Drawing.Size(260, 37);
-            this.keyFrameGroupBox.TabIndex = 17;
-            this.keyFrameGroupBox.TabStop = false;
-            // 
-            // summaryTrackBar
-            // 
-            this.summaryTrackBar.LargeChange = 10;
-            this.summaryTrackBar.Location = new System.Drawing.Point(12, 237);
-            this.summaryTrackBar.Maximum = 100;
-            this.summaryTrackBar.Name = "summaryTrackBar";
-            this.summaryTrackBar.Size = new System.Drawing.Size(260, 45);
-            this.summaryTrackBar.TabIndex = 18;
-            this.summaryTrackBar.TabStop = false;
-            this.summaryTrackBar.TickFrequency = 10;
-            this.summaryTrackBar.Value = 50;
-            // 
-            // sceneTrackBar
-            // 
-            this.sceneTrackBar.LargeChange = 2;
-            this.sceneTrackBar.Location = new System.Drawing.Point(12, 179);
-            this.sceneTrackBar.Maximum = 8;
-            this.sceneTrackBar.Minimum = 1;
-            this.sceneTrackBar.Name = "sceneTrackBar";
-            this.sceneTrackBar.Size = new System.Drawing.Size(260, 45);
-            this.sceneTrackBar.TabIndex = 19;
-            this.sceneTrackBar.TabStop = false;
-            this.sceneTrackBar.Value = 3;
             // 
             // motionAnalysisButton
             // 
@@ -186,12 +155,58 @@
             this.motionAnalysisButton.Text = "Motion Analysis";
             this.motionAnalysisButton.UseVisualStyleBackColor = false;
             // 
+            // keyFrameGroupBox
+            // 
+            this.keyFrameGroupBox.Controls.Add(this.audioExcitationButton);
+            this.keyFrameGroupBox.Location = new System.Drawing.Point(12, 133);
+            this.keyFrameGroupBox.Name = "keyFrameGroupBox";
+            this.keyFrameGroupBox.Size = new System.Drawing.Size(260, 37);
+            this.keyFrameGroupBox.TabIndex = 17;
+            this.keyFrameGroupBox.TabStop = false;
+            // 
+            // summaryTrackBar
+            // 
+            this.summaryTrackBar.LargeChange = 10;
+            this.summaryTrackBar.Location = new System.Drawing.Point(12, 260);
+            this.summaryTrackBar.Maximum = 100;
+            this.summaryTrackBar.Name = "summaryTrackBar";
+            this.summaryTrackBar.Size = new System.Drawing.Size(260, 45);
+            this.summaryTrackBar.TabIndex = 18;
+            this.summaryTrackBar.TabStop = false;
+            this.summaryTrackBar.TickFrequency = 10;
+            this.summaryTrackBar.Value = 50;
+            // 
+            // sceneTrackBar
+            // 
+            this.sceneTrackBar.LargeChange = 2;
+            this.sceneTrackBar.Location = new System.Drawing.Point(12, 202);
+            this.sceneTrackBar.Maximum = 8;
+            this.sceneTrackBar.Minimum = 1;
+            this.sceneTrackBar.Name = "sceneTrackBar";
+            this.sceneTrackBar.Size = new System.Drawing.Size(260, 45);
+            this.sceneTrackBar.TabIndex = 19;
+            this.sceneTrackBar.TabStop = false;
+            this.sceneTrackBar.Value = 3;
+            // 
+            // motionAnalysisCheckBox
+            // 
+            this.motionAnalysisCheckBox.AutoSize = true;
+            this.motionAnalysisCheckBox.BackColor = System.Drawing.Color.Peru;
+            this.motionAnalysisCheckBox.Checked = true;
+            this.motionAnalysisCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.motionAnalysisCheckBox.Location = new System.Drawing.Point(19, 58);
+            this.motionAnalysisCheckBox.Name = "motionAnalysisCheckBox";
+            this.motionAnalysisCheckBox.Size = new System.Drawing.Size(143, 17);
+            this.motionAnalysisCheckBox.TabIndex = 10;
+            this.motionAnalysisCheckBox.Text = "Use Pre-Processed Data";
+            this.motionAnalysisCheckBox.UseVisualStyleBackColor = false;
+            // 
             // VPOptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSeaGreen;
-            this.ClientSize = new System.Drawing.Size(284, 313);
+            this.ClientSize = new System.Drawing.Size(284, 332);
             this.Controls.Add(this.keyFrameGroupBox);
             this.Controls.Add(this.summaryDuration);
             this.Controls.Add(this.keyFrameLabel);
@@ -233,5 +248,6 @@
         private System.Windows.Forms.TrackBar summaryTrackBar;
         private System.Windows.Forms.TrackBar sceneTrackBar;
         private System.Windows.Forms.RadioButton motionAnalysisButton;
+        private System.Windows.Forms.CheckBox motionAnalysisCheckBox;
     }
 }

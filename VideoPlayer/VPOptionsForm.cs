@@ -85,5 +85,10 @@ namespace VideoPlayer
 
             return result;
         }
+
+        public bool UsePreProcessedMotionData()
+        {
+            return motionAnalysisCheckBox.Checked;
+        }
     }
 }
