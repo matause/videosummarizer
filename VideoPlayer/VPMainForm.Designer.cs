@@ -36,6 +36,8 @@
             this.fileCloseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileCloseSeperator = new System.Windows.Forms.ToolStripSeparator();
             this.fileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showHideHistogramMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displaySplitContainer = new System.Windows.Forms.SplitContainer();
@@ -43,8 +45,6 @@
             this.playButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.timelineBar = new System.Windows.Forms.TrackBar();
-            this.optionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showHideHistogramMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.displaySplitContainer)).BeginInit();
             this.displaySplitContainer.Panel2.SuspendLayout();
@@ -83,41 +83,57 @@
             // 
             this.fileOpenMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileOpenMenuItem.Name = "fileOpenMenuItem";
-            this.fileOpenMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileOpenMenuItem.Size = new System.Drawing.Size(142, 22);
             this.fileOpenMenuItem.Text = "Open...";
             // 
             // fileSummarizeMenuItem
             // 
             this.fileSummarizeMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileSummarizeMenuItem.Name = "fileSummarizeMenuItem";
-            this.fileSummarizeMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileSummarizeMenuItem.Size = new System.Drawing.Size(142, 22);
             this.fileSummarizeMenuItem.Text = "Summarize...";
             // 
             // fileOpenSeperator
             // 
             this.fileOpenSeperator.BackColor = System.Drawing.Color.Peru;
             this.fileOpenSeperator.Name = "fileOpenSeperator";
-            this.fileOpenSeperator.Size = new System.Drawing.Size(149, 6);
+            this.fileOpenSeperator.Size = new System.Drawing.Size(139, 6);
             // 
             // fileCloseMenuItem
             // 
             this.fileCloseMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileCloseMenuItem.Name = "fileCloseMenuItem";
-            this.fileCloseMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileCloseMenuItem.Size = new System.Drawing.Size(142, 22);
             this.fileCloseMenuItem.Text = "Close";
             // 
             // fileCloseSeperator
             // 
             this.fileCloseSeperator.BackColor = System.Drawing.Color.Peru;
             this.fileCloseSeperator.Name = "fileCloseSeperator";
-            this.fileCloseSeperator.Size = new System.Drawing.Size(149, 6);
+            this.fileCloseSeperator.Size = new System.Drawing.Size(139, 6);
             // 
             // fileExitMenuItem
             // 
             this.fileExitMenuItem.BackColor = System.Drawing.Color.Peru;
             this.fileExitMenuItem.Name = "fileExitMenuItem";
-            this.fileExitMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fileExitMenuItem.Size = new System.Drawing.Size(142, 22);
             this.fileExitMenuItem.Text = "Exit";
+            // 
+            // optionsMenuItem
+            // 
+            this.optionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showHideHistogramMenuItem});
+            this.optionsMenuItem.Name = "optionsMenuItem";
+            this.optionsMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsMenuItem.Text = "Options";
+            this.optionsMenuItem.Visible = false;
+            // 
+            // showHideHistogramMenuItem
+            // 
+            this.showHideHistogramMenuItem.BackColor = System.Drawing.Color.Peru;
+            this.showHideHistogramMenuItem.Name = "showHideHistogramMenuItem";
+            this.showHideHistogramMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.showHideHistogramMenuItem.Text = "Show/Hide Histogram";
             // 
             // aboutMenuItem
             // 
@@ -131,7 +147,7 @@
             // 
             this.aboutAboutMenuItem.BackColor = System.Drawing.Color.Peru;
             this.aboutAboutMenuItem.Name = "aboutAboutMenuItem";
-            this.aboutAboutMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutAboutMenuItem.Size = new System.Drawing.Size(116, 22);
             this.aboutAboutMenuItem.Text = "About...";
             // 
             // displaySplitContainer
@@ -200,21 +216,6 @@
             this.timelineBar.TabIndex = 7;
             this.timelineBar.TabStop = false;
             this.timelineBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // optionsMenuItem
-            // 
-            this.optionsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showHideHistogramMenuItem});
-            this.optionsMenuItem.Name = "optionsMenuItem";
-            this.optionsMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsMenuItem.Text = "Options";
-            // 
-            // showHideHistogramMenuItem
-            // 
-            this.showHideHistogramMenuItem.BackColor = System.Drawing.Color.Peru;
-            this.showHideHistogramMenuItem.Name = "showHideHistogramMenuItem";
-            this.showHideHistogramMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.showHideHistogramMenuItem.Text = "Show/Hide Histogram";
             // 
             // VPMainForm
             // 
