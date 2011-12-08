@@ -144,6 +144,9 @@ namespace VideoPlayer
 
             // Draw the frame.
             renderer.OnRender();
+
+            // Update the histogram.
+            OnUpdateHistogram();
         }
 
         private void OnResize(object sender, EventArgs e)
@@ -304,22 +307,35 @@ namespace VideoPlayer
         {
             if (isShowingHistogram == true)
             {
+                isShowingHistogram = false;
+
                 // Hide the histogram window.
                 if (histogramForm != null)
                 {
                     histogramForm.Hide();
                     histogramForm = null;
                 }
-
-                isShowingHistogram = false;
             }
             else
             {
+                isShowingHistogram = true;
+
                 // Display the histogram window.
                 histogramForm = new VPHistogramForm();
+                OnUpdateHistogram();
                 histogramForm.Show(this);
+            }
+        }
 
-                isShowingHistogram = true;
+        //
+        // Helper function to update histogram form.
+        //
+        private void OnUpdateHistogram()
+        {
+            if (histogramForm != null && video != null)
+            {
+                long[] data = video.GetCurrentFrameHistogram();
+                histogramForm.SetValues( data );
             }
         }
 

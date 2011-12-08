@@ -8,7 +8,7 @@
 // to listen to audio.
 #define AUDIO
 
-// Comment this to output CVS files
+// Uncomment this to output CVS files
 //#define CVS
 
 using System;
@@ -288,6 +288,29 @@ namespace VideoPlayer
                 {
                     result = audioPlayer.WriteSummary(audioFilePath, summarizer.summaryFrames);
                 }
+            }
+
+            return result;
+        }
+
+        public long[] GetCurrentFrameHistogram()
+        {
+            long[] result = null;
+
+            if (currentFrame != null)
+            {
+                // TODO: Get histogram from the currentFrame...
+
+                // REMOVE THIS. Sample/TEST code
+                Random random = new Random();
+
+                List<long> theList = new List<long>();
+                for (int i = 0; i < 256; ++i)
+                {
+                    theList.Add( random.Next(50) );
+                }
+
+                result = theList.ToArray();
             }
 
             return result;
