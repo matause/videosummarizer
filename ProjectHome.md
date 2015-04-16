@@ -1,0 +1,1 @@
+This project procedurally locates the most interesting sections of a video and allows the user to quickly browse through them.
